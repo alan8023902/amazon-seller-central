@@ -1,0 +1,37 @@
+{
+  "store-us-main": {
+    "poor_listings": 10,
+    "fair_listings": 3,
+    "good_listings": 67,
+    "very_good_listings": 1,
+    "excellent_listings": 6
+  },
+  "store-japan-main": {
+    "poor_listings": 4,
+    "fair_listings": 2,
+    "good_listings": 3,
+    "very_good_listings": 2,
+    "excellent_listings": 8
+  },
+  "store-uk-main": {
+    "poor_listings": 3,
+    "fair_listings": 1,
+    "good_listings": 2,
+    "very_good_listings": 3,
+    "excellent_listings": 5
+  },
+  "store-germany-main": {
+    "poor_listings": 2,
+    "fair_listings": 1,
+    "good_listings": 1,
+    "very_good_listings": 1,
+    "excellent_listings": 3
+  },
+  "store-jp-main": {
+    "poor_listings": 6,
+    "fair_listings": 0,
+    "good_listings": 0,
+    "very_good_listings": 1,
+    "excellent_listings": 6
+  }
+}

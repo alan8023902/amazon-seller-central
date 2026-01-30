@@ -1,0 +1,122 @@
+[
+  {
+    "store_id": "test-store-1768846729298-4ketkgav4",
+    "title": "New seller performance standards",
+    "post_date": "2026-01-19",
+    "views": 1234,
+    "comments": 56,
+    "post_type": "FORUM",
+    "likes": 0,
+    "id": "3311a07c-d103-4c8f-8a54-950c6612b9b8"
+  },
+  {
+    "store_id": "test-store-1768846729298-4ketkgav4",
+    "title": "Holiday selling tips and best practices",
+    "post_date": "2026-01-19",
+    "views": 987,
+    "comments": 23,
+    "post_type": "NEWS",
+    "likes": 45,
+    "id": "488a2658-32be-4098-8c38-83e56250b816"
+  },
+  {
+    "store_id": "store-us-main",
+    "title": "New seller performance standards",
+    "post_date": "2026-01-19",
+    "views": 1234,
+    "comments": 56,
+    "post_type": "FORUM",
+    "likes": 0,
+    "id": "3249531b-8d5f-4e4c-8c9e-6a745403d265"
+  },
+  {
+    "store_id": "store-us-main",
+    "title": "Holiday selling tips and best practices",
+    "post_date": "2026-01-19",
+    "views": 987,
+    "comments": 23,
+    "post_type": "NEWS",
+    "likes": 45,
+    "id": "17abc6ca-a4a4-4439-b8d8-08a1b862573e"
+  },
+  {
+    "store_id": "0f1850fa-65f8-4dce-a758-2beca1a8ae96",
+    "title": "New seller performance standards",
+    "post_date": "2026-01-20",
+    "views": 1234,
+    "comments": 56,
+    "post_type": "FORUM",
+    "likes": 0,
+    "id": "ce352823-35c2-4431-b57c-c76d2128a23b"
+  },
+  {
+    "store_id": "0f1850fa-65f8-4dce-a758-2beca1a8ae96",
+    "title": "Holiday selling tips and best practices",
+    "post_date": "2026-01-20",
+    "views": 987,
+    "comments": 23,
+    "post_type": "NEWS",
+    "likes": 45,
+    "id": "dda39f41-6ed5-40af-851d-434a8af9191e"
+  },
+  {
+    "store_id": "TechNestGo",
+    "title": "New seller performance standards",
+    "post_date": "2026-01-20",
+    "views": 1234,
+    "comments": 56,
+    "post_type": "FORUM",
+    "likes": 0,
+    "id": "14448c89-8661-46a0-9487-50e580ee3418"
+  },
+  {
+    "store_id": "TechNestGo",
+    "title": "Holiday selling tips and best practices",
+    "post_date": "2026-01-20",
+    "views": 987,
+    "comments": 23,
+    "post_type": "NEWS",
+    "likes": 45,
+    "id": "d5a45237-8ecd-4997-932e-530027d12044"
+  },
+  {
+    "store_id": "TechNest JP",
+    "title": "New seller performance standards",
+    "post_date": "2026-01-20",
+    "views": 1234,
+    "comments": 56,
+    "post_type": "FORUM",
+    "likes": 0,
+    "id": "fee0a318-6cd8-4d21-92a8-b7cd025394a3"
+  },
+  {
+    "store_id": "TechNest JP",
+    "title": "Holiday selling tips and best practices",
+    "post_date": "2026-01-20",
+    "views": 987,
+    "comments": 23,
+    "post_type": "NEWS",
+    "likes": 45,
+    "id": "a378df67-529f-43d3-8af4-a986568cb0d2"
+  },
+  {
+    "store_id": "TechNest EU",
+    "title": "New seller performance standards",
+    "post_date": "2026-01-20",
+    "views": 1234,
+    "comments": 56,
+    "post_type": "FORUM",
+    "likes": 0,
+    "id": "564e644d-e049-4b73-91da-e20d5ec3fc35"
+  },
+  {
+    "store_id": "TechNest EU",
+    "title": "Holiday selling tips and best practices",
+    "post_date": "2026-01-20",
+    "views": 987,
+    "comments": 23,
+    "post_type": "NEWS",
+    "likes": 45,
+    "id": "19ec4b7c-5615-445a-94d3-201400a4aed0"
+  }
+]

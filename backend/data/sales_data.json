@@ -1,0 +1,1210 @@
+{
+  "store-us-main": [
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-21",
+      "revenue": 3389,
+      "orders": 135,
+      "units_sold": 169,
+      "sessions": 22284,
+      "page_views": 48954,
+      "conversion_rate": 3.86
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-20",
+      "revenue": 4172,
+      "orders": 63,
+      "units_sold": 355,
+      "sessions": 19050,
+      "page_views": 29929,
+      "conversion_rate": 3.72
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-19",
+      "revenue": 4575,
+      "orders": 92,
+      "units_sold": 366,
+      "sessions": 10765,
+      "page_views": 36051,
+      "conversion_rate": 2.35
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-18",
+      "revenue": 3918,
+      "orders": 148,
+      "units_sold": 127,
+      "sessions": 28141,
+      "page_views": 35883,
+      "conversion_rate": 3.27
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-17",
+      "revenue": 4198,
+      "orders": 132,
+      "units_sold": 239,
+      "sessions": 22674,
+      "page_views": 33253,
+      "conversion_rate": 2.21
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-16",
+      "revenue": 2225,
+      "orders": 66,
+      "units_sold": 105,
+      "sessions": 24949,
+      "page_views": 34240,
+      "conversion_rate": 2.88
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-15",
+      "revenue": 2133,
+      "orders": 143,
+      "units_sold": 288,
+      "sessions": 14796,
+      "page_views": 68995,
+      "conversion_rate": 1.59
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-14",
+      "revenue": 3419,
+      "orders": 106,
+      "units_sold": 226,
+      "sessions": 26457,
+      "page_views": 24775,
+      "conversion_rate": 3.67
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-13",
+      "revenue": 4464,
+      "orders": 47,
+      "units_sold": 123,
+      "sessions": 19936,
+      "page_views": 61404,
+      "conversion_rate": 3.01
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-12",
+      "revenue": 2390,
+      "orders": 146,
+      "units_sold": 150,
+      "sessions": 22848,
+      "page_views": 53500,
+      "conversion_rate": 3.52
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-11",
+      "revenue": 3013,
+      "orders": 41,
+      "units_sold": 262,
+      "sessions": 10968,
+      "page_views": 19548,
+      "conversion_rate": 3.2
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-10",
+      "revenue": 1533,
+      "orders": 55,
+      "units_sold": 93,
+      "sessions": 28218,
+      "page_views": 64228,
+      "conversion_rate": 2.77
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-09",
+      "revenue": 4568,
+      "orders": 138,
+      "units_sold": 237,
+      "sessions": 11416,
+      "page_views": 34983,
+      "conversion_rate": 3.1
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-08",
+      "revenue": 3826,
+      "orders": 140,
+      "units_sold": 113,
+      "sessions": 16993,
+      "page_views": 24117,
+      "conversion_rate": 1.68
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-07",
+      "revenue": 4448,
+      "orders": 140,
+      "units_sold": 88,
+      "sessions": 12043,
+      "page_views": 22861,
+      "conversion_rate": 2.54
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-06",
+      "revenue": 5884,
+      "orders": 117,
+      "units_sold": 169,
+      "sessions": 23475,
+      "page_views": 70176,
+      "conversion_rate": 2.23
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-05",
+      "revenue": 3861,
+      "orders": 117,
+      "units_sold": 255,
+      "sessions": 16954,
+      "page_views": 35566,
+      "conversion_rate": 1.77
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-04",
+      "revenue": 3999,
+      "orders": 66,
+      "units_sold": 99,
+      "sessions": 17176,
+      "page_views": 53968,
+      "conversion_rate": 1.51
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-03",
+      "revenue": 3552,
+      "orders": 45,
+      "units_sold": 215,
+      "sessions": 12964,
+      "page_views": 25704,
+      "conversion_rate": 1.64
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-02",
+      "revenue": 1865,
+      "orders": 68,
+      "units_sold": 288,
+      "sessions": 14044,
+      "page_views": 17721,
+      "conversion_rate": 3.76
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2026-01-01",
+      "revenue": 5388,
+      "orders": 125,
+      "units_sold": 75,
+      "sessions": 14589,
+      "page_views": 21459,
+      "conversion_rate": 3.13
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-31",
+      "revenue": 5166,
+      "orders": 87,
+      "units_sold": 187,
+      "sessions": 23421,
+      "page_views": 29191,
+      "conversion_rate": 2.93
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-30",
+      "revenue": 2164,
+      "orders": 108,
+      "units_sold": 362,
+      "sessions": 13824,
+      "page_views": 57666,
+      "conversion_rate": 1.71
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-29",
+      "revenue": 4852,
+      "orders": 62,
+      "units_sold": 295,
+      "sessions": 8269,
+      "page_views": 70692,
+      "conversion_rate": 2.86
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-28",
+      "revenue": 2821,
+      "orders": 30,
+      "units_sold": 280,
+      "sessions": 16032,
+      "page_views": 72042,
+      "conversion_rate": 3.03
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-27",
+      "revenue": 3331,
+      "orders": 111,
+      "units_sold": 283,
+      "sessions": 13974,
+      "page_views": 45072,
+      "conversion_rate": 2.53
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-26",
+      "revenue": 2988,
+      "orders": 145,
+      "units_sold": 342,
+      "sessions": 18178,
+      "page_views": 21909,
+      "conversion_rate": 2.37
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-25",
+      "revenue": 2986,
+      "orders": 72,
+      "units_sold": 148,
+      "sessions": 14181,
+      "page_views": 35473,
+      "conversion_rate": 2.39
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-24",
+      "revenue": 4754,
+      "orders": 73,
+      "units_sold": 100,
+      "sessions": 16419,
+      "page_views": 52879,
+      "conversion_rate": 3.27
+    },
+    {
+      "store_id": "store-us-main",
+      "date": "2025-12-23",
+      "revenue": 3716,
+      "orders": 46,
+      "units_sold": 346,
+      "sessions": 19875,
+      "page_views": 72109,
+      "conversion_rate": 2.07
+    }
+  ],
+  "store-jp-main": [
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-21",
+      "revenue": 4392,
+      "orders": 76,
+      "units_sold": 229,
+      "sessions": 8498,
+      "page_views": 21894,
+      "conversion_rate": 3.33
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-20",
+      "revenue": 3518,
+      "orders": 46,
+      "units_sold": 153,
+      "sessions": 6030,
+      "page_views": 15340,
+      "conversion_rate": 3.44
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-19",
+      "revenue": 3397,
+      "orders": 87,
+      "units_sold": 120,
+      "sessions": 22472,
+      "page_views": 20965,
+      "conversion_rate": 1.9
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-18",
+      "revenue": 2463,
+      "orders": 88,
+      "units_sold": 216,
+      "sessions": 18393,
+      "page_views": 19894,
+      "conversion_rate": 1.9
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-17",
+      "revenue": 3039,
+      "orders": 58,
+      "units_sold": 267,
+      "sessions": 8055,
+      "page_views": 49024,
+      "conversion_rate": 3.02
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-16",
+      "revenue": 1401,
+      "orders": 79,
+      "units_sold": 74,
+      "sessions": 20852,
+      "page_views": 17889,
+      "conversion_rate": 1.94
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-15",
+      "revenue": 1358,
+      "orders": 105,
+      "units_sold": 90,
+      "sessions": 16245,
+      "page_views": 40070,
+      "conversion_rate": 2.67
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-14",
+      "revenue": 2310,
+      "orders": 72,
+      "units_sold": 289,
+      "sessions": 23650,
+      "page_views": 24133,
+      "conversion_rate": 3.89
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-13",
+      "revenue": 2597,
+      "orders": 71,
+      "units_sold": 150,
+      "sessions": 18492,
+      "page_views": 13772,
+      "conversion_rate": 1.57
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-12",
+      "revenue": 1411,
+      "orders": 64,
+      "units_sold": 168,
+      "sessions": 11835,
+      "page_views": 19570,
+      "conversion_rate": 1.58
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-11",
+      "revenue": 2206,
+      "orders": 99,
+      "units_sold": 256,
+      "sessions": 19839,
+      "page_views": 52818,
+      "conversion_rate": 2.07
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-10",
+      "revenue": 4242,
+      "orders": 50,
+      "units_sold": 117,
+      "sessions": 20901,
+      "page_views": 46743,
+      "conversion_rate": 2.91
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-09",
+      "revenue": 2956,
+      "orders": 90,
+      "units_sold": 215,
+      "sessions": 11704,
+      "page_views": 51967,
+      "conversion_rate": 3.21
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-08",
+      "revenue": 3627,
+      "orders": 68,
+      "units_sold": 239,
+      "sessions": 9038,
+      "page_views": 26722,
+      "conversion_rate": 1.66
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-07",
+      "revenue": 2655,
+      "orders": 33,
+      "units_sold": 237,
+      "sessions": 23199,
+      "page_views": 20306,
+      "conversion_rate": 3.8
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-06",
+      "revenue": 2321,
+      "orders": 102,
+      "units_sold": 129,
+      "sessions": 16111,
+      "page_views": 34893,
+      "conversion_rate": 3.18
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-05",
+      "revenue": 2907,
+      "orders": 40,
+      "units_sold": 99,
+      "sessions": 20430,
+      "page_views": 52795,
+      "conversion_rate": 2.94
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-04",
+      "revenue": 2434,
+      "orders": 57,
+      "units_sold": 191,
+      "sessions": 10060,
+      "page_views": 33745,
+      "conversion_rate": 2.45
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-03",
+      "revenue": 3622,
+      "orders": 71,
+      "units_sold": 225,
+      "sessions": 14055,
+      "page_views": 33745,
+      "conversion_rate": 2.44
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-02",
+      "revenue": 1306,
+      "orders": 29,
+      "units_sold": 267,
+      "sessions": 10719,
+      "page_views": 12859,
+      "conversion_rate": 2.11
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2026-01-01",
+      "revenue": 4008,
+      "orders": 76,
+      "units_sold": 223,
+      "sessions": 20391,
+      "page_views": 22671,
+      "conversion_rate": 2.46
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-31",
+      "revenue": 3642,
+      "orders": 41,
+      "units_sold": 244,
+      "sessions": 8535,
+      "page_views": 40014,
+      "conversion_rate": 1.65
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-30",
+      "revenue": 1356,
+      "orders": 88,
+      "units_sold": 157,
+      "sessions": 20522,
+      "page_views": 24012,
+      "conversion_rate": 3.23
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-29",
+      "revenue": 3945,
+      "orders": 29,
+      "units_sold": 233,
+      "sessions": 7575,
+      "page_views": 42928,
+      "conversion_rate": 2.19
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-28",
+      "revenue": 1840,
+      "orders": 103,
+      "units_sold": 135,
+      "sessions": 19826,
+      "page_views": 19639,
+      "conversion_rate": 3.14
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-27",
+      "revenue": 3087,
+      "orders": 36,
+      "units_sold": 108,
+      "sessions": 15386,
+      "page_views": 33174,
+      "conversion_rate": 3.29
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-26",
+      "revenue": 2426,
+      "orders": 111,
+      "units_sold": 264,
+      "sessions": 18070,
+      "page_views": 36816,
+      "conversion_rate": 2.47
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-25",
+      "revenue": 2760,
+      "orders": 53,
+      "units_sold": 255,
+      "sessions": 15285,
+      "page_views": 25219,
+      "conversion_rate": 1.52
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-24",
+      "revenue": 1278,
+      "orders": 70,
+      "units_sold": 241,
+      "sessions": 17587,
+      "page_views": 26539,
+      "conversion_rate": 3.77
+    },
+    {
+      "store_id": "store-jp-main",
+      "date": "2025-12-23",
+      "revenue": 3751,
+      "orders": 44,
+      "units_sold": 265,
+      "sessions": 9189,
+      "page_views": 31944,
+      "conversion_rate": 2.47
+    }
+  ],
+  "store-uk-main": [
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-21",
+      "revenue": 1731,
+      "orders": 50,
+      "units_sold": 202,
+      "sessions": 6151,
+      "page_views": 16840,
+      "conversion_rate": 3.52
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-20",
+      "revenue": 1470,
+      "orders": 51,
+      "units_sold": 162,
+      "sessions": 7725,
+      "page_views": 39043,
+      "conversion_rate": 2.84
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-19",
+      "revenue": 1410,
+      "orders": 93,
+      "units_sold": 57,
+      "sessions": 5604,
+      "page_views": 26942,
+      "conversion_rate": 2.35
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-18",
+      "revenue": 3062,
+      "orders": 22,
+      "units_sold": 188,
+      "sessions": 5268,
+      "page_views": 46393,
+      "conversion_rate": 2.72
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-17",
+      "revenue": 2953,
+      "orders": 30,
+      "units_sold": 165,
+      "sessions": 7311,
+      "page_views": 27320,
+      "conversion_rate": 3.97
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-16",
+      "revenue": 3771,
+      "orders": 46,
+      "units_sold": 158,
+      "sessions": 15984,
+      "page_views": 42682,
+      "conversion_rate": 2.37
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-15",
+      "revenue": 1498,
+      "orders": 68,
+      "units_sold": 174,
+      "sessions": 6927,
+      "page_views": 46761,
+      "conversion_rate": 1.99
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-14",
+      "revenue": 3055,
+      "orders": 48,
+      "units_sold": 61,
+      "sessions": 14266,
+      "page_views": 28489,
+      "conversion_rate": 2.45
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-13",
+      "revenue": 3916,
+      "orders": 76,
+      "units_sold": 193,
+      "sessions": 19039,
+      "page_views": 33029,
+      "conversion_rate": 2.89
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-12",
+      "revenue": 1258,
+      "orders": 21,
+      "units_sold": 124,
+      "sessions": 9632,
+      "page_views": 37765,
+      "conversion_rate": 3.97
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-11",
+      "revenue": 3713,
+      "orders": 43,
+      "units_sold": 148,
+      "sessions": 18929,
+      "page_views": 23561,
+      "conversion_rate": 1.71
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-10",
+      "revenue": 3783,
+      "orders": 92,
+      "units_sold": 188,
+      "sessions": 5248,
+      "page_views": 36266,
+      "conversion_rate": 3.26
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-09",
+      "revenue": 1110,
+      "orders": 59,
+      "units_sold": 226,
+      "sessions": 8474,
+      "page_views": 11850,
+      "conversion_rate": 1.96
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-08",
+      "revenue": 1119,
+      "orders": 76,
+      "units_sold": 63,
+      "sessions": 12986,
+      "page_views": 43102,
+      "conversion_rate": 3.23
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-07",
+      "revenue": 2562,
+      "orders": 89,
+      "units_sold": 146,
+      "sessions": 15086,
+      "page_views": 14574,
+      "conversion_rate": 2.49
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-06",
+      "revenue": 3673,
+      "orders": 41,
+      "units_sold": 84,
+      "sessions": 5421,
+      "page_views": 42837,
+      "conversion_rate": 1.58
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-05",
+      "revenue": 1815,
+      "orders": 40,
+      "units_sold": 218,
+      "sessions": 8190,
+      "page_views": 39440,
+      "conversion_rate": 3.63
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-04",
+      "revenue": 3304,
+      "orders": 93,
+      "units_sold": 83,
+      "sessions": 9349,
+      "page_views": 39381,
+      "conversion_rate": 2.24
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-03",
+      "revenue": 2893,
+      "orders": 48,
+      "units_sold": 211,
+      "sessions": 8887,
+      "page_views": 31205,
+      "conversion_rate": 2.54
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-02",
+      "revenue": 1553,
+      "orders": 27,
+      "units_sold": 195,
+      "sessions": 9784,
+      "page_views": 43341,
+      "conversion_rate": 3.2
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2026-01-01",
+      "revenue": 1144,
+      "orders": 25,
+      "units_sold": 238,
+      "sessions": 18659,
+      "page_views": 16829,
+      "conversion_rate": 2.98
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-31",
+      "revenue": 1119,
+      "orders": 32,
+      "units_sold": 112,
+      "sessions": 11384,
+      "page_views": 28702,
+      "conversion_rate": 3.41
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-30",
+      "revenue": 2518,
+      "orders": 56,
+      "units_sold": 164,
+      "sessions": 16126,
+      "page_views": 11459,
+      "conversion_rate": 1.78
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-29",
+      "revenue": 2105,
+      "orders": 91,
+      "units_sold": 81,
+      "sessions": 17396,
+      "page_views": 10857,
+      "conversion_rate": 1.69
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-28",
+      "revenue": 2749,
+      "orders": 30,
+      "units_sold": 98,
+      "sessions": 18374,
+      "page_views": 45898,
+      "conversion_rate": 1.67
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-27",
+      "revenue": 3447,
+      "orders": 83,
+      "units_sold": 70,
+      "sessions": 6593,
+      "page_views": 14102,
+      "conversion_rate": 3.86
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-26",
+      "revenue": 2928,
+      "orders": 40,
+      "units_sold": 242,
+      "sessions": 8014,
+      "page_views": 14163,
+      "conversion_rate": 2.36
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-25",
+      "revenue": 2436,
+      "orders": 83,
+      "units_sold": 153,
+      "sessions": 13528,
+      "page_views": 18596,
+      "conversion_rate": 3.15
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-24",
+      "revenue": 2681,
+      "orders": 44,
+      "units_sold": 64,
+      "sessions": 5071,
+      "page_views": 25142,
+      "conversion_rate": 3.3
+    },
+    {
+      "store_id": "store-uk-main",
+      "date": "2025-12-23",
+      "revenue": 1389,
+      "orders": 31,
+      "units_sold": 217,
+      "sessions": 13431,
+      "page_views": 47473,
+      "conversion_rate": 1.7
+    }
+  ],
+  "store-de-main": [
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-21",
+      "revenue": 2676,
+      "orders": 61,
+      "units_sold": 47,
+      "sessions": 8049,
+      "page_views": 26067,
+      "conversion_rate": 3.6
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-20",
+      "revenue": 2661,
+      "orders": 39,
+      "units_sold": 167,
+      "sessions": 5492,
+      "page_views": 30887,
+      "conversion_rate": 3.79
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-19",
+      "revenue": 1656,
+      "orders": 61,
+      "units_sold": 171,
+      "sessions": 8839,
+      "page_views": 14507,
+      "conversion_rate": 2.25
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-18",
+      "revenue": 1622,
+      "orders": 25,
+      "units_sold": 115,
+      "sessions": 10385,
+      "page_views": 33929,
+      "conversion_rate": 1.57
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-17",
+      "revenue": 1296,
+      "orders": 63,
+      "units_sold": 90,
+      "sessions": 6494,
+      "page_views": 26672,
+      "conversion_rate": 2.76
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-16",
+      "revenue": 2266,
+      "orders": 67,
+      "units_sold": 42,
+      "sessions": 11605,
+      "page_views": 22049,
+      "conversion_rate": 1.69
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-15",
+      "revenue": 1670,
+      "orders": 59,
+      "units_sold": 173,
+      "sessions": 11443,
+      "page_views": 15966,
+      "conversion_rate": 2.52
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-14",
+      "revenue": 2031,
+      "orders": 26,
+      "units_sold": 51,
+      "sessions": 13960,
+      "page_views": 18497,
+      "conversion_rate": 2.17
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-13",
+      "revenue": 2687,
+      "orders": 66,
+      "units_sold": 35,
+      "sessions": 10924,
+      "page_views": 10658,
+      "conversion_rate": 2.12
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-12",
+      "revenue": 2507,
+      "orders": 15,
+      "units_sold": 173,
+      "sessions": 6108,
+      "page_views": 22289,
+      "conversion_rate": 1.99
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-11",
+      "revenue": 2392,
+      "orders": 28,
+      "units_sold": 51,
+      "sessions": 7123,
+      "page_views": 9450,
+      "conversion_rate": 3.12
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-10",
+      "revenue": 1087,
+      "orders": 49,
+      "units_sold": 131,
+      "sessions": 13031,
+      "page_views": 29643,
+      "conversion_rate": 3.25
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-09",
+      "revenue": 980,
+      "orders": 42,
+      "units_sold": 161,
+      "sessions": 9243,
+      "page_views": 32008,
+      "conversion_rate": 1.91
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-08",
+      "revenue": 1339,
+      "orders": 28,
+      "units_sold": 130,
+      "sessions": 11321,
+      "page_views": 27815,
+      "conversion_rate": 2.88
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-07",
+      "revenue": 2085,
+      "orders": 22,
+      "units_sold": 147,
+      "sessions": 12558,
+      "page_views": 30810,
+      "conversion_rate": 2.18
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-06",
+      "revenue": 1552,
+      "orders": 52,
+      "units_sold": 137,
+      "sessions": 4947,
+      "page_views": 31271,
+      "conversion_rate": 1.69
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-05",
+      "revenue": 2296,
+      "orders": 48,
+      "units_sold": 102,
+      "sessions": 3570,
+      "page_views": 16358,
+      "conversion_rate": 1.84
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-04",
+      "revenue": 2757,
+      "orders": 41,
+      "units_sold": 73,
+      "sessions": 12198,
+      "page_views": 24771,
+      "conversion_rate": 2.54
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-03",
+      "revenue": 1590,
+      "orders": 45,
+      "units_sold": 43,
+      "sessions": 4301,
+      "page_views": 11563,
+      "conversion_rate": 3.02
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-02",
+      "revenue": 1675,
+      "orders": 41,
+      "units_sold": 131,
+      "sessions": 5933,
+      "page_views": 19478,
+      "conversion_rate": 2.19
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2026-01-01",
+      "revenue": 1334,
+      "orders": 50,
+      "units_sold": 65,
+      "sessions": 6019,
+      "page_views": 10999,
+      "conversion_rate": 2.35
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-31",
+      "revenue": 1379,
+      "orders": 24,
+      "units_sold": 155,
+      "sessions": 13094,
+      "page_views": 15628,
+      "conversion_rate": 2.57
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-30",
+      "revenue": 1839,
+      "orders": 23,
+      "units_sold": 138,
+      "sessions": 12607,
+      "page_views": 15756,
+      "conversion_rate": 2.93
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-29",
+      "revenue": 1844,
+      "orders": 64,
+      "units_sold": 37,
+      "sessions": 5881,
+      "page_views": 25109,
+      "conversion_rate": 2.41
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-28",
+      "revenue": 1943,
+      "orders": 69,
+      "units_sold": 165,
+      "sessions": 4725,
+      "page_views": 23205,
+      "conversion_rate": 3.39
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-27",
+      "revenue": 1957,
+      "orders": 41,
+      "units_sold": 121,
+      "sessions": 4470,
+      "page_views": 33532,
+      "conversion_rate": 2.87
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-26",
+      "revenue": 2784,
+      "orders": 35,
+      "units_sold": 151,
+      "sessions": 7720,
+      "page_views": 23166,
+      "conversion_rate": 3.06
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-25",
+      "revenue": 1540,
+      "orders": 57,
+      "units_sold": 39,
+      "sessions": 13167,
+      "page_views": 9893,
+      "conversion_rate": 1.77
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-24",
+      "revenue": 1436,
+      "orders": 23,
+      "units_sold": 113,
+      "sessions": 11248,
+      "page_views": 32783,
+      "conversion_rate": 1.58
+    },
+    {
+      "store_id": "store-de-main",
+      "date": "2025-12-23",
+      "revenue": 1721,
+      "orders": 66,
+      "units_sold": 169,
+      "sessions": 7308,
+      "page_views": 9841,
+      "conversion_rate": 2.62
+    }
+  ]
+}

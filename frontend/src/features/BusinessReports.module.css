@@ -1,0 +1,495 @@
+/* Business Reports 专用样式 - 像素级还原 */
+
+.businessReports {
+  font-family: "Amazon Ember", Arial, sans-serif;
+  --primary-teal: #008296;
+  --dark-teal: #007185;
+  --text-dark: #0f1111;
+  --text-gray: #565959;
+  --text-light: #888888;
+  --border-gray: #d5d9d9;
+  --bg-white: #ffffff;
+  --bg-light: #f3f3f3;
+  --chart-line: #008296;
+  --link-color: #007185;
+}
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #ffffff;
+  width: 100%;
+  max-width: none;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: #f7f8f8;
+  border-bottom: 1px solid var(--border-gray);
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 400;
+  color: #0F1111;
+  margin: 0;
+}
+
+.learnMoreLink {
+  font-size: 11px;
+  color: #007185;
+  text-decoration: none;
+  margin-left: 6px;
+  position: relative;
+  top: 1px;
+}
+
+.learnMoreLink:hover {
+  text-decoration: underline;
+  color: #c45500;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.btnRefresh,
+.btnDownload {
+  padding: 0 14px;
+  height: 29px;
+  font-size: 13px;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+}
+
+.btnRefresh {
+  color: #0F1111;
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-gray);
+  box-shadow: 0 1px 2px rgba(15, 17, 17, .15);
+}
+
+.btnDownload {
+  color: var(--bg-white);
+  background-color: var(--primary-teal);
+  border: 1px solid #006778;
+}
+
+.btnRefresh:hover {
+  background-color: #f7f8fa;
+}
+
+.btnDownload:hover {
+  background-color: #007185;
+}
+
+.insightsCard {
+  background-color: var(--bg-white);
+  border: 1px solid #e7e7e7;
+  border-radius: 2px;
+  margin: 16px 20px 6px 20px;
+  padding: 16px 20px;
+  position: relative;
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.insightsHeader {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.sparkleIcon {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.insightsTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F1111;
+  line-height: 1.4;
+}
+
+.insightsText {
+  font-size: 13px;
+  color: #0F1111;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.feedbackSection {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.feedbackText {
+  font-size: 11px;
+  color: #565959;
+  font-style: italic;
+}
+
+.feedbackIcons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.feedbackIcon {
+  color: #888;
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+}
+
+.separator {
+  width: 1px;
+  height: 14px;
+  background-color: #ddd;
+}
+
+.feedbackIcon:hover {
+  color: var(--primary-teal);
+}
+
+.filtersContainer {
+  background-color: #fcfcfc;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-gray);
+  margin-bottom: 0;
+}
+
+.filterRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filterLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F1111;
+  margin-bottom: 2px;
+}
+
+.filterSelect,
+.dateInput {
+  height: 29px;
+  font-size: 13px;
+  border: 1px solid #a6a6a6;
+  border-top-color: #949494;
+  border-radius: 3px;
+  background-color: var(--bg-white);
+  padding: 0 8px;
+  outline: none;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5), 0 1px 0 rgba(0, 0, 0, .07) inset;
+}
+
+.filterSelect {
+  min-width: 160px;
+  background-image: linear-gradient(to bottom, #f7f8fa, #e7e9ec);
+}
+
+.datePicker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dateInputsRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 288px;
+  min-width: 288px;
+}
+
+.dateInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #888;
+  background: #fff;
+  height: 29px;
+  padding: 0 4px;
+}
+
+.calendarIconLeft {
+  color: #0F1111;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.dateInputBare {
+  border: none;
+  outline: none;
+  width: 80px;
+  font-size: 12px;
+  color: #0F1111;
+}
+
+.btnApply {
+  height: 29px;
+  padding: 0 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bg-white);
+  background-color: #008296;
+  border: 1px solid #006778;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-top: 21px;
+}
+
+.btnApply:hover {
+  background-color: #007185;
+}
+
+.snapshotSection {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-gray);
+  margin: 0 20px 6px 20px;
+}
+
+.snapshotHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f6f6f6;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.snapshotTitle {
+  font-size: 17px;
+  font-weight: 400;
+  color: #0F1111;
+}
+
+.snapshotTimestamp {
+  font-size: 11px;
+  color: #565959;
+  position: relative;
+  top: 1px;
+}
+
+.metricsRow {
+  display: flex;
+  padding: 12px 16px 20px 16px;
+  background-color: #fcfcfc;
+  gap: 65px;
+  justify-content: flex-start;
+}
+
+.metricItem {
+  flex: none;
+  width: auto;
+}
+
+.metricLabel {
+  font-size: 11px;
+  color: #565959;
+  margin-bottom: 4px;
+}
+
+.metricValue {
+  font-size: 21px;
+  font-weight: 400;
+  color: #002f36;
+}
+
+.compareSection {
+  background-color: #DFEAF2;
+  margin: 0 20px 16px 20px;
+  border: 1px solid var(--border-gray);
+}
+
+.compareHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #DFEAF2;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.compareTitle {
+  font-size: 17px;
+  font-weight: 400;
+  color: #0F1111;
+}
+
+.viewToggle {
+  display: flex;
+  gap: 0;
+  border: 1px solid #888;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.viewBtn {
+  height: 25px;
+  padding: 0 12px;
+  font-size: 11px;
+  background-color: #fff;
+  color: #0F1111;
+  border: 1px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5), 0 1px 0 rgba(0, 0, 0, .07) inset;
+}
+
+.viewBtn.active {
+  background-color: #008296;
+  color: #fff;
+  border: 1px solid #006778;
+  margin: -1px;
+  z-index: 1;
+}
+
+.viewBtn:not(:last-child) {
+  border-right: 1px solid #888;
+}
+
+.chartsContainer {
+  display: flex;
+  padding: 0;
+  gap: 0;
+  background-color: #e0e0e0;
+  border-top: 1px solid #e7e7e7;
+  margin-top: 0;
+}
+
+.chartDivider {
+  width: 1px;
+  background-color: #ccc;
+  margin: 0;
+}
+
+.chartWrapper {
+  flex: 1;
+  height: 260px;
+  border: none;
+  padding: 0;
+  position: relative;
+  background-color: #e0e0e0;
+}
+
+.chartWrapper:last-child {
+  padding: 0;
+}
+
+.chartWrapper:first-child {
+  border-right: none;
+}
+
+.chartWrapper:last-child {
+  border-left: none;
+}
+
+.compareLegend {
+  display: flex;
+  gap: 60px;
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+}
+
+.compareLabel {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.whatsThisLink {
+  font-size: 14px;
+  color: var(--link-color);
+  display: block;
+}
+
+.compareCheckbox {
+  display: flex;
+  gap: 10px;
+}
+
+.checkboxLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--link-color);
+}
+
+.checkboxValues {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F1111;
+  margin-top: 4px;
+}
+.compareLegend {
+  display: flex;
+  gap: 30px;
+  padding: 8px 16px;
+  background-color: #DFEAF2;
+  border-top: 1px solid #e7e7e7;
+  border-right: 1px solid #ddd;
+  margin-top: 10px;
+}
+
+.compareLabel {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0F1111;
+  display: block;
+}
+
+.whatsThisLink {
+  font-size: 11px;
+  color: #007185;
+  text-decoration: none;
+  display: block;
+  margin-top: 2px;
+}
+
+.whatsThisLink:hover {
+  text-decoration: underline;
+  color: #c45500;
+}
+
+.compareCheckbox {
+  display: flex;
+  gap: 12px;
+}
+
+.checkboxLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #007185;
+  display: block;
+  margin-top: 2px;
+}
+
+.checkboxValues {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F1111;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+

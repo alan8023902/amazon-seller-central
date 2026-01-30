@@ -1,0 +1,5 @@
+{
+  "name": "Amazon Seller Central Clone",
+  "description": "A pixel-perfect Amazon Seller Central backend clone featuring a comprehensive dashboard, multi-step auth flow, marketplace switching, and data import capabilities.",
+  "requestFramePermissions": []
+}

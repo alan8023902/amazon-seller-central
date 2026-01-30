@@ -1,0 +1,114 @@
+[
+  {
+    "id": "ah-store-us-main",
+    "store_id": "store-us-main",
+    "order_defect_rate": {
+      "seller_fulfilled": 3,
+      "fulfilled_by_amazon": 2
+    },
+    "policy_violations": {
+      "negative_feedback": 0,
+      "a_to_z_claims": 0,
+      "chargeback_claims": 0
+    },
+    "account_health_rating": 999,
+    "shipping_performance": {
+      "late_shipment_rate": 0,
+      "pre_fulfillment_cancel_rate": 0,
+      "valid_tracking_rate": 99,
+      "on_time_delivery_rate": null
+    },
+    "policy_compliance": {
+      "product_policy_violations": 0,
+      "listing_policy_violations": 0,
+      "intellectual_property_violations": 0,
+      "customer_product_reviews": 0,
+      "other_policy_violations": 0
+    },
+    "updated_at": "2026-01-28T14:41:04.280Z"
+  },
+  {
+    "id": "ah-store-jp-main",
+    "store_id": "store-jp-main",
+    "order_defect_rate": {
+      "seller_fulfilled": 2.5,
+      "fulfilled_by_amazon": 1.8
+    },
+    "policy_violations": {
+      "negative_feedback": 0,
+      "a_to_z_claims": 0,
+      "chargeback_claims": 0
+    },
+    "account_health_rating": 945,
+    "shipping_performance": {
+      "late_shipment_rate": 0,
+      "pre_fulfillment_cancel_rate": 0,
+      "valid_tracking_rate": 97,
+      "on_time_delivery_rate": null
+    },
+    "policy_compliance": {
+      "product_policy_violations": 0,
+      "listing_policy_violations": 0,
+      "intellectual_property_violations": 0,
+      "customer_product_reviews": 0,
+      "other_policy_violations": 0
+    },
+    "updated_at": "2026-01-22T10:00:00.000Z"
+  },
+  {
+    "id": "ah-store-uk-main",
+    "store_id": "store-uk-main",
+    "order_defect_rate": {
+      "seller_fulfilled": 2.8,
+      "fulfilled_by_amazon": 1.5
+    },
+    "policy_violations": {
+      "negative_feedback": 0,
+      "a_to_z_claims": 0,
+      "chargeback_claims": 0
+    },
+    "account_health_rating": 967,
+    "shipping_performance": {
+      "late_shipment_rate": 0,
+      "pre_fulfillment_cancel_rate": 0,
+      "valid_tracking_rate": 98,
+      "on_time_delivery_rate": null
+    },
+    "policy_compliance": {
+      "product_policy_violations": 0,
+      "listing_policy_violations": 0,
+      "intellectual_property_violations": 0,
+      "customer_product_reviews": 0,
+      "other_policy_violations": 0
+    },
+    "updated_at": "2026-01-22T10:00:00.000Z"
+  },
+  {
+    "id": "ah-store-de-main",
+    "store_id": "store-de-main",
+    "order_defect_rate": {
+      "seller_fulfilled": 1.9,
+      "fulfilled_by_amazon": 1.2
+    },
+    "policy_violations": {
+      "negative_feedback": 0,
+      "a_to_z_claims": 0,
+      "chargeback_claims": 0
+    },
+    "account_health_rating": 890,
+    "shipping_performance": {
+      "late_shipment_rate": 0,
+      "pre_fulfillment_cancel_rate": 0,
+      "valid_tracking_rate": 95,
+      "on_time_delivery_rate": null
+    },
+    "policy_compliance": {
+      "product_policy_violations": 0,
+      "listing_policy_violations": 0,
+      "intellectual_property_violations": 0,
+      "customer_product_reviews": 0,
+      "other_policy_violations": 0
+    },
+    "updated_at": "2026-01-22T10:00:00.000Z"
+  }
+]
