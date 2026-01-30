@@ -242,37 +242,37 @@ export const performanceSidebar: SidebarConfig = {
       children: [
         {
           id: 'account-health-overview',
-          label: 'Account Health',
+          label: 'accountHealth',
           path: '/app/performance',
         },
         {
           id: 'customer-service-performance',
-          label: 'Customer Service Performance',
+          label: 'customerServicePerformance',
           path: '/app/performance/customer-service',
         },
         {
           id: 'product-policy-compliance',
-          label: 'Product Policy Compliance',
+          label: 'productPolicyCompliance',
           path: '/app/performance/product-policy',
         },
         {
           id: 'shipping-performance',
-          label: 'Shipping Performance',
+          label: 'shippingPerformance',
           path: '/app/performance/shipping',
         },
         {
           id: 'reports',
-          label: 'Reports',
+          label: 'reports',
           path: '/app/performance/reports',
         },
         {
           id: 'eligibilities',
-          label: 'Eligibilities',
+          label: 'eligibilities',
           path: '/app/performance/eligibilities',
         },
         {
           id: 'voice-of-customer',
-          label: 'Voice of the Customer',
+          label: 'voiceOfTheCustomer',
           path: '/app/performance/voice-of-customer',
         }
       ]

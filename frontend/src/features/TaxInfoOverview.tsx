@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useI18n } from '../hooks/useI18n';
 import { Info, X } from 'lucide-react';
 
 const TaxInfoOverview: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [showBanner, setShowBanner] = useState(true);
 
   return (
@@ -18,8 +20,7 @@ const TaxInfoOverview: React.FC = () => {
                   <Info size={18} />
                 </div>
                 <div className="text-[14px] leading-5 text-[#0f1111] font-semibold">
-                  You can use the links below to change the setting for the store you're currently browsing. You can
-                  change the store via the country drop-down menu in the navigation bar.
+                  {t('taxInfoBannerText')}
                 </div>
               </div>
 
@@ -43,7 +44,7 @@ const TaxInfoOverview: React.FC = () => {
             <div className="bg-white border border-[#d5d9d9] shadow-[0_4px_12px_rgba(0,0,0,0.25)] rounded-sm">
                <div className="px-12 py-8">
                 <h1 className="text-[44px] leading-[52px] font-normal text-[#232f3e]">
-                  Tax Information
+                  {t('taxInformation')}
                 </h1>
 
                 {/* Links */}
@@ -53,7 +54,7 @@ const TaxInfoOverview: React.FC = () => {
                     className="block text-[14px] text-[#2f6f87] hover:text-[#007185] hover:underline"
                     onClick={() => navigate('/app/settings/tax-info/details')}
                   >
-                    Tax Information
+                    {t('taxInformation')}
                   </button>
 
                   <button
@@ -61,7 +62,7 @@ const TaxInfoOverview: React.FC = () => {
                     className="block text-[14px] text-[#2f6f87] hover:text-[#007185] hover:underline"
                     onClick={() => navigate('/app/settings/tax-info/vat-gst')}
                   >
-                    VAT/GST Registration Numbers
+                    {t('vatGstRegistrationNumbers')}
                   </button>
 
                   <button
@@ -69,7 +70,7 @@ const TaxInfoOverview: React.FC = () => {
                     className="block text-[14px] text-[#2f6f87] hover:text-[#007185] hover:underline"
                     onClick={() => navigate('/app/settings/tax-info/rfc')}
                   >
-                    RFC ID
+                    {t('rfcId')}
                   </button>
                 </div>
               </div>

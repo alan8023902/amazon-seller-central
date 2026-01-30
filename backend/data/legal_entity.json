@@ -1,1 +1,90 @@
-[]
+[
+  {
+    "id": "legal-entity-store-us-main",
+    "store_id": "store-us-main",
+    "legalBusinessName": "TechCorp Solutions LLC",
+    "businessAddress": {
+      "street": "1234 Innovation Drive",
+      "suite": "Suite 500",
+      "city": "San Francisco",
+      "state": "CA",
+      "zipCode": "94105",
+      "country": "United States"
+    },
+    "taxInformation": {
+      "status": "Complete",
+      "taxId": "12-3456789",
+      "taxClassification": "Limited Liability Company"
+    },
+    "businessType": "Limited Liability Company",
+    "registrationDate": "2023-01-15",
+    "created_at": "2023-01-15T10:00:00.000Z",
+    "updated_at": "2024-01-30T15:30:00.000Z"
+  },
+  {
+    "id": "legal-entity-store-jp-main",
+    "store_id": "store-jp-main",
+    "legalBusinessName": "テックコープ株式会社",
+    "businessAddress": {
+      "street": "東京都渋谷区恵比寿1-2-3",
+      "suite": "恵比寿ビル10階",
+      "city": "東京",
+      "state": "東京都",
+      "zipCode": "150-0013",
+      "country": "Japan"
+    },
+    "taxInformation": {
+      "status": "Complete",
+      "taxId": "T123456789012",
+      "taxClassification": "株式会社"
+    },
+    "businessType": "株式会社",
+    "registrationDate": "2023-02-20",
+    "created_at": "2023-02-20T10:00:00.000Z",
+    "updated_at": "2024-01-30T15:30:00.000Z"
+  },
+  {
+    "id": "legal-entity-store-uk-main",
+    "store_id": "store-uk-main",
+    "legalBusinessName": "TechCorp Solutions Ltd",
+    "businessAddress": {
+      "street": "123 Tech Street",
+      "suite": "Floor 5",
+      "city": "London",
+      "state": "England",
+      "zipCode": "EC1A 1BB",
+      "country": "United Kingdom"
+    },
+    "taxInformation": {
+      "status": "Complete",
+      "taxId": "GB123456789",
+      "taxClassification": "Private Limited Company"
+    },
+    "businessType": "Private Limited Company",
+    "registrationDate": "2023-03-10",
+    "created_at": "2023-03-10T10:00:00.000Z",
+    "updated_at": "2024-01-30T15:30:00.000Z"
+  },
+  {
+    "id": "legal-entity-store-de-main",
+    "store_id": "store-de-main",
+    "legalBusinessName": "TechCorp Solutions GmbH",
+    "businessAddress": {
+      "street": "Technologiestraße 123",
+      "suite": "Büro 400",
+      "city": "Berlin",
+      "state": "Berlin",
+      "zipCode": "10115",
+      "country": "Germany"
+    },
+    "taxInformation": {
+      "status": "Complete",
+      "taxId": "DE123456789",
+      "taxClassification": "Gesellschaft mit beschränkter Haftung"
+    },
+    "businessType": "GmbH",
+    "registrationDate": "2023-04-05",
+    "created_at": "2023-04-05T10:00:00.000Z",
+    "updated_at": "2024-01-30T15:30:00.000Z"
+  }
+]

@@ -149,12 +149,23 @@ export type AccountHealth = z.infer<typeof AccountHealthSchema>;
 export const LegalEntitySchema = z.object({
   id: z.string().optional(),
   store_id: z.string(),
-  business_name: z.string().optional(),
-  address_line1: z.string().optional(),
-  address_line2: z.string().optional(),
-  city: z.string().optional(),
-  province: z.string().optional(),
-  postal_code: z.string().optional(),
+  legalBusinessName: z.string().optional(),
+  businessAddress: z.object({
+    street: z.string().optional(),
+    suite: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    country: z.string().optional(),
+  }).optional(),
+  taxInformation: z.object({
+    status: z.string().optional(),
+    taxId: z.string().optional(),
+    taxClassification: z.string().optional(),
+  }).optional(),
+  businessType: z.string().optional(),
+  registrationDate: z.string().optional(),
+  created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
 

@@ -71,23 +71,23 @@ const AccountHealth: React.FC = () => {
                       <div className="flex items-start justify-between gap-6">
                         <div className="flex-1">
                           <a href="#" className="text-[#007185] hover:underline font-semibold text-[13px]">
-                            Order Defect Rate
+                            {t('orderDefectRate')}
                           </a>
-                          <div className="text-xs text-[#565959] mt-1">Target: under 1%</div>
+                          <div className="text-xs text-[#565959] mt-1">{t('target')}: {t('underPercent', { percent: '1' })}</div>
                         </div>
 
                         <div className="flex gap-8 text-right flex-shrink-0">
                           <div className="min-w-[130px]">
-                            <div className="text-xs text-[#565959] mb-1">Seller Fulfilled</div>
+                            <div className="text-xs text-[#565959] mb-1">{t('sellerFulfilled')}</div>
                             <div className="text-lg font-semibold text-[#0f1111]">3%</div>
-                            <div className="text-[11px] text-[#565959] mt-1">317 of 10570 orders</div>
-                            <div className="text-[11px] text-[#565959]">60 days</div>
+                            <div className="text-[11px] text-[#565959] mt-1">{t('ofOrders', { count: '317', total: '10570' })}</div>
+                            <div className="text-[11px] text-[#565959]">60 {t('days')}</div>
                           </div>
                           <div className="min-w-[130px]">
-                            <div className="text-xs text-[#565959] mb-1">Fulfilled by Amazon</div>
+                            <div className="text-xs text-[#565959] mb-1">{t('fulfilledByAmazon')}</div>
                             <div className="text-lg font-semibold text-[#0f1111]">2%</div>
-                            <div className="text-[11px] text-[#565959] mt-1">317 of 15856 orders</div>
-                            <div className="text-[11px] text-[#565959]">60 days</div>
+                            <div className="text-[11px] text-[#565959] mt-1">{t('ofOrders', { count: '317', total: '15856' })}</div>
+                            <div className="text-[11px] text-[#565959]">60 {t('days')}</div>
                           </div>
                         </div>
                       </div>
@@ -95,18 +95,18 @@ const AccountHealth: React.FC = () => {
 
                     {/* Metrics explanation */}
                     <div className="px-4 py-2 text-xs text-[#0f1111] border-b border-[#e7e7e7]">
-                      Order Defect Rate consists of three different metrics:
+                      {t('orderDefectRateDesc')}
                     </div>
 
                     {/* Metrics table */}
                     <div>
                       <div className="px-4 py-2 text-xs text-[#565959] flex justify-between border-b border-[#e7e7e7]">
                         <div className="flex-1"></div>
-                        <div className="w-[110px] text-right">Seller Fulfilled</div>
-                        <div className="w-[110px] text-right">Fulfilled by Amazon</div>
+                        <div className="w-[110px] text-right">{t('sellerFulfilled')}</div>
+                        <div className="w-[110px] text-right">{t('fulfilledByAmazon')}</div>
                       </div>
 
-                      {['Negative feedback', 'A-to-z Guarantee claims', 'Chargeback claims'].map((name) => (
+                      {[t('negativeFeedback'), t('aToZClaims'), t('chargebackClaims')].map((name) => (
                         <div key={name}>
                           <div className="px-4 py-3 flex justify-between items-center border-b border-[#e7e7e7]">
                             <div className="flex items-center gap-2 flex-1">
@@ -125,7 +125,7 @@ const AccountHealth: React.FC = () => {
                     {/* View details link */}
                     <div className="py-2 text-center">
                       <a href="#" className="text-[#007185] hover:underline text-[13px]">
-                        View details
+                        {t('viewDetails')}
                       </a>
                     </div>
                   </div>
@@ -139,25 +139,25 @@ const AccountHealth: React.FC = () => {
               <div className="bg-[#e8f3f7] border border-[#88c2d8] p-4 flex items-start gap-3 rounded-sm">
                 <ShieldCheck size={20} className="text-[#007185] flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <div className="text-[13px] font-semibold text-[#0f1111]">Account Health Assurance</div>
+                  <div className="text-[13px] font-semibold text-[#0f1111]">{t('accountHealthAssurance')}</div>
                   <div className="text-[13px] text-[#0f1111] mt-1 leading-tight">
-                    A new benefit to all ANC partners who consistently achieve a high Account Health Rating.
+                    {t('accountHealthAssuranceDesc')}
                   </div>
                   <a
                     href="#"
                     className="text-[13px] text-[#007185] hover:underline inline-flex items-center gap-1 mt-2"
                   >
-                    See what it takes to qualify
+                    {t('seeWhatItTakes')}
                   </a>
                 </div>
                 <ChevronRight size={18} className="text-[#565959] mt-0.5" aria-hidden />
               </div>
 
               <Panel
-                title="Policy Compliance"
+                title={t('policyCompliance')}
                 right={
                   <span className="bg-[#1d8102] text-white px-2.5 py-1 rounded-full text-xs font-semibold">
-                    Healthy
+                    {t('healthy')}
                   </span>
                 }
               >
@@ -166,11 +166,11 @@ const AccountHealth: React.FC = () => {
                   <div className="px-4 py-3 border-b border-[#e7e7e7]">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <div className="text-[13px] font-semibold text-[#0f1111]">Account Health Rating</div>
+                        <div className="text-[13px] font-semibold text-[#0f1111]">{t('accountHealthRating')}</div>
                         <div className="text-[13px] text-[#565959] mt-1 leading-tight">
-                          This rating reflects your adherence to Amazon&apos;s selling policies.
+                          {t('accountHealthRatingDesc')}
                           <a href="#" className="text-[#007185] hover:underline ml-1">
-                            Learn more.
+                            {t('learnMore')}
                           </a>
                         </div>
                       </div>
@@ -194,7 +194,7 @@ const AccountHealth: React.FC = () => {
 
                   {/* All Issues section */}
                   <div className="px-4 py-2.5 flex items-center justify-between border-b border-[#e7e7e7]">
-                    <div className="text-[13px] font-semibold text-[#0f1111]">All Issues</div>
+                    <div className="text-[13px] font-semibold text-[#0f1111]">{t('allIssues')}</div>
                     <button className="text-[#565959] hover:text-[#0f1111] p-1" aria-label="Collapse">
                       <ChevronDown size={18} />
                     </button>
@@ -203,16 +203,16 @@ const AccountHealth: React.FC = () => {
                   {/* Issues list */}
                   <div>
                     {[
-                      'Suspected Intellectual Property Violations',
-                      'Received Intellectual Property Complaints',
-                      'Product Authenticity Customer Complaints',
-                      'Product Condition Customer Complaints',
-                      'Food and Product Safety Issues',
-                      'Listing Policy Violations',
-                      'Restricted Product Policy Violations',
-                      'Customer Product Reviews Policy Violations',
-                      'Other Policy Violations',
-                      'Regulatory Compliance',
+                      t('suspectedIPViolations'),
+                      t('receivedIPComplaints'),
+                      t('productAuthComplaints'),
+                      t('productConditionComplaints'),
+                      t('foodSafetyIssues'),
+                      t('listingPolicyViolations'),
+                      t('restrictedProductViolations'),
+                      t('reviewPolicyViolations'),
+                      t('otherPolicyViolations'),
+                      t('regulatoryCompliance'),
                     ].map((item, idx, arr) => (
                       <div
                         key={item}
@@ -232,7 +232,7 @@ const AccountHealth: React.FC = () => {
                   {/* View all link */}
                   <div className="py-2 text-center border-t border-[#e7e7e7]">
                     <a href="#" className="text-[#007185] hover:underline text-[13px]">
-                      View all(0)
+                      {t('viewAll')}(0)
                     </a>
                   </div>
                 </div>
@@ -242,59 +242,59 @@ const AccountHealth: React.FC = () => {
             {/* RIGHT */}
             <div className="space-y-6">
               {/* Need Help Card */}
-              <Panel title="Need help?">
+              <Panel title={t('needHelp')}>
                 <div className="p-4 text-[13px] bg-[#f2f3f3]">
                   <div className="text-[#0f1111]">
-                    <div>Speak to an Account Health Specialist.</div>
+                    <div>{t('speakToSpecialist')}</div>
                     <div className="mt-1">
-                      To learn more about the Account Health Support Team, click{' '}
+                      {t('contactUsForHelp')}{' '}
                       <a className="text-[#007185] hover:underline" href="#">
-                        here
+                        {t('here')}
                       </a>
                     </div>
                   </div>
                   <button className="mt-3 bg-[#f0b429] hover:bg-[#e3a61c] text-[#0f1111] px-2.5 py-1.5 rounded-sm text-[13px] font-semibold inline-flex items-center gap-2 transition-colors">
                     <Phone size={14} />
-                    Contact Us
+                    {t('contactUs')}
                   </button>
                 </div>
               </Panel>
 
               {/* Shipping Performance */}
               <Panel
-                title="Shipping Performance"
+                title={t('shippingPerformance')}
                 right={
                   <button className="text-[13px] text-[#565959] hover:text-[#0f1111] inline-flex items-center gap-1 px-2 py-1">
-                    Seller Fulfilled <ChevronDown size={14} />
+                    {t('sellerFulfilled')} <ChevronDown size={14} />
                   </button>
                 }
               >
                 <div className="p-0">
                   {[
                     {
-                      name: 'Late Shipment Rate',
-                      target: 'Target: under 4%',
+                      name: t('lateShipmentRate'),
+                      target: `${t('target')}: ${t('underPercent', { percent: '4' })}`,
                       value: '0%',
-                      meta1: '0 of 5329 orders',
-                      meta2: '30 days',
+                      meta1: t('ofOrders', { count: '0', total: '5329' }),
+                      meta2: `30 ${t('days')}`,
                     },
                     {
-                      name: 'Pre-fulfillment Cancel Rate',
-                      target: 'Target: under 2.5%',
+                      name: t('preFulfillmentCancelRate'),
+                      target: `${t('target')}: ${t('underPercent', { percent: '2.5' })}`,
                       value: '0%',
-                      meta1: '0 of 3265 orders',
-                      meta2: '7 days',
+                      meta1: t('ofOrders', { count: '0', total: '3265' }),
+                      meta2: `7 ${t('days')}`,
                     },
                     {
-                      name: 'Valid Tracking Rate',
-                      target: 'Target: over 95%',
+                      name: t('validTrackingRate'),
+                      target: `${t('target')}: ${t('overPercent', { percent: '95' })}`,
                       value: '99%',
-                      meta1: '7914 of 7994 orders',
-                      meta2: '30 days',
+                      meta1: t('ofOrders', { count: '7914', total: '7994' }),
+                      meta2: `30 ${t('days')}`,
                     },
                     {
-                      name: 'On-Time Delivery Rate',
-                      target: 'Target: over 90%',
+                      name: t('onTimeDeliveryRate'),
+                      target: `${t('target')}: ${t('overPercent', { percent: '90' })}`,
                       value: 'N/A',
                       meta1: '',
                       meta2: '',
@@ -326,10 +326,10 @@ const AccountHealth: React.FC = () => {
                   {/* Bottom links */}
                   <div className="px-4 py-2.5 flex items-center justify-between text-[13px]">
                     <a href="#" className="text-[#007185] hover:underline">
-                      View details
+                      {t('viewDetails')}
                     </a>
                     <a href="#" className="text-[#007185] hover:underline">
-                      View shipping eligibilities here
+                      {t('viewShippingEligibilities')}
                     </a>
                   </div>
                 </div>
@@ -339,28 +339,28 @@ const AccountHealth: React.FC = () => {
 
           {/* bottom panels */}
           <div className="min-w-[1200px] grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            <Panel title="Payment Policy">
+            <Panel title={t('paymentPolicy')}>
               <div className="p-4 text-[13px]">
                 <div className="border border-[#e7e7e7] bg-[#fff9e6] p-3 rounded-sm">
-                  <span className="font-semibold text-[#0f1111]">FEEDBACK</span>
-                  <span className="text-[#0f1111] ml-2">Your account is in good standing. (Placeholder)</span>
+                  <span className="font-semibold text-[#0f1111]">{t('feedback')}</span>
+                  <span className="text-[#0f1111] ml-2">{t('accountInGoodStanding')}</span>
                 </div>
               </div>
             </Panel>
 
-            <Panel title="Account Health News">
+            <Panel title={t('accountHealthNews')}>
               <div className="p-4 text-[13px] text-[#0f1111]">
-                <div className="border border-[#e7e7e7] p-3 rounded-sm">No recent updates. (Placeholder)</div>
+                <div className="border border-[#e7e7e7] p-3 rounded-sm">{t('noRecentUpdates')}</div>
               </div>
             </Panel>
 
-            <Panel title="Manage your compliance">
+            <Panel title={t('manageCompliance')}>
               <div className="p-4 text-[13px] space-y-2">
                 <a href="#" className="text-[#007185] hover:underline block">
-                  Product Compliance Requests
+                  {t('productComplianceRequests')}
                 </a>
                 <a href="#" className="text-[#007185] hover:underline block">
-                  Compliance References
+                  {t('complianceReferences')}
                 </a>
               </div>
             </Panel>

@@ -10,13 +10,13 @@ const BusinessInfo: React.FC = () => {
   const navigate = useNavigate();
 
   const links = [
-    { label: 'Business Address and Phone Number', desc: 'Manage your verified business contact details', path: 'address' },
-    { label: 'Your Merchant Token', desc: 'Integration identifier for developers', path: 'token' },
-    { label: 'Business Insurance', desc: 'Upload and manage your liability insurance', path: 'insurance' },
-    { label: 'Manage Your Brands', desc: 'Brand Registry enrollment and protection tools', path: 'brands' },
-    { label: 'Language for feed processing report', desc: 'Default language for processing reports', path: 'language' },
-    { label: 'Legal Entity', desc: 'Verified legal name and tax identity', path: 'legal' },
-    { label: 'Display Name', desc: 'Your store name shown to customers on the website', path: 'display-name' },
+    { label: t('businessAddress'), desc: t('businessAddressDesc'), path: 'address' },
+    { label: t('merchantToken'), desc: t('merchantTokenDesc'), path: 'token' },
+    { label: t('businessInsurance'), desc: t('businessInsuranceDesc'), path: 'insurance' },
+    { label: t('manageBrands'), desc: t('manageBrandsDesc'), path: 'brands' },
+    { label: t('languageForFeed'), desc: t('languageForFeedDesc'), path: 'language' },
+    { label: t('legalEntity'), desc: t('legalEntityUpdateInstructions'), path: 'legal' },
+    { label: t('displayName'), desc: t('displayNameDesc'), path: 'display-name' },
   ];
 
   return (
@@ -24,7 +24,7 @@ const BusinessInfo: React.FC = () => {
       <div className="mb-4 flex items-center justify-between">
          <h1 className="text-2xl font-black text-amazon-text tracking-tight uppercase">{t('businessInfo')}</h1>
          <div className="flex items-center gap-1.5 text-xs-amz text-amazon-link font-bold cursor-pointer hover:underline">
-            <ExternalLink size={14} /> View Seller Profile
+            <ExternalLink size={14} /> {t('viewSellerProfile')}
          </div>
       </div>
 
@@ -54,18 +54,18 @@ const BusinessInfo: React.FC = () => {
         <div className="flex-1 p-5 bg-white border border-amazon-border rounded-sm shadow-sm">
            <div className="flex items-center gap-2 mb-3 text-amazon-orange">
               <Info size={18} />
-              <span className="text-xs font-black uppercase tracking-widest">Verification Status</span>
+              <span className="text-xs font-black uppercase tracking-widest">{t('verificationStatus')}</span>
            </div>
            <p className="text-[11px] text-gray-600 leading-relaxed font-bold">
-              Your business information has been successfully verified. Changes to your legal entity or business address will trigger a re-verification process.
+              {t('verificationStatusDesc')}
            </p>
         </div>
         <div className="flex-1 p-5 bg-amazon-teal/5 border border-amazon-teal/20 rounded-sm shadow-sm group cursor-pointer hover:bg-amazon-teal/10 transition-colors">
-           <h4 className="text-xs font-black text-amazon-teal uppercase tracking-widest mb-1.5">Marketplace Enrollment</h4>
+           <h4 className="text-xs font-black text-amazon-teal uppercase tracking-widest mb-1.5">{t('marketplaceEnrollment')}</h4>
            <p className="text-[11px] text-amazon-teal/70 leading-relaxed font-medium">
-              You are currently active in 16 global marketplaces. Expand your business to Europe or Japan with a single click.
+              {t('marketplaceEnrollmentDesc')}
            </p>
-           <button className="mt-4 text-[10px] font-black text-amazon-teal uppercase tracking-tighter flex items-center gap-1">Expand Global Selling <ChevronRight size={12}/></button>
+           <button className="mt-4 text-[10px] font-black text-amazon-teal uppercase tracking-tighter flex items-center gap-1">{t('expandGlobalSelling')} <ChevronRight size={12}/></button>
         </div>
       </div>
     </div>

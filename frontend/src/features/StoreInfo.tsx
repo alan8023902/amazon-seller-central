@@ -38,11 +38,11 @@ const StoreInfo: React.FC = () => {
       if (response.success) {
         setStoreData(response.data);
       } else {
-        setError('Failed to load store information');
+        setError(t('failedToLoadStoreInfo') || 'Failed to load store information');
       }
     } catch (err) {
       console.error('Error fetching store info:', err);
-      setError('Failed to load store information');
+      setError(t('failedToLoadStoreInfo') || 'Failed to load store information');
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ const StoreInfo: React.FC = () => {
       }
     } catch (err) {
       console.error('Error refreshing store data:', err);
-      setError('Failed to refresh store data');
+      setError(t('failedToRefreshStoreData') || 'Failed to refresh store data');
     } finally {
       setRefreshing(false);
     }
@@ -85,7 +85,7 @@ const StoreInfo: React.FC = () => {
         <h1 className="text-[22px] font-bold text-[#0F1111] mb-6 uppercase tracking-tight">{t('storeInfo')}</h1>
         <div className="flex items-center justify-center py-12">
           <div className="w-8 h-8 border-4 border-amazon-teal border-t-transparent rounded-full animate-spin"></div>
-          <span className="ml-3 text-[13px] text-[#565959]">Loading store information...</span>
+          <span className="ml-3 text-[13px] text-[#565959]">{t('loadingStoreInfo') || 'Loading store information...'}...</span>
         </div>
       </div>
     );
@@ -101,7 +101,7 @@ const StoreInfo: React.FC = () => {
             onClick={handleRefresh}
             className="text-[13px] text-amazon-link font-bold hover:underline"
           >
-            Try Again
+            {t('tryAgain')}
           </button>
         </div>
       </div>
@@ -113,7 +113,7 @@ const StoreInfo: React.FC = () => {
       <div className="max-w-4xl animate-in fade-in duration-300">
         <h1 className="text-[22px] font-bold text-[#0F1111] mb-6 uppercase tracking-tight">{t('storeInfo')}</h1>
         <div className="text-center py-12 text-[#565959]">
-          No store selected. Please select a store from the header.
+          {t('noStoreSelected')}
         </div>
       </div>
     );
@@ -129,47 +129,47 @@ const StoreInfo: React.FC = () => {
           className="flex items-center gap-2 text-[13px] text-amazon-link font-bold hover:underline disabled:opacity-50"
         >
           <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-          {refreshing ? 'Refreshing...' : 'Refresh Data'}
+          {refreshing ? t('refreshing') : t('refreshData')}
         </button>
       </div>
 
       <div className="space-y-6">
         {/* Store Information Card */}
-        <Card title="Store Information" headerAction={<button className="text-[13px] text-amazon-link font-bold hover:underline">Edit Store Info</button>}>
+        <Card title={t('storeInformation')} headerAction={<button className="text-[13px] text-amazon-link font-bold hover:underline">{t('editStoreInfo')}</button>}>
           <div className="p-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="font-bold text-[14px] mb-2">Store Name</div>
+                <div className="font-bold text-[14px] mb-2">{t('storeName')}</div>
                 <div className="text-[13px] text-[#565959]">{storeData.name}</div>
               </div>
               <div>
-                <div className="font-bold text-[14px] mb-2">Seller ID</div>
+                <div className="font-bold text-[14px] mb-2">{t('sellerId')}</div>
                 <div className="text-[13px] text-[#565959]">{storeData.id}</div>
               </div>
               <div>
-                <div className="font-bold text-[14px] mb-2">Marketplace</div>
+                <div className="font-bold text-[14px] mb-2">{t('marketplace')}</div>
                 <div className="flex items-center gap-2 text-[13px] text-[#565959]">
                   <Globe size={16} />
                   <span>{storeData.marketplace} (Amazon.{storeData.country === 'United States' ? 'com' : storeData.country.toLowerCase()})</span>
                 </div>
               </div>
               <div>
-                <div className="font-bold text-[14px] mb-2">Store Status</div>
+                <div className="font-bold text-[14px] mb-2">{t('storeStatus')}</div>
                 <div className="flex items-center gap-2 text-[13px]">
                   <CheckCircle2 size={16} className={storeData.is_active ? 'text-[#007600]' : 'text-[#B12704]'} />
                   <span className={storeData.is_active ? 'text-[#007600]' : 'text-[#B12704]'}>
-                    {storeData.is_active ? 'Active' : 'Inactive'}
+                    {storeData.is_active ? t('active') : t('inactive')}
                   </span>
                 </div>
               </div>
               {storeData.business_type && (
                 <div>
-                  <div className="font-bold text-[14px] mb-2">Business Type</div>
+                  <div className="font-bold text-[14px] mb-2">{t('businessType')}</div>
                   <div className="text-[13px] text-[#565959]">{storeData.business_type}</div>
                 </div>
               )}
               <div>
-                <div className="font-bold text-[14px] mb-2">Currency</div>
+                <div className="font-bold text-[14px] mb-2">{t('currency')}</div>
                 <div className="text-[13px] text-[#565959]">{storeData.currency_symbol}</div>
               </div>
             </div>
@@ -177,29 +177,29 @@ const StoreInfo: React.FC = () => {
             {/* Additional Information */}
             {(storeData.contact_email || storeData.contact_phone || storeData.tax_id || storeData.vat_number) && (
               <div className="mt-6 pt-6 border-t border-[#D5D9D9]">
-                <div className="font-bold text-[14px] mb-4">Contact & Tax Information</div>
+                <div className="font-bold text-[14px] mb-4">{t('contactTaxInformation')}</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {storeData.contact_email && (
                     <div>
-                      <div className="font-bold text-[14px] mb-2">Contact Email</div>
+                      <div className="font-bold text-[14px] mb-2">{t('contactEmail')}</div>
                       <div className="text-[13px] text-[#565959]">{storeData.contact_email}</div>
                     </div>
                   )}
                   {storeData.contact_phone && (
                     <div>
-                      <div className="font-bold text-[14px] mb-2">Contact Phone</div>
+                      <div className="font-bold text-[14px] mb-2">{t('contactPhone')}</div>
                       <div className="text-[13px] text-[#565959]">{storeData.contact_phone}</div>
                     </div>
                   )}
                   {storeData.tax_id && (
                     <div>
-                      <div className="font-bold text-[14px] mb-2">Tax ID</div>
+                      <div className="font-bold text-[14px] mb-2">{t('taxId')}</div>
                       <div className="text-[13px] text-[#565959]">{storeData.tax_id}</div>
                     </div>
                   )}
                   {storeData.vat_number && (
                     <div>
-                      <div className="font-bold text-[14px] mb-2">VAT Number</div>
+                      <div className="font-bold text-[14px] mb-2">{t('vatNumber')}</div>
                       <div className="text-[13px] text-[#565959]">{storeData.vat_number}</div>
                     </div>
                   )}
@@ -210,30 +210,30 @@ const StoreInfo: React.FC = () => {
         </Card>
 
         {/* Store URL Card */}
-        <Card title="Store URL" headerAction={<button className="text-[13px] text-amazon-link font-bold hover:underline">Manage Store URL</button>}>
+        <Card title={t('storeUrl')} headerAction={<button className="text-[13px] text-amazon-link font-bold hover:underline">{t('manageStoreUrl')}</button>}>
           <div className="p-1">
             <div className="flex items-center gap-3">
               <span className="text-[13px] text-[#565959]">https://www.amazon.{storeData.country === 'United States' ? 'com' : storeData.country.toLowerCase()}/shops/</span>
               <span className="font-bold text-[13px]">{generateStoreUrl(storeData.name)}</span>
             </div>
             <div className="mt-4 text-[13px] text-[#565959]">
-              Your store URL is automatically generated based on your store name. You can customize your store URL if it's available.
+              {t('storeUrlDescription')}
             </div>
           </div>
         </Card>
 
         {/* Store Design Card */}
-        <Card title="Store Design" headerAction={<button className="text-[13px] text-amazon-link font-bold hover:underline">Design Your Store</button>}>
+        <Card title={t('storeDesign')} headerAction={<button className="text-[13px] text-amazon-link font-bold hover:underline">{t('designYourStore')}</button>}>
           <div className="p-1">
             <div className="flex items-start gap-4">
               <div className="w-32 h-32 bg-[#F0F2F2] rounded-[4px] flex items-center justify-center">
                 <Globe size={32} className="text-[#565959]" />
               </div>
               <div className="flex-1">
-                <div className="font-bold text-[14px] mb-1">Current Store Design</div>
-                <div className="text-[13px] text-[#565959] mb-3">Basic Amazon Store Design</div>
+                <div className="font-bold text-[14px] mb-1">{t('currentStoreDesign')}</div>
+                <div className="text-[13px] text-[#565959] mb-3">{t('basicAmazonStoreDesign')}</div>
                 <div className="text-[13px] text-[#565959] leading-relaxed">
-                  Customize your store design to showcase your brand and products. Add a logo, cover image, and organize your products into categories.
+                  {t('customizeStoreDesign')}
                 </div>
               </div>
             </div>
@@ -241,15 +241,15 @@ const StoreInfo: React.FC = () => {
         </Card>
 
         {/* Store Timestamps */}
-        <Card title="Store Information">
+        <Card title={t('storeInformation')}>
           <div className="p-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[13px] text-[#565959]">
               <div>
-                <div className="font-bold text-[14px] mb-2">Created</div>
+                <div className="font-bold text-[14px] mb-2">{t('created')}</div>
                 <div>{new Date(storeData.created_at).toLocaleString()}</div>
               </div>
               <div>
-                <div className="font-bold text-[14px] mb-2">Last Updated</div>
+                <div className="font-bold text-[14px] mb-2">{t('lastUpdated')}</div>
                 <div>{new Date(storeData.updated_at).toLocaleString()}</div>
               </div>
             </div>

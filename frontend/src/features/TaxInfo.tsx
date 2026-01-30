@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
+import { useI18n } from '../hooks/useI18n';
 import { API_CONFIG, apiGet } from '../config/api';
 import { Check } from 'lucide-react';
 
@@ -19,6 +20,7 @@ interface TaxInfo {
 const TaxInfo: React.FC = () => {
   const navigate = useNavigate();
   const { currentStore } = useStore();
+  const { t } = useI18n();
   const [taxInfo, setTaxInfo] = useState<TaxInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -71,7 +73,7 @@ const TaxInfo: React.FC = () => {
         <div className="max-w-[760px]">
           {/* 顶部标题行：右侧 Account Info 是链接 */}
           <div className="pt-3 flex items-start justify-between">
-            <h1 className="text-[22px] font-bold text-[#0f1111]">Legal Entity</h1>
+            <h1 className="text-[22px] font-bold text-[#0f1111]">{t('legalEntity')}</h1>
 
             <a
               href="#"
@@ -82,7 +84,7 @@ const TaxInfo: React.FC = () => {
                 // navigate('/app/account-info');
               }}
             >
-              Account Info
+              {t('accountInfo')}
             </a>
           </div>
 
@@ -101,10 +103,10 @@ const TaxInfo: React.FC = () => {
 
                 <div className="flex-1">
                   <div className="text-[15px] font-semibold text-[#2E7D5B] leading-5">
-                    Tax information is complete
+                    {t('taxInformationComplete')}
                   </div>
                   <div className="text-[12px] text-[#0f1111] mt-1">
-                    Your tax information has been validated successfully.
+                    {t('taxInformationValidated')}
                   </div>
 
                   {/* 第二行：左按钮右链接 */}
@@ -114,7 +116,7 @@ const TaxInfo: React.FC = () => {
                       className="text-[12px] px-3 py-1.5 bg-white border border-[#d5d9d9] rounded-sm text-[#0f1111] hover:bg-[#f7fafa]"
                       onClick={() => navigate('/app/settings/tax-info/update')}
                     >
-                      Update Tax Information
+                      {t('updateTaxInformation')}
                     </button>
 
                     <a
@@ -122,7 +124,7 @@ const TaxInfo: React.FC = () => {
                       className="text-[12px] text-[#007185] hover:underline"
                       onClick={(e) => e.preventDefault()}
                     >
-                      Tax interview help guide
+                      {t('taxInterviewHelpGuide')}
                     </a>
                   </div>
                 </div>
@@ -132,21 +134,20 @@ const TaxInfo: React.FC = () => {
 
           {/* 说明文字：与上面拉开一点距离 */}
           <div className="mt-4 text-[12px] text-[#0f1111]">
-            To update legal entity name or address, you must retake the tax interview by clicking on
-            &nbsp;"Update Tax Information"
+            {t('taxInfoUpdateInstructions')}
           </div>
 
           {/* 灰底信息卡：加大间距，让布局不紧促 */}
           <div className="mt-6 space-y-5">
             <div className="bg-[#f2f3f3] border border-[#e7e7e7] rounded-md px-5 py-4">
-              <div className="text-[12px] font-bold text-[#0f1111]">Legal business name</div>
+              <div className="text-[12px] font-bold text-[#0f1111]">{t('legalBusinessName')}</div>
               <div className="text-[12px] text-[#0f1111] mt-2 break-words">
                 {taxInfo?.legal_business_name || 'TechNest LLC'}
               </div>
             </div>
 
             <div className="bg-[#f2f3f3] border border-[#e7e7e7] rounded-md px-5 py-4">
-              <div className="text-[12px] font-bold text-[#0f1111]">Place of establishment address</div>
+              <div className="text-[12px] font-bold text-[#0f1111]">{t('placeOfEstablishmentAddress')}</div>
               <div className="text-[12px] text-[#0f1111] mt-2 break-words">
                 {taxInfo?.place_of_establishment ||
                   '1234 Business Ave, Suite 100, New York, NY 10001, United States'}
@@ -161,7 +162,7 @@ const TaxInfo: React.FC = () => {
               onClick={() => navigate('/app/settings/tax-info')}
               className="w-[320px] bg-white border border-[#d5d9d9] rounded-md py-2 text-[12px] text-[#0f1111] hover:bg-[#f7fafa]"
             >
-              Back
+              {t('back')}
             </button>
           </div>
         </div>
