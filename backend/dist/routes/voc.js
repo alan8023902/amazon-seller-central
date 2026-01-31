@@ -15,6 +15,7 @@ router.get('/data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) =
                 store_id: storeId,
                 product_name: 'Wireless Bluetooth Headphones',
                 asin: 'B012345678',
+                sku: 'WBH-001',
                 sku_status: 'Active',
                 fulfillment: 'Amazon Fulfillment',
                 dissatisfaction_rate: 1.2,
@@ -32,6 +33,7 @@ router.get('/data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) =
                 store_id: storeId,
                 product_name: 'Smart Home Security Camera',
                 asin: 'B087654321',
+                sku: 'SHSC-002',
                 sku_status: 'Active',
                 fulfillment: 'Seller Fulfillment',
                 dissatisfaction_rate: 5.8,
@@ -49,6 +51,7 @@ router.get('/data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) =
                 store_id: storeId,
                 product_name: 'Portable External SSD 1TB',
                 asin: 'B098765432',
+                sku: 'PESSD-003',
                 sku_status: 'Active',
                 fulfillment: 'Amazon Fulfillment',
                 dissatisfaction_rate: 0.5,
@@ -66,6 +69,7 @@ router.get('/data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) =
                 store_id: storeId,
                 product_name: 'Electric Toothbrush with UV Sanitizer',
                 asin: 'B076543210',
+                sku: 'ETB-004',
                 sku_status: 'Active',
                 fulfillment: 'Amazon Fulfillment',
                 dissatisfaction_rate: 8.9,
@@ -83,6 +87,7 @@ router.get('/data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) =
                 store_id: storeId,
                 product_name: 'Wireless Charging Pad',
                 asin: 'B065432109',
+                sku: 'WCP-005',
                 sku_status: 'Active',
                 fulfillment: 'Seller Fulfillment',
                 dissatisfaction_rate: 3.4,
@@ -142,6 +147,32 @@ router.put('/data/:storeId/:id', (0, errorHandler_1.asyncHandler)(async (req, re
         success: true,
         data: updatedData,
         message: 'VOC data updated successfully',
+    };
+    res.json(response);
+}));
+router.post('/data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { storeId } = req.params;
+    const newData = await dataService_1.dataService.create('voc_data', {
+        ...req.body,
+        store_id: storeId,
+        last_updated: new Date().toISOString().split('T')[0],
+    });
+    const response = {
+        success: true,
+        data: newData,
+        message: 'VOC data created successfully',
+    };
+    res.json(response);
+}));
+router.delete('/data/:storeId/:id', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { storeId, id } = req.params;
+    const deleted = await dataService_1.dataService.delete('voc_data', id);
+    if (!deleted) {
+        throw (0, errorHandler_1.createError)('VOC data not found', 404);
+    }
+    const response = {
+        success: true,
+        message: 'VOC data deleted successfully',
     };
     res.json(response);
 }));

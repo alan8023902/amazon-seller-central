@@ -37,13 +37,17 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const communications_1 = __importDefault(require("./routes/communications"));
 const accountHealth_1 = __importDefault(require("./routes/accountHealth"));
 const taxInfo_1 = __importDefault(require("./routes/taxInfo"));
+const legalEntity_1 = __importDefault(require("./routes/legalEntity"));
 const errorHandler_1 = require("./middleware/errorHandler");
 const requestLogger_1 = require("./middleware/requestLogger");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || PORTS.backend;
 app.use((0, cors_1.default)({
     origin: CORS_ORIGINS,
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    optionsSuccessStatus: 200
 }));
 app.use(express_1.default.json({ limit: '10mb' }));
 app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
@@ -65,6 +69,7 @@ app.use('/api/voc', voc_1.default);
 app.use('/api/communications', communications_1.default);
 app.use('/api/account-health', accountHealth_1.default);
 app.use('/api/tax-info', taxInfo_1.default);
+app.use('/api/legal-entity', legalEntity_1.default);
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',

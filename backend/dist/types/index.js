@@ -111,12 +111,23 @@ exports.AccountHealthSchema = zod_1.z.object({
 exports.LegalEntitySchema = zod_1.z.object({
     id: zod_1.z.string().optional(),
     store_id: zod_1.z.string(),
-    business_name: zod_1.z.string().optional(),
-    address_line1: zod_1.z.string().optional(),
-    address_line2: zod_1.z.string().optional(),
-    city: zod_1.z.string().optional(),
-    province: zod_1.z.string().optional(),
-    postal_code: zod_1.z.string().optional(),
+    legalBusinessName: zod_1.z.string().optional(),
+    businessAddress: zod_1.z.object({
+        street: zod_1.z.string().optional(),
+        suite: zod_1.z.string().optional(),
+        city: zod_1.z.string().optional(),
+        state: zod_1.z.string().optional(),
+        zipCode: zod_1.z.string().optional(),
+        country: zod_1.z.string().optional(),
+    }).optional(),
+    taxInformation: zod_1.z.object({
+        status: zod_1.z.string().optional(),
+        taxId: zod_1.z.string().optional(),
+        taxClassification: zod_1.z.string().optional(),
+    }).optional(),
+    businessType: zod_1.z.string().optional(),
+    registrationDate: zod_1.z.string().optional(),
+    created_at: zod_1.z.string().optional(),
     updated_at: zod_1.z.string().optional(),
 });
 exports.ForumPostSchema = zod_1.z.object({

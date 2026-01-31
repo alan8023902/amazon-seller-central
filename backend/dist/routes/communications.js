@@ -309,4 +309,58 @@ router.post('/:storeId/news/:newsId/like', (0, errorHandler_1.asyncHandler)(asyn
         throw (0, errorHandler_1.createError)('Failed to like news item', 500);
     }
 }));
+router.delete('/forums/:storeId/:forumId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { storeId, forumId } = req.params;
+    try {
+        const filePath = require('path').join(__dirname, '../../data/communications.json');
+        const communicationsData = require('fs-extra').readJsonSync(filePath);
+        const decodedStoreId = decodeURIComponent(storeId);
+        const storeComms = communicationsData[decodedStoreId] || communicationsData[storeId];
+        if (!storeComms || !storeComms.seller_forums) {
+            throw (0, errorHandler_1.createError)('Store communications not found', 404);
+        }
+        const forumIndex = storeComms.seller_forums.findIndex((forum) => forum.id === forumId);
+        if (forumIndex === -1) {
+            throw (0, errorHandler_1.createError)('Forum post not found', 404);
+        }
+        storeComms.seller_forums.splice(forumIndex, 1);
+        require('fs-extra').writeJsonSync(filePath, communicationsData, { spaces: 2 });
+        const response = {
+            success: true,
+            message: 'Forum post deleted successfully'
+        };
+        res.json(response);
+    }
+    catch (error) {
+        console.error('Delete forum error:', error);
+        throw (0, errorHandler_1.createError)('Failed to delete forum post', 500);
+    }
+}));
+router.delete('/news/:storeId/:newsId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { storeId, newsId } = req.params;
+    try {
+        const filePath = require('path').join(__dirname, '../../data/communications.json');
+        const communicationsData = require('fs-extra').readJsonSync(filePath);
+        const decodedStoreId = decodeURIComponent(storeId);
+        const storeComms = communicationsData[decodedStoreId] || communicationsData[storeId];
+        if (!storeComms || !storeComms.seller_news) {
+            throw (0, errorHandler_1.createError)('Store communications not found', 404);
+        }
+        const newsIndex = storeComms.seller_news.findIndex((news) => news.id === newsId);
+        if (newsIndex === -1) {
+            throw (0, errorHandler_1.createError)('News item not found', 404);
+        }
+        storeComms.seller_news.splice(newsIndex, 1);
+        require('fs-extra').writeJsonSync(filePath, communicationsData, { spaces: 2 });
+        const response = {
+            success: true,
+            message: 'News item deleted successfully'
+        };
+        res.json(response);
+    }
+    catch (error) {
+        console.error('Delete news error:', error);
+        throw (0, errorHandler_1.createError)('Failed to delete news item', 500);
+    }
+}));
 module.exports = router;

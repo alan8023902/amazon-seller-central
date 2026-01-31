@@ -223,5 +223,16 @@
     "otp_secret": "563001",
     "created_at": "2026-01-31T04:11:56.353Z",
     "updated_at": "2026-01-31T04:11:56.354Z"
+  },
+  {
+    "id": "user-1769846646547-esap90p",
+    "email": "111111@qq.com",
+    "name": "陈丽",
+    "role": "manager",
+    "is_active": true,
+    "password": "P772707",
+    "otp_secret": "549460",
+    "created_at": "2026-01-31T08:04:06.547Z",
+    "updated_at": "2026-01-31T08:04:06.547Z"
   }
 ]

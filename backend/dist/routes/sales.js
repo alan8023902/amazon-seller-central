@@ -147,94 +147,232 @@ router.post('/generate-daily/:storeId', (0, errorHandler_1.asyncHandler)(async (
 router.get('/chart-data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { storeId } = req.params;
     const { startDate, endDate } = req.query;
-    let dailySales = await dataService_1.dataService.findByStoreId('daily_sales', storeId);
-    if (startDate && endDate) {
-        dailySales = dailySales.filter(sale => {
-            const saleDate = new Date(sale.sale_date);
-            return saleDate >= new Date(startDate) && saleDate <= new Date(endDate);
-        });
+    try {
+        const chartDataPath = require('path').join(__dirname, '../../data/chart_data.json');
+        let chartData = [];
+        try {
+            const allChartData = require('fs-extra').readJsonSync(chartDataPath);
+            chartData = allChartData.filter((item) => item.store_id === storeId);
+            if (startDate && endDate && chartData.length > 0) {
+                chartData = chartData.filter((item) => {
+                    const itemDate = new Date(item.date);
+                    return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+                });
+            }
+            if (chartData.length > 0) {
+                console.log(`Using admin-configured chart data for store ${storeId}: ${chartData.length} entries`);
+                const sortedData = chartData
+                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    .map((item) => ({
+                    date: item.date,
+                    units: item.units,
+                    sales: item.sales,
+                    lastYearUnits: item.lastYearUnits,
+                    lastYearSales: item.lastYearSales,
+                }));
+                const response = {
+                    success: true,
+                    data: sortedData,
+                };
+                res.json(response);
+                return;
+            }
+        }
+        catch (error) {
+            console.log('No admin chart data file found, using fallback generation');
+        }
+        let dailySales = await dataService_1.dataService.findByStoreId('daily_sales', storeId);
+        if (!dailySales || dailySales.length < 100) {
+            console.log('Generating spiky chart data for store:', storeId);
+            const chartData = [];
+            const startGenDate = new Date('2025-01-01');
+            const endGenDate = new Date('2026-01-31');
+            let currentDate = new Date(startGenDate);
+            while (currentDate <= endGenDate) {
+                const baseUnit = 500;
+                const baseSales = 50000;
+                const variance = 1.2;
+                const spikeMultiplier = Math.random() < 0.1 ? (2 + Math.random() * 2) : 1;
+                chartData.push({
+                    date: currentDate.toISOString().split('T')[0],
+                    units: Math.floor(baseUnit * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                    sales: Math.floor(baseSales * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                    lastYearUnits: Math.floor(baseUnit * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                    lastYearSales: Math.floor(baseSales * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                });
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            const response = {
+                success: true,
+                data: chartData,
+            };
+            res.json(response);
+            return;
+        }
+        if (startDate && endDate) {
+            dailySales = dailySales.filter(sale => {
+                const saleDate = new Date(sale.sale_date);
+                return saleDate >= new Date(startDate) && saleDate <= new Date(endDate);
+            });
+        }
+        const formattedChartData = dailySales
+            .sort((a, b) => new Date(a.sale_date).getTime() - new Date(b.sale_date).getTime())
+            .map(sale => ({
+            date: sale.sale_date,
+            units: sale.units_ordered,
+            sales: sale.sales_amount,
+            lastYearUnits: Math.round(sale.units_ordered * (0.9 + Math.random() * 0.2)),
+            lastYearSales: Math.round(sale.sales_amount * (0.9 + Math.random() * 0.2)),
+        }));
+        const response = {
+            success: true,
+            data: formattedChartData,
+        };
+        res.json(response);
     }
-    const chartData = dailySales
-        .sort((a, b) => new Date(a.sale_date).getTime() - new Date(b.sale_date).getTime())
-        .map(sale => ({
-        date: sale.sale_date,
-        units: sale.units_ordered,
-        sales: sale.sales_amount,
-        lastYearUnits: Math.round(sale.units_ordered * (0.9 + Math.random() * 0.2)),
-        lastYearSales: Math.round(sale.sales_amount * (0.9 + Math.random() * 0.2)),
-    }));
-    const response = {
-        success: true,
-        data: chartData,
-    };
-    res.json(response);
+    catch (error) {
+        console.error('Chart data error:', error);
+        throw (0, errorHandler_1.createError)('Failed to fetch chart data', 500);
+    }
 }));
-router.get('/snapshot/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+router.post('/admin/sales-data', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { store_id, date, units, sales, lastYearUnits, lastYearSales } = req.body;
+    if (!store_id || !date || units === undefined || sales === undefined) {
+        throw (0, errorHandler_1.createError)('Missing required fields', 400);
+    }
+    try {
+        const filePath = require('path').join(__dirname, '../../data/chart_data.json');
+        let chartData = [];
+        try {
+            chartData = require('fs-extra').readJsonSync(filePath);
+        }
+        catch (error) {
+            console.log('Creating new chart data file');
+        }
+        const newEntry = {
+            id: require('crypto').randomUUID(),
+            store_id,
+            date,
+            units: Number(units),
+            sales: Number(sales),
+            lastYearUnits: Number(lastYearUnits || 0),
+            lastYearSales: Number(lastYearSales || 0),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        chartData.push(newEntry);
+        require('fs-extra').writeJsonSync(filePath, chartData, { spaces: 2 });
+        const response = {
+            success: true,
+            data: newEntry,
+            message: 'Sales data created successfully'
+        };
+        res.json(response);
+    }
+    catch (error) {
+        console.error('Create sales data error:', error);
+        throw (0, errorHandler_1.createError)('Failed to create sales data', 500);
+    }
+}));
+router.put('/admin/sales-data/:id', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { id } = req.params;
+    const { store_id, date, units, sales, lastYearUnits, lastYearSales } = req.body;
+    try {
+        const filePath = require('path').join(__dirname, '../../data/chart_data.json');
+        let chartData = require('fs-extra').readJsonSync(filePath);
+        const index = chartData.findIndex((item) => item.id === id);
+        if (index === -1) {
+            throw (0, errorHandler_1.createError)('Sales data not found', 404);
+        }
+        chartData[index] = {
+            ...chartData[index],
+            store_id,
+            date,
+            units: Number(units),
+            sales: Number(sales),
+            lastYearUnits: Number(lastYearUnits || 0),
+            lastYearSales: Number(lastYearSales || 0),
+            updated_at: new Date().toISOString()
+        };
+        require('fs-extra').writeJsonSync(filePath, chartData, { spaces: 2 });
+        const response = {
+            success: true,
+            data: chartData[index],
+            message: 'Sales data updated successfully'
+        };
+        res.json(response);
+    }
+    catch (error) {
+        console.error('Update sales data error:', error);
+        throw (0, errorHandler_1.createError)('Failed to update sales data', 500);
+    }
+}));
+router.delete('/admin/sales-data/:id', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { id } = req.params;
+    try {
+        const filePath = require('path').join(__dirname, '../../data/chart_data.json');
+        let chartData = require('fs-extra').readJsonSync(filePath);
+        const index = chartData.findIndex((item) => item.id === id);
+        if (index === -1) {
+            throw (0, errorHandler_1.createError)('Sales data not found', 404);
+        }
+        chartData.splice(index, 1);
+        require('fs-extra').writeJsonSync(filePath, chartData, { spaces: 2 });
+        const response = {
+            success: true,
+            message: 'Sales data deleted successfully'
+        };
+        res.json(response);
+    }
+    catch (error) {
+        console.error('Delete sales data error:', error);
+        throw (0, errorHandler_1.createError)('Failed to delete sales data', 500);
+    }
+}));
+router.post('/admin/sales-data/generate/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { storeId } = req.params;
     try {
-        const filePath = require('path').join(__dirname, '../../data/sales_snapshots.json');
-        const salesSnapshotsData = require('fs-extra').readJsonSync(filePath);
-        let storeSnapshot = salesSnapshotsData.find((snapshot) => snapshot.store_id === storeId);
-        if (!storeSnapshot) {
-            console.log(`Creating default sales snapshot data for store: ${storeId}`);
-            storeSnapshot = {
+        const filePath = require('path').join(__dirname, '../../data/chart_data.json');
+        let chartData = [];
+        try {
+            chartData = require('fs-extra').readJsonSync(filePath);
+        }
+        catch (error) {
+            console.log('Creating new chart data file');
+        }
+        chartData = chartData.filter((item) => item.store_id !== storeId);
+        const startDate = new Date('2025-01-01');
+        const endDate = new Date('2026-01-31');
+        let currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            const baseUnit = 500;
+            const baseSales = 50000;
+            const variance = 1.2;
+            const spikeMultiplier = Math.random() < 0.1 ? (2 + Math.random() * 2) : 1;
+            const newEntry = {
                 id: require('crypto').randomUUID(),
                 store_id: storeId,
-                total_order_items: 154066,
-                units_ordered: 174714,
-                ordered_product_sales: 19701989.13,
-                avg_units_per_order_item: 1.13,
-                avg_sales_per_order_item: 127.88,
-                snapshot_time: new Date().toISOString()
+                date: currentDate.toISOString().split('T')[0],
+                units: Math.floor(baseUnit * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                sales: Math.floor(baseSales * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                lastYearUnits: Math.floor(baseUnit * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                lastYearSales: Math.floor(baseSales * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             };
-            salesSnapshotsData.push(storeSnapshot);
-            require('fs-extra').writeJsonSync(filePath, salesSnapshotsData, { spaces: 2 });
+            chartData.push(newEntry);
+            currentDate.setDate(currentDate.getDate() + 1);
         }
+        require('fs-extra').writeJsonSync(filePath, chartData, { spaces: 2 });
         const response = {
             success: true,
-            data: storeSnapshot,
+            message: `Generated ${chartData.filter((item) => item.store_id === storeId).length} sample data entries`
         };
         res.json(response);
     }
     catch (error) {
-        console.error('Sales snapshot error:', error);
-        throw (0, errorHandler_1.createError)('Failed to fetch sales snapshot data', 500);
-    }
-}));
-router.put('/snapshot/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
-    const { storeId } = req.params;
-    const { total_order_items, units_ordered, ordered_product_sales, avg_units_per_order_item, avg_sales_per_order_item, snapshot_time } = req.body;
-    try {
-        const filePath = require('path').join(__dirname, '../../data/sales_snapshots.json');
-        const salesSnapshotsData = require('fs-extra').readJsonSync(filePath);
-        const existingIndex = salesSnapshotsData.findIndex((snapshot) => snapshot.store_id === storeId);
-        const updatedSnapshot = {
-            id: existingIndex >= 0 ? salesSnapshotsData[existingIndex].id : require('crypto').randomUUID(),
-            store_id: storeId,
-            total_order_items: parseInt(total_order_items) || 0,
-            units_ordered: parseInt(units_ordered) || 0,
-            ordered_product_sales: parseFloat(ordered_product_sales) || 0,
-            avg_units_per_order_item: parseFloat(avg_units_per_order_item) || 0,
-            avg_sales_per_order_item: parseFloat(avg_sales_per_order_item) || 0,
-            snapshot_time: snapshot_time || new Date().toISOString()
-        };
-        if (existingIndex >= 0) {
-            salesSnapshotsData[existingIndex] = updatedSnapshot;
-        }
-        else {
-            salesSnapshotsData.push(updatedSnapshot);
-        }
-        require('fs-extra').writeJsonSync(filePath, salesSnapshotsData, { spaces: 2 });
-        const response = {
-            success: true,
-            data: updatedSnapshot,
-            message: 'Sales snapshot data updated successfully',
-        };
-        res.json(response);
-    }
-    catch (error) {
-        console.error('Sales snapshot update error:', error);
-        throw (0, errorHandler_1.createError)('Failed to update sales snapshot data', 500);
+        console.error('Generate sample data error:', error);
+        throw (0, errorHandler_1.createError)('Failed to generate sample data', 500);
     }
 }));
 module.exports = router;
