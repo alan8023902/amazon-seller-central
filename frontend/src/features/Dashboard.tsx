@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   MoreHorizontal,
@@ -166,6 +167,7 @@ function TinySparkline({ strokeWidth = 2 }: { strokeWidth?: number }) {
 export default function Dashboard() {
   const { session } = useStore();
   const { t, formatCurrency, formatNumber, getCurrencySymbol } = useI18n();
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState(t('active'));
   const [interactionFilter, setInteractionFilter] = useState('Frequently interacted');
   const [query, setQuery] = useState("");
@@ -225,8 +227,8 @@ export default function Dashboard() {
 
           if (currentStore) {
             console.log('Selected store:', { id: currentStore.id, name: currentStore.name });
-            // Update the store in Zustand
-            useStore.getState().setCurrentStore(currentStore);
+            // Don't update Zustand store here to avoid infinite loop
+            // useStore.getState().setCurrentStore(currentStore);
           }
         }
 
@@ -672,7 +674,7 @@ export default function Dashboard() {
 
             {/* Table Header (Matching user feedback) */}
             <div className="bg-[#F7F8F8] border-b border-[#E3E6E6]">
-              <div className="grid grid-cols-[1fr_repeat(6,90px)_1fr] text-[12px] font-medium text-[#565959]">
+              <div className="grid grid-cols-[1fr_110px_90px_90px_110px_90px_90px_1fr] text-[12px] font-medium text-[#565959]">
                 {[
                   t('productDetails'),
                   t('listingStatus'),
@@ -708,9 +710,9 @@ export default function Dashboard() {
               {paginatedProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="grid grid-cols-[1fr_repeat(6,90px)_1fr] hover:bg-[#F7F8F8] transition-colors border-b border-[#E3E6E6] last:border-b-0"
+                  className="grid grid-cols-[1fr_110px_90px_90px_110px_90px_90px_1fr] hover:bg-[#F7F8F8] transition-colors border-b border-[#E3E6E6] last:border-b-0"
                 >
-                  <div className="px-4 py-3 flex gap-2 items-center overflow-hidden">
+                  <div className="px-4 py-2 flex gap-2 items-center overflow-hidden">
                     <Star
                       size={16}
                       onClick={() => toggleStar(product.id)}
@@ -721,35 +723,43 @@ export default function Dashboard() {
                           : "text-[#FFA41C]"
                       )}
                     />
-                    <img src={product.img} alt="" className="w-10 h-10 object-contain flex-shrink-0" />
+                    <img src={product.img} alt="" className="w-8 h-8 object-contain flex-shrink-0" />
                     <div className="overflow-hidden">
-                      <div className="text-[13px] text-[#007185] font-normal truncate hover:underline cursor-pointer leading-[18px]">{product.title}</div>
-                      <div className="text-[11px] text-[#565959] mt-0.5">{product.asin}</div>
-                      <div className="text-[11px] text-[#565959]">{product.sku}</div>
+                      <div className="text-[13px] text-[#007185] font-semibold truncate hover:underline cursor-pointer leading-[16px]">{product.title}</div>
+                      <div className="text-[11px] text-[#565959] mt-0.5 font-semibold leading-[14px]">{product.asin}</div>
+                      <div className="text-[11px] font-semibold leading-[14px]">
+                        <span className="text-[#565959]">SKU: </span>
+                        <span className="text-[#007185]">{product.sku.replace('SKU: ', '')}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="px-3 py-3 flex items-center overflow-hidden">
+                  <div className="px-3 py-2 flex items-center overflow-hidden">
                     <span className="text-[12px] text-[#0F1111] truncate">
                       {product.listingStatus}
                     </span>
                   </div>
-                  <div className="px-3 py-3 flex items-center font-normal text-[#0F1111] text-[13px] overflow-hidden">
+                  <div className="px-3 py-2 flex items-center font-normal text-[#0F1111] text-[13px] overflow-hidden">
                     <span className="truncate">{product.sales}</span>
                   </div>
-                  <div className="px-3 py-3 flex items-center text-[13px] text-[#0F1111] overflow-hidden">
+                  <div className="px-3 py-2 flex items-center text-[13px] text-[#0F1111] overflow-hidden">
                     <span className="truncate">{formatNumber(product.unitsSold)}</span>
                   </div>
-                  <div className="px-3 py-3 flex items-center text-[13px] text-[#0F1111] overflow-hidden">
+                  <div className="px-3 py-2 flex items-center text-[13px] text-[#0F1111] overflow-hidden">
                     <span className="truncate">{product.pageViews > 0 ? formatNumber(product.pageViews) : "--"}</span>
                   </div>
-                  <div className="px-3 py-3 flex items-center text-[12px] text-[#565959] overflow-hidden">
+                  <div className="px-3 py-2 flex items-center text-[12px] text-[#565959] overflow-hidden">
                     <span className="truncate">{product.inventory}</span>
                   </div>
-                  <div className="px-3 py-3 flex items-center text-[13px] text-[#007185] overflow-hidden">
-                    <span className="truncate">{product.price}</span>
+                  <div className="px-3 py-2 flex items-center text-[13px] text-[#007185] overflow-hidden">
+                    <div className="flex flex-col">
+                      <span className="truncate">{product.price}</span>
+                      {(product.id === 1 || product.id === 4) && (
+                        <span className="text-[11px] text-[#B12704] mt-1">{t('improveListingQuality')}</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="px-3 py-3 flex items-center justify-end overflow-hidden pr-4">
-                    <button className="h-[29px] w-[29px] flex items-center justify-center bg-white border border-[#D5DBDB] rounded-[3px] shadow-sm hover:bg-[#F7F8F8] text-[#565959] flex-shrink-0">
+                  <div className="px-3 py-2 flex items-center justify-end overflow-hidden pr-4">
+                    <button className="h-[29px] w-[29px] flex items-center justify-center bg-white border border-[#D5DBDB] rounded-[3px] shadow-sm hover:bg-[#F7F8F8] text-[#007185] flex-shrink-0">
                       <ChevronDown size={14} />
                     </button>
                   </div>
@@ -796,7 +806,10 @@ export default function Dashboard() {
                   <ChevronDown size={14} className="-rotate-90" />
                 </button>
               </div>
-              <button className="absolute right-4 px-3 py-1 text-[12px] font-medium text-[#007185] bg-white border border-[#D5D9D9] rounded-[3px] hover:bg-gray-50 transition-all">
+              <button 
+                onClick={() => navigate('/app/inventory')}
+                className="absolute right-4 px-3 py-1 text-[12px] font-medium text-[#007185] bg-white border border-[#D5D9D9] rounded-[3px] hover:bg-gray-50 transition-all"
+              >
                 {t('goToManageInventory')}
               </button>
             </div>

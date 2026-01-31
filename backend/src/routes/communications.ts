@@ -413,4 +413,80 @@ router.post('/:storeId/news/:newsId/like', asyncHandler(async (req, res) => {
   }
 }));
 
+// DELETE /api/communications/forums/:storeId/:forumId - 删除论坛帖子
+router.delete('/forums/:storeId/:forumId', asyncHandler(async (req, res) => {
+  const { storeId, forumId } = req.params;
+  
+  try {
+    const filePath = require('path').join(__dirname, '../../data/communications.json');
+    const communicationsData = require('fs-extra').readJsonSync(filePath);
+    
+    const decodedStoreId = decodeURIComponent(storeId);
+    const storeComms = communicationsData[decodedStoreId] || communicationsData[storeId];
+    
+    if (!storeComms || !storeComms.seller_forums) {
+      throw createError('Store communications not found', 404);
+    }
+    
+    // 查找并删除论坛帖子
+    const forumIndex = storeComms.seller_forums.findIndex((forum: any) => forum.id === forumId);
+    if (forumIndex === -1) {
+      throw createError('Forum post not found', 404);
+    }
+    
+    storeComms.seller_forums.splice(forumIndex, 1);
+    
+    // 保存更新的数据
+    require('fs-extra').writeJsonSync(filePath, communicationsData, { spaces: 2 });
+    
+    const response = {
+      success: true,
+      message: 'Forum post deleted successfully'
+    };
+    
+    res.json(response);
+  } catch (error) {
+    console.error('Delete forum error:', error);
+    throw createError('Failed to delete forum post', 500);
+  }
+}));
+
+// DELETE /api/communications/news/:storeId/:newsId - 删除新闻
+router.delete('/news/:storeId/:newsId', asyncHandler(async (req, res) => {
+  const { storeId, newsId } = req.params;
+  
+  try {
+    const filePath = require('path').join(__dirname, '../../data/communications.json');
+    const communicationsData = require('fs-extra').readJsonSync(filePath);
+    
+    const decodedStoreId = decodeURIComponent(storeId);
+    const storeComms = communicationsData[decodedStoreId] || communicationsData[storeId];
+    
+    if (!storeComms || !storeComms.seller_news) {
+      throw createError('Store communications not found', 404);
+    }
+    
+    // 查找并删除新闻
+    const newsIndex = storeComms.seller_news.findIndex((news: any) => news.id === newsId);
+    if (newsIndex === -1) {
+      throw createError('News item not found', 404);
+    }
+    
+    storeComms.seller_news.splice(newsIndex, 1);
+    
+    // 保存更新的数据
+    require('fs-extra').writeJsonSync(filePath, communicationsData, { spaces: 2 });
+    
+    const response = {
+      success: true,
+      message: 'News item deleted successfully'
+    };
+    
+    res.json(response);
+  } catch (error) {
+    console.error('Delete news error:', error);
+    throw createError('Failed to delete news item', 500);
+  }
+}));
+
 export = router;

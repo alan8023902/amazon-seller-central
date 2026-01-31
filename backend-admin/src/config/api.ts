@@ -60,8 +60,11 @@ export const ADMIN_API_CONFIG = {
     
     // VOC相关
     VOC: {
-      BY_STORE: (storeId: string) => `/api/voc/${storeId}`,
-      UPDATE: (storeId: string) => `/api/voc/${storeId}`,
+      BY_STORE: (storeId: string) => `/api/voc/data/${storeId}`,
+      UPDATE: (storeId: string, id: string) => `/api/voc/data/${storeId}/${id}`,
+      CREATE: (storeId: string) => `/api/voc/data/${storeId}`,
+      DELETE: (storeId: string, id: string) => `/api/voc/data/${storeId}/${id}`,
+      SUMMARY: (storeId: string) => `/api/voc/summary/${storeId}`,
     },
     
     // 用户相关

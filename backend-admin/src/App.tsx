@@ -17,6 +17,7 @@ import StoreSelector from './components/StoreSelector';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import Dashboard from './pages/Dashboard';
 import StoreSettings from './pages/StoreSettings';
+import StoreManagement from './pages/StoreManagement';
 import ProductManagement from './pages/ProductManagement';
 import SalesDataConfig from './pages/SalesDataConfig';
 import CXHealthConfig from './pages/CXHealthConfig';
@@ -47,11 +48,19 @@ function AppContent() {
   const [selectedStoreId, setSelectedStoreId] = useState<string>('');
   const [selectedStore, setSelectedStore] = useState<any>(null);
 
-  // Initialize language from localStorage
+  // Initialize language and login state from localStorage
   useEffect(() => {
     const savedLanguage = localStorage.getItem('admin-language');
     if (savedLanguage && savedLanguage !== i18n.language) {
       i18n.changeLanguage(savedLanguage);
+    }
+    
+    // Check for saved login state
+    const savedLoginState = localStorage.getItem('admin-logged-in');
+    const savedUser = localStorage.getItem('admin-current-user');
+    if (savedLoginState === 'true' && savedUser) {
+      setIsLoggedIn(true);
+      setCurrentUser(savedUser);
     }
   }, [i18n]);
 
@@ -99,7 +108,7 @@ function AppContent() {
     {
       key: 'cx-health',
       icon: <HeartOutlined />,
-      label: t('vocDataConfig'),
+      label: t('vocDataManagement'),
     },
     {
       key: 'account-health',
@@ -125,6 +134,9 @@ function AppContent() {
         credentials.password === defaultCredentials.password) {
       setIsLoggedIn(true);
       setCurrentUser(credentials.username);
+      // Save login state to localStorage
+      localStorage.setItem('admin-logged-in', 'true');
+      localStorage.setItem('admin-current-user', credentials.username);
       message.success(t('operationSuccess'));
     } else {
       message.error('用户名或密码错误！');
@@ -136,6 +148,9 @@ function AppContent() {
     setIsLoggedIn(false);
     setCurrentUser('');
     setSelectedKey('dashboard');
+    // Clear login state from localStorage
+    localStorage.removeItem('admin-logged-in');
+    localStorage.removeItem('admin-current-user');
     message.success('已退出登录');
   };
 
@@ -172,7 +187,7 @@ function AppContent() {
       case 'communications':
         return <CommunicationsConfig {...commonProps} />;
       case 'store':
-        return <StoreSettings {...commonProps} />;
+        return <StoreManagement {...commonProps} />;
       case 'products':
         return <ProductManagement {...commonProps} />;
       case 'sales':

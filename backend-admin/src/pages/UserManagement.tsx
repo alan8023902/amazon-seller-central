@@ -62,7 +62,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const result = await adminApiGet(ADMIN_API_CONFIG.ENDPOINTS.USERS.LIST);
+      // 请求所有用户数据，设置一个较大的limit值来获取所有用户
+      const result = await adminApiGet(`${ADMIN_API_CONFIG.ENDPOINTS.USERS.LIST}?limit=1000`);
       console.log('Load users result:', result); // 添加调试日志
       
       // adminApiGet 现在直接返回数据数组

@@ -26,6 +26,7 @@ interface VocDataItem {
   store_id: string;
   product_name: string;
   asin: string;
+  sku: string;
   sku_status: string;
   fulfillment: string;
   dissatisfaction_rate: number;
@@ -81,7 +82,7 @@ const VocDataConfig: React.FC = () => {
     queryKey: ['vocSummary', selectedStoreId],
     queryFn: async () => {
       if (!selectedStoreId) return {};
-      const data = await adminApiGet(`/api/voc/summary/${selectedStoreId}`);
+      const data = await adminApiGet(ADMIN_API_CONFIG.ENDPOINTS.VOC.SUMMARY(selectedStoreId));
       // adminApiGet 现在直接返回数据
       return data || {};
     },
@@ -114,7 +115,7 @@ const VocDataConfig: React.FC = () => {
       
       if (editingItem) {
         // Update existing item
-        const data = await adminApiPut(`/api/voc/data/${selectedStoreId}/${editingItem.id}`, values);
+        const data = await adminApiPut(ADMIN_API_CONFIG.ENDPOINTS.VOC.UPDATE(selectedStoreId, editingItem.id), values);
         if (data.success) {
           message.success('VOC数据更新成功！');
         } else {
@@ -122,7 +123,7 @@ const VocDataConfig: React.FC = () => {
         }
       } else {
         // Create new item
-        const data = await adminApiPost(`/api/voc/data/${selectedStoreId}`, values);
+        const data = await adminApiPost(ADMIN_API_CONFIG.ENDPOINTS.VOC.CREATE(selectedStoreId), values);
         if (data.success) {
           message.success('VOC数据创建成功！');
         } else {
@@ -141,7 +142,7 @@ const VocDataConfig: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const data = await adminApiDelete(`/api/voc/data/${selectedStoreId}/${id}`);
+      const data = await adminApiDelete(ADMIN_API_CONFIG.ENDPOINTS.VOC.DELETE(selectedStoreId, id));
       if (data.success) {
         message.success('VOC数据删除成功！');
         queryClient.invalidateQueries({ queryKey: ['vocData'] });
@@ -177,6 +178,12 @@ const VocDataConfig: React.FC = () => {
       title: 'ASIN',
       dataIndex: 'asin',
       key: 'asin',
+      width: 120,
+    },
+    {
+      title: 'SKU',
+      dataIndex: 'sku',
+      key: 'sku',
       width: 120,
     },
     {
@@ -378,6 +385,14 @@ const VocDataConfig: React.FC = () => {
             rules={[{ required: true, message: '请输入ASIN' }]}
           >
             <Input placeholder="请输入ASIN" />
+          </Form.Item>
+
+          <Form.Item
+            label="SKU"
+            name="sku"
+            rules={[{ required: true, message: '请输入SKU' }]}
+          >
+            <Input placeholder="请输入SKU" />
           </Form.Item>
 
           <div style={{ display: 'flex', gap: '16px' }}>

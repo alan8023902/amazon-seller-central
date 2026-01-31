@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { 
   Table, 
   Button, 
@@ -26,6 +26,7 @@ import {
   ProductOutlined
 } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { ADMIN_API_CONFIG, adminApiGet, adminApiPost, adminApiPut, adminApiDelete } from '../config/api';
 
 const { Title } = Typography;
@@ -90,41 +91,68 @@ const storeApi = {
   },
 };
 
-const StoreManagement: React.FC = () => {
+interface StoreManagementProps {
+  selectedStoreId?: string;
+  selectedStore?: any;
+  onStoreChange?: (storeId: string, store: any) => void;
+}
+
+const StoreManagement: React.FC<StoreManagementProps> = ({ 
+  selectedStoreId, 
+  selectedStore 
+}) => {
+  const { t } = useTranslation();
   const [searchText, setSearchText] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingStore, setEditingStore] = useState<Store | null>(null);
-  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [viewingStore, setViewingStore] = useState<Store | null>(null);
   const [summaryModalVisible, setSummaryModalVisible] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  // 获取店铺列表
+  // 获取店铺列表 - 显示所有店铺，不进行搜索过滤
   const { data: storesResponse, isLoading } = useQuery({
-    queryKey: ['stores', { search: searchText }],
-    queryFn: () => storeApi.getStores({ 
-      search: searchText || undefined,
-    }),
+    queryKey: ['stores'],
+    queryFn: () => storeApi.getStores(),
   });
+
+  // 过滤店铺列表用于显示
+  const filteredStores = useMemo(() => {
+    if (!storesResponse) return [];
+    
+    // storesResponse 直接是数组，不需要 .data
+    let filtered = Array.isArray(storesResponse) ? storesResponse : [];
+    
+    if (searchText.trim()) {
+      const q = searchText.toLowerCase();
+      filtered = filtered.filter(store => 
+        store.name.toLowerCase().includes(q) || 
+        store.country.toLowerCase().includes(q) ||
+        store.marketplace.toLowerCase().includes(q)
+      );
+    }
+    
+    return filtered;
+  }, [storesResponse, searchText]);
 
   // 获取店铺摘要
   const { data: summaryResponse, isLoading: summaryLoading } = useQuery({
-    queryKey: ['store-summary', selectedStore?.id],
-    queryFn: () => selectedStore ? storeApi.getStoreSummary(selectedStore.id) : null,
-    enabled: !!selectedStore,
+    queryKey: ['store-summary', viewingStore?.id],
+    queryFn: () => viewingStore ? storeApi.getStoreSummary(viewingStore.id) : null,
+    enabled: !!viewingStore,
   });
 
   // 创建店铺
   const createStoreMutation = useMutation({
     mutationFn: storeApi.createStore,
     onSuccess: () => {
-      message.success('店铺创建成功！');
+      message.success(t('storeCreatedSuccess'));
       setIsModalVisible(false);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['stores'] });
     },
     onError: (error: Error) => {
-      message.error(error.message || '创建失败，请重试');
+      message.error(error.message || t('createFailed'));
     },
   });
 
@@ -133,14 +161,14 @@ const StoreManagement: React.FC = () => {
     mutationFn: ({ id, data }: { id: string; data: any }) => 
       storeApi.updateStore(id, data),
     onSuccess: () => {
-      message.success('店铺更新成功！');
+      message.success(t('storeUpdatedSuccess'));
       setIsModalVisible(false);
       setEditingStore(null);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['stores'] });
     },
     onError: (error: Error) => {
-      message.error(error.message || '更新失败，请重试');
+      message.error(error.message || t('updateFailed'));
     },
   });
 
@@ -148,11 +176,11 @@ const StoreManagement: React.FC = () => {
   const deleteStoreMutation = useMutation({
     mutationFn: storeApi.deleteStore,
     onSuccess: () => {
-      message.success('店铺删除成功！');
+      message.success(t('storeDeletedSuccess'));
       queryClient.invalidateQueries({ queryKey: ['stores'] });
     },
     onError: (error: Error) => {
-      message.error(error.message || '删除失败，请重试');
+      message.error(error.message || t('deleteFailed'));
     },
   });
 
@@ -163,6 +191,11 @@ const StoreManagement: React.FC = () => {
   };
 
   const handleDelete = (id: string) => {
+    // Check if trying to delete current store
+    if (selectedStoreId && id === selectedStoreId) {
+      message.error(t('currentStoreDeleteWarning'));
+      return;
+    }
     deleteStoreMutation.mutate(id);
   };
 
@@ -175,25 +208,25 @@ const StoreManagement: React.FC = () => {
   };
 
   const handleViewSummary = (store: Store) => {
-    setSelectedStore(store);
+    setViewingStore(store);
     setSummaryModalVisible(true);
   };
 
   const columns = [
     {
-      title: '店铺名称',
+      title: t('storeName'),
       dataIndex: 'name',
       key: 'name',
       render: (name: string, record: Store) => (
         <Space>
           <ShopOutlined />
           <span style={{ fontWeight: 'bold' }}>{name}</span>
-          {!record.is_active && <Tag color="red">未激活</Tag>}
+          {!record.is_active && <Tag color="red">{t('deactivated')}</Tag>}
         </Space>
       ),
     },
     {
-      title: '市场',
+      title: t('marketplace'),
       dataIndex: 'marketplace',
       key: 'marketplace',
       render: (marketplace: string, record: Store) => (
@@ -204,79 +237,94 @@ const StoreManagement: React.FC = () => {
       ),
     },
     {
-      title: '业务类型',
+      title: t('businessType'),
       dataIndex: 'business_type',
       key: 'business_type',
       render: (type: string) => (
         <Tag color={type === 'Business' ? 'green' : 'orange'}>
-          {type === 'Business' ? '企业' : '个人'}
+          {type === 'Business' ? t('business') : t('individual')}
         </Tag>
       ),
     },
     {
-      title: '状态',
+      title: t('status'),
       dataIndex: 'is_active',
       key: 'is_active',
       render: (isActive: boolean) => (
         <Tag color={isActive ? 'green' : 'red'}>
-          {isActive ? '活跃' : '未激活'}
+          {isActive ? t('activated') : t('deactivated')}
         </Tag>
       ),
     },
     {
-      title: '创建时间',
+      title: t('createdAt'),
       dataIndex: 'created_at',
       key: 'created_at',
       render: (date: string) => new Date(date).toLocaleDateString('zh-CN'),
     },
     {
-      title: '操作',
+      title: t('actions'),
       key: 'action',
-      render: (_: any, record: Store) => (
-        <Space size="middle">
-          <Button 
-            type="link" 
-            icon={<ProductOutlined />}
-            onClick={() => handleViewSummary(record)}
-          >
-            详情
-          </Button>
-          <Button 
-            type="link" 
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
-            编辑
-          </Button>
-          <Popconfirm
-            title="确定要删除这个店铺吗？"
-            description="删除店铺将同时删除所有相关数据（产品、销售记录等），此操作不可恢复。"
-            onConfirm={() => handleDelete(record.id)}
-            okText="确定"
-            cancelText="取消"
-            okType="danger"
-          >
+      render: (_: any, record: Store) => {
+        const isCurrentStore = selectedStoreId && record.id === selectedStoreId;
+        
+        return (
+          <Space size="middle">
             <Button 
               type="link" 
-              danger 
-              icon={<DeleteOutlined />}
+              icon={<ProductOutlined />}
+              onClick={() => handleViewSummary(record)}
             >
-              删除
+              {t('details')}
             </Button>
-          </Popconfirm>
-        </Space>
-      ),
+            <Button 
+              type="link" 
+              icon={<EditOutlined />}
+              onClick={() => handleEdit(record)}
+            >
+              {t('edit')}
+            </Button>
+            {isCurrentStore ? (
+              <Button 
+                type="link" 
+                disabled
+                icon={<DeleteOutlined />}
+                title={t('currentStoreCannotDelete')}
+              >
+                {t('delete')}
+              </Button>
+            ) : (
+              <Popconfirm
+                title={t('storeDeleteConfirm')}
+                description={t('storeDeleteWarning')}
+                onConfirm={() => handleDelete(record.id)}
+                okText={t('confirm')}
+                cancelText={t('cancel')}
+                okType="danger"
+              >
+                <Button 
+                  type="link" 
+                  danger 
+                  icon={<DeleteOutlined />}
+                >
+                  {t('delete')}
+                </Button>
+              </Popconfirm>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
   return (
     <div>
-      <Title level={2}>店铺管理</Title>
+      <Title level={2}>{t('storeManagement')}</Title>
       
       {/* 搜索和操作 */}
       <div style={{ marginBottom: 16, display: 'flex', gap: 16, justifyContent: 'space-between' }}>
         <Input
-          placeholder="搜索店铺名称或国家"
+          placeholder={t('searchStoreNameCountry')}
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
@@ -291,18 +339,18 @@ const StoreManagement: React.FC = () => {
             setIsModalVisible(true);
           }}
         >
-          新增店铺
+          {t('addStore')}
         </Button>
       </div>
 
       {/* 店铺表格 */}
       <Table
         columns={columns}
-        dataSource={storesResponse?.data || []}
+        dataSource={filteredStores}
         loading={isLoading}
         rowKey="id"
         pagination={{
-          total: storesResponse?.pagination?.total || 0,
+          total: filteredStores.length,
           pageSize: 10,
           showSizeChanger: true,
           showQuickJumper: true,
@@ -313,7 +361,7 @@ const StoreManagement: React.FC = () => {
 
       {/* 新增/编辑店铺模态框 */}
       <Modal
-        title={editingStore ? '编辑店铺' : '新增店铺'}
+        title={editingStore ? t('editStore') : t('addStore')}
         open={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false);
@@ -329,24 +377,24 @@ const StoreManagement: React.FC = () => {
           onFinish={handleSubmit}
         >
           <Form.Item
-            label="店铺名称"
+            label={t('storeName')}
             name="name"
             rules={[
-              { required: true, message: '请输入店铺名称' },
-              { min: 1, max: 100, message: '店铺名称长度应在1-100字符之间' }
+              { required: true, message: t('pleaseEnterStoreName') },
+              { min: 1, max: 100, message: t('storeNameLength') }
             ]}
           >
-            <Input placeholder="请输入店铺名称" />
+            <Input placeholder={t('pleaseEnterStoreName')} />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="市场"
+                label={t('marketplace')}
                 name="marketplace"
-                rules={[{ required: true, message: '请选择市场' }]}
+                rules={[{ required: true, message: t('pleaseSelectMarketplace') }]}
               >
-                <Select placeholder="请选择市场">
+                <Select placeholder={t('pleaseSelectMarketplace')}>
                   <Select.Option value="United States">United States</Select.Option>
                   <Select.Option value="Japan">Japan</Select.Option>
                   <Select.Option value="United Kingdom">United Kingdom</Select.Option>
@@ -357,11 +405,11 @@ const StoreManagement: React.FC = () => {
             </Col>
             <Col span={12}>
               <Form.Item
-                label="货币符号"
+                label={t('currencySymbol')}
                 name="currency_symbol"
-                rules={[{ required: true, message: '请选择货币符号' }]}
+                rules={[{ required: true, message: t('pleaseSelectCurrency') }]}
               >
-                <Select placeholder="请选择货币符号">
+                <Select placeholder={t('pleaseSelectCurrency')}>
                   <Select.Option value="US$">US$ (美元)</Select.Option>
                   <Select.Option value="¥">¥ (日元/人民币)</Select.Option>
                   <Select.Option value="£">£ (英镑)</Select.Option>
@@ -376,11 +424,11 @@ const StoreManagement: React.FC = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="国家/地区"
+                label={t('countryRegion')}
                 name="country"
-                rules={[{ required: true, message: '请选择国家/地区' }]}
+                rules={[{ required: true, message: t('pleaseSelectCountry') }]}
               >
-                <Select placeholder="请选择国家/地区">
+                <Select placeholder={t('pleaseSelectCountry')}>
                   <Select.Option value="United States">United States</Select.Option>
                   <Select.Option value="Japan">Japan</Select.Option>
                   <Select.Option value="United Kingdom">United Kingdom</Select.Option>
@@ -397,24 +445,24 @@ const StoreManagement: React.FC = () => {
             </Col>
             <Col span={12}>
               <Form.Item
-                label="业务类型"
+                label={t('businessType')}
                 name="business_type"
                 initialValue="Business"
               >
                 <Select>
-                  <Select.Option value="Business">企业</Select.Option>
-                  <Select.Option value="Individual">个人</Select.Option>
+                  <Select.Option value="Business">{t('business')}</Select.Option>
+                  <Select.Option value="Individual">{t('individual')}</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
           </Row>
 
           <Form.Item
-            label="时区"
+            label={t('timezone')}
             name="timezone"
             initialValue="UTC"
           >
-            <Select placeholder="请选择时区">
+            <Select placeholder={t('pleaseSelect') + t('timezone')}>
               <Select.Option value="UTC">UTC (协调世界时)</Select.Option>
               <Select.Option value="America/New_York">America/New_York (EST/EDT)</Select.Option>
               <Select.Option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</Select.Option>
@@ -428,11 +476,11 @@ const StoreManagement: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            label="描述"
+            label={t('storeDescription')}
             name="description"
           >
             <Input.TextArea 
-              placeholder="店铺描述（可选）" 
+              placeholder={t('storeDescriptionOptional')} 
               rows={3}
             />
           </Form.Item>
@@ -444,7 +492,7 @@ const StoreManagement: React.FC = () => {
           >
             <Space>
               <input type="checkbox" />
-              <span>激活店铺</span>
+              <span>{t('activateStore')}</span>
             </Space>
           </Form.Item>
 
@@ -455,14 +503,14 @@ const StoreManagement: React.FC = () => {
                 htmlType="submit"
                 loading={createStoreMutation.isPending || updateStoreMutation.isPending}
               >
-                {editingStore ? '更新' : '创建'}
+                {editingStore ? t('update') : t('create')}
               </Button>
               <Button onClick={() => {
                 setIsModalVisible(false);
                 setEditingStore(null);
                 form.resetFields();
               }}>
-                取消
+                {t('cancel')}
               </Button>
             </Space>
           </Form.Item>
@@ -471,11 +519,11 @@ const StoreManagement: React.FC = () => {
 
       {/* 店铺详情模态框 */}
       <Modal
-        title={`店铺详情 - ${selectedStore?.name}`}
+        title={`${t('storeDetails')} - ${viewingStore?.name}`}
         open={summaryModalVisible}
         onCancel={() => {
           setSummaryModalVisible(false);
-          setSelectedStore(null);
+          setViewingStore(null);
         }}
         footer={null}
         width={800}
@@ -486,7 +534,7 @@ const StoreManagement: React.FC = () => {
               <Col span={8}>
                 <Card>
                   <Statistic
-                    title="产品总数"
+                    title={t('totalProducts')}
                     value={summaryResponse.data.statistics.product_count}
                     prefix={<ProductOutlined />}
                   />
@@ -495,7 +543,7 @@ const StoreManagement: React.FC = () => {
               <Col span={8}>
                 <Card>
                   <Statistic
-                    title="活跃产品"
+                    title={t('activeProducts')}
                     value={summaryResponse.data.statistics.active_products}
                     prefix={<ShopOutlined />}
                   />
@@ -504,7 +552,7 @@ const StoreManagement: React.FC = () => {
               <Col span={8}>
                 <Card>
                   <Statistic
-                    title="总销售额"
+                    title={t('totalSales')}
                     value={summaryResponse.data.statistics.total_sales}
                     prefix={<DollarOutlined />}
                     precision={2}
@@ -517,7 +565,7 @@ const StoreManagement: React.FC = () => {
               <Col span={8}>
                 <Card>
                   <Statistic
-                    title="总订单数"
+                    title={t('totalOrders')}
                     value={summaryResponse.data.statistics.total_orders}
                   />
                 </Card>
@@ -525,7 +573,7 @@ const StoreManagement: React.FC = () => {
               <Col span={8}>
                 <Card>
                   <Statistic
-                    title="平均订单价值"
+                    title={t('avgOrderValue')}
                     value={summaryResponse.data.statistics.avg_order_value}
                     precision={2}
                   />
@@ -534,7 +582,7 @@ const StoreManagement: React.FC = () => {
               <Col span={8}>
                 <Card>
                   <Statistic
-                    title="库存绩效指数"
+                    title={t('inventoryPerformanceIndex')}
                     value={summaryResponse.data.health_metrics.inventory_performance_index}
                   />
                 </Card>

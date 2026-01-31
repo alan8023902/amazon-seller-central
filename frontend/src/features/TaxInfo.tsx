@@ -80,8 +80,7 @@ const TaxInfo: React.FC = () => {
               className="text-[12px] text-[#007185] hover:underline mt-1"
               onClick={(e) => {
                 e.preventDefault();
-                // 如果你有对应页面就跳过去；没有就先 preventDefault
-                // navigate('/app/account-info');
+                navigate('/app/settings/store-info');
               }}
             >
               {t('accountInfo')}

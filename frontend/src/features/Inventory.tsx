@@ -45,11 +45,24 @@ const Inventory: React.FC = () => {
           params.append('status', englishFilter);
         }
         
+        // Use the same API endpoint as Dashboard for consistency
         const response = await fetch(`/api/products?${params.toString()}`);
         const data = await response.json();
         
         if (data.success) {
-          return data.data || [];
+          // Transform the data to match the expected inventory format
+          return (data.data || []).map((product: any) => ({
+            id: product.id,
+            name: product.title || product.name,
+            sku: product.sku,
+            asin: product.asin,
+            status: product.status,
+            units: product.inventory || 0,
+            price: product.price || 0,
+            image: product.image_url || product.image,
+            sales_amount: product.sales_amount || 0,
+            units_sold: product.units_sold || 0
+          }));
         }
         
         // Fallback to fetchInventory if new API fails

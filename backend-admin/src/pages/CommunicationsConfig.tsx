@@ -15,7 +15,8 @@ import {
   Typography,
   Statistic,
   Row,
-  Col
+  Col,
+  Popconfirm
 } from 'antd';
 import { 
   MessageOutlined, 
@@ -23,10 +24,12 @@ import {
   EyeOutlined, 
   CommentOutlined,
   ReloadOutlined,
-  EditOutlined
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ADMIN_API_CONFIG, adminApiGet, adminApiPut } from '../config/api';
+import { ADMIN_API_CONFIG, adminApiGet, adminApiPut, adminApiDelete } from '../config/api';
 
 const { Title, Text } = Typography;
 
@@ -79,10 +82,34 @@ const CommunicationsConfig: React.FC<CommunicationsConfigProps> = ({
     }
   });
 
+  // 删除数据的mutation
+  const deleteMutation = useMutation({
+    mutationFn: async ({ type, id }: { type: string; id: string }) => {
+      const endpoint = type === 'forums' 
+        ? `/api/communications/forums/${selectedStoreId}/${id}`
+        : `/api/communications/news/${selectedStoreId}/${id}`;
+      
+      const result = await adminApiDelete(endpoint);
+      if (!result.success) throw new Error(result.message);
+      return result.data;
+    },
+    onSuccess: () => {
+      message.success('数据删除成功！');
+      queryClient.invalidateQueries({ queryKey: ['communications'] });
+    },
+    onError: (error: any) => {
+      message.error('删除失败: ' + error.message);
+    }
+  });
+
   const handleEdit = (item: any, type: string) => {
     setEditingItem({ ...item, type });
     form.setFieldsValue(item);
     setEditModalVisible(true);
+  };
+
+  const handleDelete = (item: any, type: string) => {
+    deleteMutation.mutate({ type, id: item.id });
   };
 
   const handleSubmit = (values: any) => {
@@ -170,15 +197,33 @@ const CommunicationsConfig: React.FC<CommunicationsConfigProps> = ({
     {
       title: '操作',
       key: 'actions',
-      width: 100,
+      width: 150,
       render: (_: any, record: any) => (
-        <Button 
-          type="link" 
-          icon={<EditOutlined />}
-          onClick={() => handleEdit(record, 'forums')}
-        >
-          编辑
-        </Button>
+        <Space size="middle">
+          <Button 
+            type="link" 
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record, 'forums')}
+          >
+            编辑
+          </Button>
+          <Popconfirm
+            title="确定要删除这个论坛帖子吗？"
+            description="删除后无法恢复"
+            onConfirm={() => handleDelete(record, 'forums')}
+            okText="确定"
+            cancelText="取消"
+            okType="danger"
+          >
+            <Button 
+              type="link" 
+              danger 
+              icon={<DeleteOutlined />}
+            >
+              删除
+            </Button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
@@ -256,15 +301,33 @@ const CommunicationsConfig: React.FC<CommunicationsConfigProps> = ({
     {
       title: '操作',
       key: 'actions',
-      width: 100,
+      width: 150,
       render: (_: any, record: any) => (
-        <Button 
-          type="link" 
-          icon={<EditOutlined />}
-          onClick={() => handleEdit(record, 'news')}
-        >
-          编辑
-        </Button>
+        <Space size="middle">
+          <Button 
+            type="link" 
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record, 'news')}
+          >
+            编辑
+          </Button>
+          <Popconfirm
+            title="确定要删除这个新闻吗？"
+            description="删除后无法恢复"
+            onConfirm={() => handleDelete(record, 'news')}
+            okText="确定"
+            cancelText="取消"
+            okType="danger"
+          >
+            <Button 
+              type="link" 
+              danger 
+              icon={<DeleteOutlined />}
+            >
+              删除
+            </Button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];

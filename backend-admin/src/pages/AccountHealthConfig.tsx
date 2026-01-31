@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { SaveOutlined, ReloadOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { ADMIN_API_CONFIG, adminApiGet, adminApiPut } from '../config/api';
 
 const { Title } = Typography;
@@ -30,6 +31,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
 }) => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   // 获取Account Health数据
   const { data: accountHealthData, isLoading } = useQuery({
@@ -100,14 +102,14 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
       
       const data = await adminApiPut(`/api/account-health/${selectedStoreId}`, formattedValues);
       if (data.success) {
-        message.success('Account Health数据更新成功！');
+        message.success(t('operationSuccess'));
         queryClient.invalidateQueries({ queryKey: ['accountHealthData'] });
       } else {
-        message.error('更新失败');
+        message.error(t('operationFailed'));
       }
     } catch (error) {
       console.error('Form validation failed:', error);
-      message.error('操作失败');
+      message.error(t('operationFailed'));
     }
   };
 
@@ -130,7 +132,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
         customer_product_reviews: accountHealthData.policy_compliance.customer_product_reviews,
         other_policy_violations: accountHealthData.policy_compliance.other_policy_violations
       });
-      message.info('已重置为原始数据');
+      message.info(t('resetToOriginalData'));
     }
   };
 
@@ -151,10 +153,10 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Title level={2}>Account Health 数据配置</Title>
+        <Title level={2}>{t('accountHealthDataConfig')}</Title>
         {selectedStore && (
           <div style={{ fontSize: '14px', color: '#666' }}>
-            当前店铺: <strong>{selectedStore.name}</strong> ({selectedStore.marketplace})
+            {t('currentStore')}: <strong>{selectedStore.name}</strong> ({selectedStore.marketplace})
           </div>
         )}
       </div>
@@ -167,17 +169,17 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
             color: '#999',
             fontSize: '16px' 
           }}>
-            请先在页面顶部选择一个店铺
+            {t('pleaseSelectStore')}
           </div>
         </Card>
       ) : (
         <>
           {/* 当前数据概览 */}
-          <Card title="📊 当前Account Health概览" style={{ marginBottom: 24 }}>
+          <Card title={`📊 ${t('currentAccountHealthOverview')}`} style={{ marginBottom: 24 }}>
             <Row gutter={16}>
               <Col span={6}>
                 <Statistic
-                  title="Account Health Rating"
+                  title={t('accountHealthRating')}
                   value={accountHealthData?.account_health_rating || 0}
                   suffix="/ 1000"
                   valueStyle={{ color: getHealthRatingColor(accountHealthData?.account_health_rating || 0) }}
@@ -191,7 +193,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               </Col>
               <Col span={6}>
                 <Statistic
-                  title="Seller Fulfilled Defect Rate"
+                  title={`${t('sellerFulfilled')} Defect Rate`}
                   value={accountHealthData?.order_defect_rate?.seller_fulfilled || 0}
                   suffix="%"
                   precision={1}
@@ -207,7 +209,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               </Col>
               <Col span={6}>
                 <Statistic
-                  title="Valid Tracking Rate"
+                  title={t('validTrackingRate')}
                   value={accountHealthData?.shipping_performance?.valid_tracking_rate || 0}
                   suffix="%"
                 />
@@ -217,14 +219,14 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
 
           {/* 编辑表单 */}
           <Card 
-            title="✏️ 编辑Account Health数据" 
+            title={`✏️ ${t('editAccountHealthData')}`} 
             extra={
               <Space>
                 <Button 
                   icon={<ReloadOutlined />} 
                   onClick={handleReset}
                 >
-                  重置
+                  {t('reset')}
                 </Button>
                 <Button 
                   type="primary" 
@@ -232,7 +234,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   onClick={handleSave}
                   loading={isLoading}
                 >
-                  保存更改
+                  {t('saveChanges')}
                 </Button>
               </Space>
             }
@@ -259,13 +261,13 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               }}
             >
               {/* Account Health Rating */}
-              <Divider orientation="left">Account Health Rating</Divider>
+              <Divider orientation="left">{t('accountHealthRating')}</Divider>
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    label="Account Health Rating (0-1000)"
+                    label={`${t('accountHealthRating')} (0-1000)`}
                     name="account_health_rating"
-                    rules={[{ required: true, message: '请输入Account Health Rating' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')} ${t('accountHealthRating')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -279,13 +281,13 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               </Row>
 
               {/* Order Defect Rate */}
-              <Divider orientation="left">Order Defect Rate</Divider>
+              <Divider orientation="left">{t('orderDefectRate')}</Divider>
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    label="Seller Fulfilled (%)"
+                    label={`${t('sellerFulfilled')} (%)`}
                     name="seller_fulfilled_defect_rate"
-                    rules={[{ required: true, message: '请输入Seller Fulfilled缺陷率' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('sellerFulfilled')}缺陷率` }]}
                   >
                     <InputNumber
                       min={0}
@@ -299,9 +301,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                 </Col>
                 <Col span={12}>
                   <Form.Item
-                    label="Fulfilled by Amazon (%)"
+                    label={`${t('fulfilledByAmazon')} (%)`}
                     name="fulfilled_by_amazon_defect_rate"
-                    rules={[{ required: true, message: '请输入FBA缺陷率' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}FBA缺陷率` }]}
                   >
                     <InputNumber
                       min={0}
@@ -316,13 +318,13 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               </Row>
 
               {/* Policy Violations */}
-              <Divider orientation="left">Policy Violations</Divider>
+              <Divider orientation="left">{t('policyViolations')}</Divider>
               <Row gutter={16}>
                 <Col span={8}>
                   <Form.Item
-                    label="Negative Feedback (%)"
+                    label={`${t('negativeFeedback')} (%)`}
                     name="negative_feedback"
-                    rules={[{ required: true, message: '请输入负面反馈率' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}负面反馈率` }]}
                   >
                     <InputNumber
                       min={0}
@@ -336,9 +338,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="A-to-Z Claims (%)"
+                    label={`${t('aToZClaims')} (%)`}
                     name="a_to_z_claims"
-                    rules={[{ required: true, message: '请输入A-to-Z申诉率' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}A-to-Z申诉率` }]}
                   >
                     <InputNumber
                       min={0}
@@ -352,9 +354,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="Chargeback Claims (%)"
+                    label={`${t('chargebackClaims')} (%)`}
                     name="chargeback_claims"
-                    rules={[{ required: true, message: '请输入退单申诉率' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}退单申诉率` }]}
                   >
                     <InputNumber
                       min={0}
@@ -369,13 +371,13 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               </Row>
 
               {/* Shipping Performance */}
-              <Divider orientation="left">Shipping Performance</Divider>
+              <Divider orientation="left">{t('shippingPerformance')}</Divider>
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    label="Late Shipment Rate (%)"
+                    label={`${t('lateShipmentRate')} (%)`}
                     name="late_shipment_rate"
-                    rules={[{ required: true, message: '请输入延迟发货率' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}延迟发货率` }]}
                   >
                     <InputNumber
                       min={0}
@@ -389,9 +391,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                 </Col>
                 <Col span={12}>
                   <Form.Item
-                    label="Pre-fulfillment Cancel Rate (%)"
+                    label={`${t('preFulfillmentCancelRate')} (%)`}
                     name="pre_fulfillment_cancel_rate"
-                    rules={[{ required: true, message: '请输入预履行取消率' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}预履行取消率` }]}
                   >
                     <InputNumber
                       min={0}
@@ -408,9 +410,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    label="Valid Tracking Rate (%)"
+                    label={`${t('validTrackingRate')} (%)`}
                     name="valid_tracking_rate"
-                    rules={[{ required: true, message: '请输入有效跟踪率' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}有效跟踪率` }]}
                   >
                     <InputNumber
                       min={0}
@@ -424,7 +426,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                 </Col>
                 <Col span={12}>
                   <Form.Item
-                    label="On-time Delivery Rate (%) - Optional"
+                    label={`${t('onTimeDeliveryRate')} (%) - ${t('optional')}`}
                     name="on_time_delivery_rate"
                   >
                     <InputNumber
@@ -440,13 +442,13 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               </Row>
 
               {/* Policy Compliance */}
-              <Divider orientation="left">Policy Compliance Issues</Divider>
+              <Divider orientation="left">{t('policyComplianceIssues')}</Divider>
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    label="Product Policy Violations"
+                    label={t('productPolicyViolations')}
                     name="product_policy_violations"
-                    rules={[{ required: true, message: '请输入产品政策违规数' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}产品政策违规数` }]}
                   >
                     <InputNumber
                       min={0}
@@ -458,9 +460,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                 </Col>
                 <Col span={12}>
                   <Form.Item
-                    label="Listing Policy Violations"
+                    label={t('listingPolicyViolations')}
                     name="listing_policy_violations"
-                    rules={[{ required: true, message: '请输入列表政策违规数' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}列表政策违规数` }]}
                   >
                     <InputNumber
                       min={0}
@@ -475,9 +477,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               <Row gutter={16}>
                 <Col span={8}>
                   <Form.Item
-                    label="Intellectual Property Violations"
+                    label={t('intellectualPropertyViolations')}
                     name="intellectual_property_violations"
-                    rules={[{ required: true, message: '请输入知识产权违规数' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}知识产权违规数` }]}
                   >
                     <InputNumber
                       min={0}
@@ -489,9 +491,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="Customer Product Reviews"
+                    label={t('customerProductReviews')}
                     name="customer_product_reviews"
-                    rules={[{ required: true, message: '请输入客户产品评论问题数' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}客户产品评论问题数` }]}
                   >
                     <InputNumber
                       min={0}
@@ -503,9 +505,9 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="Other Policy Violations"
+                    label={t('otherPolicyViolations')}
                     name="other_policy_violations"
-                    rules={[{ required: true, message: '请输入其他政策违规数' }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}其他政策违规数` }]}
                   >
                     <InputNumber
                       min={0}
@@ -520,17 +522,17 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
           </Card>
 
           {/* 使用说明 */}
-          <Card title="💡 使用说明" style={{ marginTop: 24 }}>
+          <Card title={`💡 ${t('usageInstructions')}`} style={{ marginTop: 24 }}>
             <div style={{ lineHeight: '1.8' }}>
-              <p><strong>Account Health</strong> 数据显示在前端Account Health页面：</p>
+              <p><strong>Account Health</strong> {t('accountHealthUsageNote')}</p>
               <ul style={{ paddingLeft: '20px' }}>
-                <li><strong>Account Health Rating</strong>: 账户健康评分 (0-1000)</li>
-                <li><strong>Order Defect Rate</strong>: 订单缺陷率，分为自发货和FBA</li>
-                <li><strong>Policy Violations</strong>: 政策违规相关指标</li>
-                <li><strong>Shipping Performance</strong>: 发货表现指标</li>
-                <li><strong>Policy Compliance</strong>: 政策合规问题数量</li>
+                <li><strong>{t('accountHealthRating')}</strong>: {t('accountHealthRatingDesc')}</li>
+                <li><strong>{t('orderDefectRate')}</strong>: {t('orderDefectRateDesc')}</li>
+                <li><strong>{t('policyViolations')}</strong>: {t('policyViolationsDesc')}</li>
+                <li><strong>{t('shippingPerformance')}</strong>: {t('shippingPerformanceDesc')}</li>
+                <li><strong>{t('policyComplianceIssues')}</strong>: {t('policyComplianceDesc')}</li>
               </ul>
-              <p><strong>注意：</strong>修改这些数值后，前端Account Health页面会实时更新显示。</p>
+              <p><strong>{t('modificationNote')}</strong></p>
             </div>
           </Card>
         </>

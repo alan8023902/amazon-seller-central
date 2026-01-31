@@ -22,6 +22,7 @@ router.get('/data/:storeId', asyncHandler(async (req, res) => {
         store_id: storeId,
         product_name: 'Wireless Bluetooth Headphones',
         asin: 'B012345678',
+        sku: 'WBH-001',
         sku_status: 'Active',
         fulfillment: 'Amazon Fulfillment',
         dissatisfaction_rate: 1.2,
@@ -39,6 +40,7 @@ router.get('/data/:storeId', asyncHandler(async (req, res) => {
         store_id: storeId,
         product_name: 'Smart Home Security Camera',
         asin: 'B087654321',
+        sku: 'SHSC-002',
         sku_status: 'Active',
         fulfillment: 'Seller Fulfillment',
         dissatisfaction_rate: 5.8,
@@ -56,6 +58,7 @@ router.get('/data/:storeId', asyncHandler(async (req, res) => {
         store_id: storeId,
         product_name: 'Portable External SSD 1TB',
         asin: 'B098765432',
+        sku: 'PESSD-003',
         sku_status: 'Active',
         fulfillment: 'Amazon Fulfillment',
         dissatisfaction_rate: 0.5,
@@ -73,6 +76,7 @@ router.get('/data/:storeId', asyncHandler(async (req, res) => {
         store_id: storeId,
         product_name: 'Electric Toothbrush with UV Sanitizer',
         asin: 'B076543210',
+        sku: 'ETB-004',
         sku_status: 'Active',
         fulfillment: 'Amazon Fulfillment',
         dissatisfaction_rate: 8.9,
@@ -90,6 +94,7 @@ router.get('/data/:storeId', asyncHandler(async (req, res) => {
         store_id: storeId,
         product_name: 'Wireless Charging Pad',
         asin: 'B065432109',
+        sku: 'WCP-005',
         sku_status: 'Active',
         fulfillment: 'Seller Fulfillment',
         dissatisfaction_rate: 3.4,
@@ -165,6 +170,43 @@ router.put('/data/:storeId/:id', asyncHandler(async (req, res) => {
     success: true,
     data: updatedData,
     message: 'VOC data updated successfully',
+  };
+  
+  res.json(response);
+}));
+
+// POST /api/voc/data/:storeId - Create new VOC data
+router.post('/data/:storeId', asyncHandler(async (req, res) => {
+  const { storeId } = req.params;
+  
+  const newData = await dataService.create<VocData>('voc_data', {
+    ...req.body,
+    store_id: storeId,
+    last_updated: new Date().toISOString().split('T')[0],
+  });
+  
+  const response: ApiResponse<VocData> = {
+    success: true,
+    data: newData,
+    message: 'VOC data created successfully',
+  };
+  
+  res.json(response);
+}));
+
+// DELETE /api/voc/data/:storeId/:id - Delete VOC data
+router.delete('/data/:storeId/:id', asyncHandler(async (req, res) => {
+  const { storeId, id } = req.params;
+  
+  const deleted = await dataService.delete('voc_data', id);
+  
+  if (!deleted) {
+    throw createError('VOC data not found', 404);
+  }
+  
+  const response: ApiResponse = {
+    success: true,
+    message: 'VOC data deleted successfully',
   };
   
   res.json(response);

@@ -2,19 +2,6 @@
   "store-us-main": {
     "seller_forums": [
       {
-        "id": "forum-store-us-main-1",
-        "title": "Amazon FBA Fee Changes Discussion",
-        "author": "Seller670",
-        "views": 39489,
-        "replies": 3592,
-        "likes": 11220,
-        "category": "FBA",
-        "created_at": "2025-12-10T15:09:39.423Z",
-        "last_activity": "2026-01-28T14:33:39.595Z",
-        "is_pinned": false,
-        "is_solved": false
-      },
-      {
         "id": "forum-store-us-main-2",
         "title": "Best Practices for Product Photography",
         "author": "Seller175",
@@ -133,18 +120,6 @@
       }
     ],
     "seller_news": [
-      {
-        "id": "news-store-us-main-1",
-        "title": "Amazon Announces New FBA Fee Structure for 2026",
-        "summary": "Important updates and information for Amazon sellers regarding amazon announces new fba fee structure for 2026.",
-        "views": 199975,
-        "comments": 2353,
-        "likes": 8941,
-        "category": "Marketing",
-        "published_at": "2026-01-05T15:09:39.424Z",
-        "is_featured": false,
-        "read_time": 2
-      },
       {
         "id": "news-store-us-main-2",
         "title": "Enhanced Brand Analytics Now Available",

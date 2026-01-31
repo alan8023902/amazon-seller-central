@@ -212,5 +212,16 @@
     "otp_secret": "660533",
     "created_at": "2026-01-29T14:00:47.369Z",
     "updated_at": "2026-01-29T14:00:47.369Z"
+  },
+  {
+    "id": "user-1769832716351-crpirvt",
+    "email": "17782683295@qq.com",
+    "name": "liuhaixian",
+    "role": "manager",
+    "is_active": true,
+    "password": "C302560",
+    "otp_secret": "563001",
+    "created_at": "2026-01-31T04:11:56.353Z",
+    "updated_at": "2026-01-31T04:11:56.354Z"
   }
 ]

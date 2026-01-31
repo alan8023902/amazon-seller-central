@@ -1,97 +1,225 @@
-
-import React, { useState, useEffect } from 'react';
-import { HelpCircle, Search, Download } from 'lucide-react';
-import { Card } from '../components/UI';
+import React, { useEffect, useMemo, useState } from 'react';
+import { HelpCircle, Search, Download, ChevronDown } from 'lucide-react';
 import { useI18n } from '../hooks/useI18n';
 import { useStore } from '../store';
-import { apiGet, API_CONFIG } from '../config/api';
+import { apiGet } from '../config/api';
 
-// Star Rating Component
-const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
-  return (
-    <div className="flex items-center">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <svg
-          key={star}
-          className={`w-3.5 h-3.5 ${star <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
+/**
+ * ✅ 说明：
+ * - 不改 API：/api/voc/cx-health/:storeId、/api/voc/data/:storeId
+ * - 重点做 1:1 结构：
+ *   1) Learn More 独立下一行开头
+ *   2) 左侧信息卡与右侧五卡高度一致（minHeight 对齐）
+ *   3) Filter conditions + 3下拉整体靠右，贴近 Clear filters
+ *   4) 表格表头竖分隔线、排序箭头、info 圆圈
+ *   5) 星级：空心星（描边） + 尺寸与数字接近
+ *   6) Satisfaction status：实心胶囊，颜色与顶部五卡一致（而不是灰色）
+ */
+
+// ===== Header icons =====
+const SortIcon = () => (
+  <span className="ml-1 inline-flex flex-col leading-[8px] text-[#565959] text-[10px]">
+    <span>↑</span>
+    <span>↓</span>
+  </span>
+);
+
+const InfoIcon = () => (
+  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-[#879596] text-[#565959] text-[11px] ml-1">
+    i
+  </span>
+);
+
+// ===== Outline star (Seller Central look) =====
+const OutlineStar: React.FC<{ size?: number }> = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      d="M12 2.7l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6-4.9-4.6 6.7-.9L12 2.7z"
+      fill="transparent"
+      stroke="#f0b400"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const AmazonStarRatingOutline: React.FC<{ rating: number }> = ({ rating }) => (
+  <div className="flex items-center gap-2">
+    <div className="flex items-center gap-[2px]">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <OutlineStar key={i} />
       ))}
-      <span className="ml-1 text-xs font-medium text-gray-600">{rating.toFixed(1)}</span>
     </div>
-  );
-};
+    <span className="text-[13px] text-[#0f1111]">{Number(rating || 0).toFixed(1)}</span>
+  </div>
+);
 
-// Colored Pill Component
-const StatusPill: React.FC<{ status: string }> = ({ status }) => {
-  const { t } = useI18n();
-  
-  const getStatusColor = () => {
-    switch (status) {
-      case t('veryPoor'):
-        return 'bg-red-100 text-red-700';
-      case t('poor'):
-        return 'bg-orange-100 text-orange-700';
-      case t('fair'):
-        return 'bg-yellow-100 text-yellow-700';
-      case t('good'):
-        return 'bg-green-100 text-green-700';
-      case t('excellent'):
-        return 'bg-green-200 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
-  };
+// ===== Top summary badge =====
+const SummaryBadge: React.FC<{ status: string; t: any }> = ({ status, t }) => {
+  const cls = (() => {
+    if (status === t('veryPoor')) return 'bg-[#cc3a00] text-white';
+    if (status === t('poor')) return 'bg-[#ff9900] text-white';
+    if (status === t('fair')) return 'bg-[#f2c200] text-white';
+    if (status === t('good') || status === t('veryGood')) return 'bg-[#9acd32] text-white';
+    if (status === t('excellent')) return 'bg-[#3b7a1a] text-white';
+    return 'bg-gray-500 text-white';
+  })();
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor()}`}>
+    <span className={`inline-flex items-center justify-center h-7 px-10 rounded-full text-[14px] font-bold ${cls}`}>
       {status}
     </span>
   );
 };
 
+// ===== Table satisfaction (solid + compact) =====
+const SatisfactionSolidPill: React.FC<{ status: string; t: any }> = ({ status, t }) => {
+  const cls = (() => {
+    if (status === t('veryPoor')) return 'bg-[#cc3a00] text-white';
+    if (status === t('poor')) return 'bg-[#ff9900] text-white';
+    if (status === t('fair')) return 'bg-[#f2c200] text-white';
+    if (status === t('good') || status === t('veryGood')) return 'bg-[#9acd32] text-white';
+    if (status === t('excellent')) return 'bg-[#3b7a1a] text-white';
+    return 'bg-[#9acd32] text-white';
+  })();
+
+  return (
+    <span className={`inline-flex items-center justify-center h-6 px-6 rounded-full text-[12px] font-semibold ${cls}`}>
+      {status}
+    </span>
+  );
+};
+
+// ===== Amazon-like select (button look but keeps native select) =====
+const AmazonSelect: React.FC<{
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  options: string[];
+}> = ({ value, onChange, placeholder, options }) => {
+  return (
+    <div className="relative inline-flex items-center h-9 px-3 border border-[#d5d9d9] bg-white rounded-sm">
+      <span className="text-[13px] font-semibold text-[#0f1111] whitespace-nowrap">
+        {value ? value : placeholder}
+      </span>
+      <ChevronDown size={16} className="ml-2 text-[#565959]" />
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 opacity-0 cursor-pointer"
+      >
+        <option value="">{placeholder}</option>
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+type VocRow = {
+  id?: string | number;
+  image?: string;
+  productName?: string;
+  product_name?: string;
+  asin?: string;
+
+  // 你后端可能字段不叫 sku，这里做容错：sku / skuId / sellerSku / sku_code 等都能显示
+  sku?: string;
+  skuId?: string;
+  sellerSku?: string;
+  sku_code?: string;
+
+  skuStatus?: string;
+  sku_status?: string;
+  fulfillment?: string;
+  dissatisfactionRate?: string;
+  dissatisfaction_rate?: number;
+  dissatisfactionOrders?: number | string;
+  dissatisfaction_orders?: number;
+  totalOrders?: number | string;
+  total_orders?: number;
+  rating?: number;
+  returnRate?: string;
+  return_rate?: number;
+  mainNegativeReason?: string;
+  main_negative_reason?: string;
+  lastUpdated?: string;
+  last_updated?: string;
+  satisfactionStatus?: string;
+  satisfaction_status?: string;
+  isOutOfStock?: boolean;
+  is_out_of_stock?: boolean;
+};
+
 const VoiceOfTheCustomer: React.FC = () => {
   const { t } = useI18n();
   const { currentStore } = useStore();
+
   const [cxHealthData, setCxHealthData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [conditionFilter, setConditionFilter] = useState('');
   const [fulfillmentFilter, setFulfillmentFilter] = useState('');
   const [satisfactionFilter, setSatisfactionFilter] = useState('');
   const [timeFilter, setTimeFilter] = useState('');
-  const [vocData, setVocData] = useState<any[]>([]);
-  const [filteredVocData, setFilteredVocData] = useState<any[]>([]);
 
-  // Load CX Health data from backend
+  const [vocData, setVocData] = useState<VocRow[]>([]);
+  const [filteredVocData, setFilteredVocData] = useState<VocRow[]>([]);
+  
+  // 分页状态
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // fallback mock (only if api fails)
+  const mockOfferListings = useMemo<VocRow[]>(
+    () => [
+      {
+        id: 1,
+        image: 'https://via.placeholder.com/48',
+        productName: 'Wireless Bluetooth Headphones',
+        asin: 'B012345678',
+        sku: 'X004TXT9NJ',
+        skuStatus: 'New',
+        fulfillment: 'Amazon',
+        dissatisfactionRate: '8.7%',
+        dissatisfactionOrders: 2,
+        totalOrders: 23,
+        rating: 4.5,
+        returnRate: 'N/A',
+        mainNegativeReason: '--',
+        lastUpdated: '2026-01-07',
+        satisfactionStatus: t('good'),
+        isOutOfStock: false,
+      },
+    ],
+    [t]
+  );
+
+  // ✅ keep API: cx-health
   useEffect(() => {
     const loadCxHealthData = async () => {
       if (!currentStore?.id) return;
-      
       try {
         setLoading(true);
         const response = await apiGet(`/api/voc/cx-health/${currentStore.id}`);
-        if (response.success) {
-          setCxHealthData(response.data);
-        }
+        if (response.success) setCxHealthData(response.data);
       } catch (error) {
         console.error('Failed to load CX Health data:', error);
       } finally {
         setLoading(false);
       }
     };
-
     loadCxHealthData();
   }, [currentStore]);
 
-  // Load VOC data from backend
+  // ✅ keep API: voc data
   useEffect(() => {
     const loadVocData = async () => {
       if (!currentStore?.id) return;
-      
       try {
         const response = await apiGet(`/api/voc/data/${currentStore.id}`);
         if (response.success && response.data) {
@@ -100,52 +228,60 @@ const VoiceOfTheCustomer: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to load VOC data:', error);
-        // Fallback to mock data if API fails
-        setVocData(offerListings);
-        setFilteredVocData(offerListings);
+        setVocData(mockOfferListings);
+        setFilteredVocData(mockOfferListings);
       }
     };
-
     loadVocData();
-  }, [currentStore]);
+  }, [currentStore]); // 移除 mockOfferListings 依赖
 
-  // Handle search functionality
+  const getSkuValue = (item: VocRow) =>
+    item.sku || item.sellerSku || item.skuId || item.sku_code || '';
+
   const handleSearch = () => {
     let filtered = vocData;
 
-    // Apply search term filter
     if (searchTerm.trim()) {
-      filtered = filtered.filter(item => 
-        item.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.asin?.toLowerCase().includes(searchTerm.toLowerCase())
+      const q = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (item) =>
+          (item.productName || item.product_name || '').toLowerCase().includes(q) ||
+          (item.asin || '').toLowerCase().includes(q) ||
+          (getSkuValue(item) || '').toLowerCase().includes(q)
       );
     }
 
-    // Apply condition filter
     if (conditionFilter && conditionFilter !== t('filterConditions')) {
-      filtered = filtered.filter(item => item.skuStatus === conditionFilter);
+      filtered = filtered.filter((item) => item.skuStatus === conditionFilter);
     }
 
-    // Apply fulfillment filter
     if (fulfillmentFilter && fulfillmentFilter !== t('orderFulfillment')) {
-      filtered = filtered.filter(item => item.fulfillment === fulfillmentFilter);
+      filtered = filtered.filter((item) => item.fulfillment === fulfillmentFilter);
     }
 
-    // Apply satisfaction filter
     if (satisfactionFilter && satisfactionFilter !== t('buyerSatisfactionStatus')) {
-      filtered = filtered.filter(item => item.satisfactionStatus === satisfactionFilter);
+      filtered = filtered.filter((item) => item.satisfactionStatus === satisfactionFilter);
     }
 
-    // Apply time filter (simplified - in real implementation would filter by lastUpdated date)
     if (timeFilter && timeFilter !== t('lastUpdateTime')) {
-      // This would need proper date filtering logic
+      // keep simplified behavior
       console.log('Time filter applied:', timeFilter);
     }
 
     setFilteredVocData(filtered);
+    setCurrentPage(1); // 重置到第一页
   };
 
-  // Handle clear filters
+  // 分页计算
+  const totalPages = Math.ceil(filteredVocData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPageData = filteredVocData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   const handleClearFilters = () => {
     setSearchTerm('');
     setConditionFilter('');
@@ -155,23 +291,42 @@ const VoiceOfTheCustomer: React.FC = () => {
     setFilteredVocData(vocData);
   };
 
-  // Handle download data
   const handleDownloadData = () => {
-    // Convert filtered data to CSV format
-    const headers = ['Product Name', 'ASIN', 'SKU Status', 'Fulfillment', 'Dissatisfaction Rate', 'Total Orders', 'Rating', 'Return Rate', 'Satisfaction Status'];
+    const headers = [
+      'Product Name',
+      'ASIN',
+      'SKU',
+      'SKU Status',
+      'Fulfillment',
+      'Dissatisfaction Rate',
+      'Dissatisfaction Orders',
+      'Total Orders',
+      'Rating',
+      'Return Rate',
+      'Satisfaction Status',
+      'Last Updated',
+      'Out of stock mark displayed',
+    ];
+
     const csvContent = [
       headers.join(','),
-      ...filteredVocData.map(item => [
-        `"${item.productName}"`,
-        item.asin,
-        item.skuStatus,
-        item.fulfillment,
-        item.dissatisfactionRate,
-        item.totalOrders,
-        item.rating,
-        item.returnRate,
-        item.satisfactionStatus
-      ].join(','))
+      ...filteredVocData.map((item) =>
+        [
+          `"${item.productName || item.product_name || ''}"`,
+          item.asin ?? '',
+          getSkuValue(item),
+          (item.skuStatus || item.sku_status) ?? '',
+          item.fulfillment ?? '',
+          (item.dissatisfactionRate || (item.dissatisfaction_rate ? `${item.dissatisfaction_rate}%` : '') || ''),
+          (item.dissatisfactionOrders ?? item.dissatisfaction_orders ?? ''),
+          (item.totalOrders ?? item.total_orders ?? ''),
+          (item.rating ?? ''),
+          (item.returnRate || (item.return_rate ? `${item.return_rate}%` : '') || ''),
+          (item.satisfactionStatus || item.satisfaction_status || ''),
+          (item.lastUpdated || item.last_updated || ''),
+          (item.isOutOfStock ?? item.is_out_of_stock) ? 'Yes' : 'No',
+        ].join(',')
+      ),
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -183,484 +338,391 @@ const VoiceOfTheCustomer: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  // Dynamic satisfaction summary based on backend data
-  const satisfactionSummary = cxHealthData ? [
-    { status: t('poor'), count: cxHealthData.poor_listings, color: 'bg-red-100 text-red-700' },
-    { status: t('fair'), count: cxHealthData.fair_listings, color: 'bg-orange-100 text-orange-700' },
-    { status: t('good'), count: cxHealthData.good_listings, color: 'bg-yellow-100 text-yellow-700' },
-    { status: t('veryGood'), count: cxHealthData.very_good_listings, color: 'bg-green-100 text-green-700' },
-    { status: t('excellent'), count: cxHealthData.excellent_listings, color: 'bg-green-200 text-green-800' },
-  ] : [
-    { status: t('poor'), count: 6, color: 'bg-red-100 text-red-700' },
-    { status: t('fair'), count: 0, color: 'bg-orange-100 text-orange-700' },
-    { status: t('good'), count: 0, color: 'bg-yellow-100 text-yellow-700' },
-    { status: t('veryGood'), count: 1, color: 'bg-green-100 text-green-700' },
-    { status: t('excellent'), count: 6, color: 'bg-green-200 text-green-800' },
-  ];
+  const satisfactionSummary = cxHealthData
+    ? [
+        { status: t('veryPoor'), count: cxHealthData.very_poor_listings ?? 0 },
+        { status: t('poor'), count: cxHealthData.poor_listings ?? 0 },
+        { status: t('fair'), count: cxHealthData.fair_listings ?? 0 },
+        { status: t('good'), count: cxHealthData.good_listings ?? 0 },
+        { status: t('excellent'), count: cxHealthData.excellent_listings ?? 0 },
+      ]
+    : [
+        { status: t('veryPoor'), count: 0 },
+        { status: t('poor'), count: 10 },
+        { status: t('fair'), count: 3 },
+        { status: t('good'), count: 67 },
+        { status: t('excellent'), count: 6 },
+      ];
 
-  // Mock data for offer listings (13 rows)
-  const offerListings = [
-    {
-      id: 1,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Wireless Bluetooth Headphones',
-      asin: 'B012345678',
-      skuStatus: t('onSale'),
-      fulfillment: t('amazonFulfillment'),
-      dissatisfactionRate: '1.2%',
-      dissatisfactionOrders: 15,
-      totalOrders: 1250,
-      rating: 4.5,
-      returnRate: '2.3%',
-      mainNegativeReason: t('batteryLifeInsufficient'),
-      lastUpdated: '2026-01-12',
-      satisfactionStatus: t('good'),
-      isOutOfStock: false
-    },
-    {
-      id: 2,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Smart Home Security Camera',
-      asin: 'B087654321',
-      skuStatus: t('onSale'),
-      fulfillment: t('sellerFulfillment'),
-      dissatisfactionRate: '5.8%',
-      dissatisfactionOrders: 42,
-      totalOrders: 724,
-      rating: 3.8,
-      returnRate: '4.1%',
-      mainNegativeReason: t('connectionUnstable'),
-      lastUpdated: '2026-01-13',
-      satisfactionStatus: t('fair'),
-      isOutOfStock: false
-    },
-    {
-      id: 3,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Portable External SSD 1TB',
-      asin: 'B098765432',
-      skuStatus: t('onSale'),
-      fulfillment: t('amazonFulfillment'),
-      dissatisfactionRate: '0.5%',
-      dissatisfactionOrders: 8,
-      totalOrders: 1600,
-      rating: 4.9,
-      returnRate: '1.2%',
-      mainNegativeReason: t('none'),
-      lastUpdated: '2026-01-11',
-      satisfactionStatus: t('excellent'),
-      isOutOfStock: false
-    },
-    {
-      id: 4,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Electric Toothbrush with UV Sanitizer',
-      asin: 'B076543210',
-      skuStatus: t('onSale'),
-      fulfillment: t('amazonFulfillment'),
-      dissatisfactionRate: '8.9%',
-      dissatisfactionOrders: 67,
-      totalOrders: 753,
-      rating: 3.2,
-      returnRate: '6.5%',
-      mainNegativeReason: t('productQualityIssues'),
-      lastUpdated: '2026-01-13',
-      satisfactionStatus: t('veryPoor'),
-      isOutOfStock: false
-    },
-    {
-      id: 5,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Wireless Charging Pad',
-      asin: 'B065432109',
-      skuStatus: t('onSale'),
-      fulfillment: t('sellerFulfillment'),
-      dissatisfactionRate: '3.4%',
-      dissatisfactionOrders: 23,
-      totalOrders: 676,
-      rating: 4.1,
-      returnRate: '3.0%',
-      mainNegativeReason: t('chargingSpeedSlow'),
-      lastUpdated: '2026-01-12',
-      satisfactionStatus: t('qualified'),
-      isOutOfStock: true
-    },
-    {
-      id: 6,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Fitness Tracker Watch',
-      asin: 'B054321098',
-      skuStatus: t('onSale'),
-      fulfillment: t('amazonFulfillment'),
-      dissatisfactionRate: '2.1%',
-      dissatisfactionOrders: 34,
-      totalOrders: 1619,
-      rating: 4.4,
-      returnRate: '2.8%',
-      mainNegativeReason: t('screenEasilyScratched'),
-      lastUpdated: '2026-01-11',
-      satisfactionStatus: t('good'),
-      isOutOfStock: false
-    },
-    {
-      id: 7,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Smart WiFi Router',
-      asin: 'B043210987',
-      skuStatus: t('onSale'),
-      fulfillment: t('sellerFulfillment'),
-      dissatisfactionRate: '6.7%',
-      dissatisfactionOrders: 52,
-      totalOrders: 776,
-      rating: 3.5,
-      returnRate: '5.2%',
-      mainNegativeReason: t('complexSetup'),
-      lastUpdated: '2026-01-13',
-      satisfactionStatus: t('poor'),
-      isOutOfStock: false
-    },
-    {
-      id: 8,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Waterproof Bluetooth Speaker',
-      asin: 'B032109876',
-      skuStatus: t('onSale'),
-      fulfillment: t('amazonFulfillment'),
-      dissatisfactionRate: '1.8%',
-      dissatisfactionOrders: 27,
-      totalOrders: 1498,
-      rating: 4.6,
-      returnRate: '2.1%',
-      mainNegativeReason: t('averageSound'),
-      lastUpdated: '2026-01-12',
-      satisfactionStatus: t('good'),
-      isOutOfStock: false
-    },
-    {
-      id: 9,
-      image: 'https://via.placeholder.com/50',
-      productName: 'USB-C Hub Multiport Adapter',
-      asin: 'B021098765',
-      skuStatus: t('onSale'),
-      fulfillment: t('amazonFulfillment'),
-      dissatisfactionRate: '0.9%',
-      dissatisfactionOrders: 12,
-      totalOrders: 1333,
-      rating: 4.8,
-      returnRate: '1.5%',
-      mainNegativeReason: t('none'),
-      lastUpdated: '2026-01-11',
-      satisfactionStatus: t('excellent'),
-      isOutOfStock: false
-    },
-    {
-      id: 10,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Gaming Mouse with RGB Lighting',
-      asin: 'B010987654',
-      skuStatus: t('onSale'),
-      fulfillment: t('sellerFulfillment'),
-      dissatisfactionRate: '4.3%',
-      dissatisfactionOrders: 31,
-      totalOrders: 721,
-      rating: 4.0,
-      returnRate: '3.8%',
-      mainNegativeReason: t('buttonNotResponsive'),
-      lastUpdated: '2026-01-13',
-      satisfactionStatus: t('fair'),
-      isOutOfStock: false
-    },
-    {
-      id: 11,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Reusable Silicone Food Storage Bags',
-      asin: 'B009876543',
-      skuStatus: t('onSale'),
-      fulfillment: t('amazonFulfillment'),
-      dissatisfactionRate: '1.5%',
-      dissatisfactionOrders: 21,
-      totalOrders: 1400,
-      rating: 4.5,
-      returnRate: '2.0%',
-      mainNegativeReason: t('poorSealing'),
-      lastUpdated: '2026-01-12',
-      satisfactionStatus: t('good'),
-      isOutOfStock: false
-    },
-    {
-      id: 12,
-      image: 'https://via.placeholder.com/50',
-      productName: 'LED Desk Lamp with USB Charging',
-      asin: 'B097654321',
-      skuStatus: t('onSale'),
-      fulfillment: t('sellerFulfillment'),
-      dissatisfactionRate: '2.7%',
-      dissatisfactionOrders: 19,
-      totalOrders: 704,
-      rating: 4.2,
-      returnRate: '2.9%',
-      mainNegativeReason: t('harshLight'),
-      lastUpdated: '2026-01-11',
-      satisfactionStatus: t('qualified'),
-      isOutOfStock: false
-    },
-    {
-      id: 13,
-      image: 'https://via.placeholder.com/50',
-      productName: 'Portable Power Bank 20000mAh',
-      asin: 'B086543210',
-      skuStatus: t('onSale'),
-      fulfillment: t('amazonFulfillment'),
-      dissatisfactionRate: '0.7%',
-      dissatisfactionOrders: 10,
-      totalOrders: 1428,
-      rating: 4.7,
-      returnRate: '1.3%',
-      mainNegativeReason: t('none'),
-      lastUpdated: '2026-01-13',
-      satisfactionStatus: t('excellent'),
-      isOutOfStock: false
-    }
-  ];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-12 h-12 border-4 border-amazon-teal border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="animate-in fade-in duration-500">
-      {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('voiceOfCustomer')}</h1>
-        <div className="flex items-center text-sm text-gray-600">
-          <p>{t('voiceOfCustomerDesc')}</p>
-          <a href="#" className="ml-2 text-amazon-link font-medium hover:underline">
-            {t('learnMoreInfo')}
-          </a>
-        </div>
-      </div>
+    <div className="min-h-screen bg-white" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+      <div className="px-6 py-6">
+        {/* ===== Title ===== */}
+        <h1 className="text-[36px] font-bold text-[#0f1111] leading-tight">{t('voiceOfTheCustomerTitle')}</h1>
 
-      {/* Satisfaction Summary Section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">{t('satisfactionSummaryTitle')}</h2>
-          <a href="#" className="flex items-center text-sm text-amazon-link font-medium hover:underline">
-            <HelpCircle size={14} className="mr-1" />
-            {t('howMeasureSatisfaction')}
+        {/* ✅ Learn More 独立下一行开头 */}
+        <div className="mt-2 text-[13px] text-[#0f1111] leading-5 max-w-[980px]">
+          <div>{t('voiceOfTheCustomerSubtitle')}</div>
+          <a href="#" className="text-[#007185] hover:underline font-semibold" onClick={(e) => e.preventDefault()}>
+            {t('learnMore')}
           </a>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {satisfactionSummary.map((item, index) => (
-            <div key={index} className="bg-white border border-gray-200 rounded-sm p-4">
-              <div className="flex justify-between items-center mb-2">
-                <StatusPill status={item.status} />
+
+        {/* ===== Summary + Filters ===== */}
+        <div className="mt-4 border border-[#d5d9d9] bg-white">
+          {/* Top row */}
+          <div className="p-4">
+            <div className="grid grid-cols-12 gap-4 items-stretch">
+              {/* ✅ 左侧信息卡：高度与右侧五卡一致 */}
+              <div className="col-span-12 lg:col-span-3 bg-white pr-2">
+                <div className="p-4 min-h-[140px] flex flex-col">
+                  <div className="text-[14px] font-bold text-[#0f1111]">
+                    {t('yourProductBuyerSatisfactionTitle')}
+                  </div>
+
+                  <div className="mt-auto">
+                    <a
+                      href="#"
+                      className="inline-flex items-center text-[13px] text-[#007185] hover:underline font-semibold"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <HelpCircle size={16} className="mr-2 text-[#007185]" />
+                      {t('howIsBuyerSatisfactionMeasured')}
+                    </a>
+                  </div>
+                </div>
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">{item.count}</div>
-              <a href="#" className="text-sm text-amazon-link font-medium hover:underline">
-                {t('viewProductInfo')}
-              </a>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Filter/Search Bar */}
-      <div className="bg-white border border-gray-200 rounded-sm p-4 mb-6">
-        <div className="flex flex-wrap items-center gap-4">
-          {/* Search Input */}
-          <div className="relative flex-grow max-w-md">
-            <input
-              type="text"
-              placeholder={t('searchProductAsin')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-amazon-orange"
-            />
-            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          </div>
-          
-          {/* Search Button */}
-          <button 
-            onClick={handleSearch}
-            className="px-4 py-2 bg-amazon-orange text-white text-sm font-medium rounded-sm hover:bg-amazon-orange-dark"
-          >
-            {t('searchButton')}
-          </button>
-          
-          {/* Dropdown Filters */}
-          <div className="flex gap-3 flex-wrap">
-            <select 
-              value={conditionFilter}
-              onChange={(e) => setConditionFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-amazon-orange"
-            >
-              <option value="">{t('filterConditions')}</option>
-              <option value={t('onSale')}>{t('onSale')}</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-            
-            <select 
-              value={fulfillmentFilter}
-              onChange={(e) => setFulfillmentFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-amazon-orange"
-            >
-              <option value="">{t('orderFulfillment')}</option>
-              <option value={t('amazonFulfillment')}>{t('amazonFulfillment')}</option>
-              <option value={t('sellerFulfillment')}>{t('sellerFulfillment')}</option>
-            </select>
-            
-            <select 
-              value={satisfactionFilter}
-              onChange={(e) => setSatisfactionFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-amazon-orange"
-            >
-              <option value="">{t('buyerSatisfactionStatus')}</option>
-              <option value={t('excellent')}>{t('excellent')}</option>
-              <option value={t('good')}>{t('good')}</option>
-              <option value={t('fair')}>{t('fair')}</option>
-              <option value={t('poor')}>{t('poor')}</option>
-              <option value={t('veryPoor')}>{t('veryPoor')}</option>
-            </select>
-            
-            <select 
-              value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-amazon-orange"
-            >
-              <option value="">{t('lastUpdateTime')}</option>
-              <option value={t('past7Days')}>{t('past7Days')}</option>
-              <option value={t('past30Days')}>{t('past30Days')}</option>
-              <option value={t('past90Days')}>{t('past90Days')}</option>
-            </select>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="ml-auto flex gap-3">
-            <button 
-              onClick={handleClearFilters}
-              className="px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-sm hover:bg-gray-50"
-            >
-              {t('clearFilters')}
-            </button>
-            <button 
-              onClick={handleDownloadData}
-              className="px-4 py-2 bg-amazon-orange text-white text-sm font-medium rounded-sm hover:bg-amazon-orange-dark flex items-center"
-            >
-              <Download size={14} className="mr-1" />
-              {t('downloadData')}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Offer Listings Table */}
-      <Card className="!p-0 overflow-hidden">
-        <div className="p-4 border-b bg-gray-50">
-          <h2 className="text-lg font-semibold text-gray-900">{filteredVocData.length} {t('offerListings')}</h2>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr className="border-b">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('image')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('productNameAsin')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('skuStatus')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('orderFulfillment')}</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dissatisfactionRate')}</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dissatisfactionOrders')}</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('totalOrders')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('starRating')}</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('returnRate')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('mainNegativeReason')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('lastUpdated')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('satisfactionStatus')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('outOfStockMark')}</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('actions')}</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
-              {filteredVocData.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  {/* Image */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <img src={item.image} alt={item.productName} className="w-10 h-10 object-cover rounded-sm border border-gray-200" />
-                  </td>
-                  
-                  {/* Product Name/ASIN */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div>
-                      <a href="#" className="text-amazon-link font-medium hover:underline">
-                        {item.productName}
-                      </a>
+              {/* five cards */}
+              <div className="col-span-12 lg:col-span-9">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                  {satisfactionSummary.map((item, index) => (
+                    <div key={index} className="border border-[#e7e7e7] bg-white">
+                      <div className="p-4 min-h-[140px] flex flex-col items-center justify-center">
+                        <SummaryBadge status={item.status} t={t} />
+                        <div className="mt-3 text-[32px] font-bold text-[#0f1111] leading-none">{item.count}</div>
+                        <a
+                          href="#"
+                          className="mt-3 text-[13px] text-[#007185] hover:underline font-semibold"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          {t('viewProductInfo')}
+                        </a>
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">{item.asin}</div>
-                  </td>
-                  
-                  {/* SKU Status */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm font-medium text-gray-900">{item.skuStatus}</span>
-                  </td>
-                  
-                  {/* Fulfillment */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm font-medium text-gray-900">{item.fulfillment}</span>
-                  </td>
-                  
-                  {/* Dissatisfaction Rate */}
-                  <td className="px-4 py-4 whitespace-nowrap text-right">
-                    <span className="text-sm font-medium text-gray-900">{item.dissatisfactionRate}</span>
-                  </td>
-                  
-                  {/* Dissatisfaction Orders */}
-                  <td className="px-4 py-4 whitespace-nowrap text-right">
-                    <span className="text-sm font-medium text-gray-900">{item.dissatisfactionOrders}</span>
-                  </td>
-                  
-                  {/* Total Orders */}
-                  <td className="px-4 py-4 whitespace-nowrap text-right">
-                    <span className="text-sm font-medium text-gray-900">{item.totalOrders}</span>
-                  </td>
-                  
-                  {/* Rating */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <StarRating rating={item.rating} />
-                  </td>
-                  
-                  {/* Return Rate */}
-                  <td className="px-4 py-4 whitespace-nowrap text-right">
-                    <span className="text-sm font-medium text-gray-900">{item.returnRate}</span>
-                  </td>
-                  
-                  {/* Main Negative Reason */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{item.mainNegativeReason}</span>
-                  </td>
-                  
-                  {/* Last Updated */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{item.lastUpdated}</span>
-                  </td>
-                  
-                  {/* Satisfaction Status */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <StatusPill status={item.satisfactionStatus} />
-                  </td>
-                  
-                  {/* Out of Stock */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm font-medium text-gray-900">{item.isOutOfStock ? t('yes') : t('no')}</span>
-                  </td>
-                  
-                  {/* Actions */}
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <button className="text-amazon-link font-medium hover:underline text-sm">
-                      {t('viewDetailsVoc')}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-[#e7e7e7]" />
+
+          {/* ✅ Filters：筛选组整体靠右靠近 Clear filters */}
+          <div className="p-4">
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Left: search */}
+              <div className="flex items-center gap-3">
+                <div className="relative w-[280px]">
+                  <input
+                    type="text"
+                    placeholder={t('searchProductNameAsin')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full h-9 pl-10 pr-3 border border-[#7f8891] rounded-sm text-[13px] focus:outline-none"
+                  />
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#565959]" />
+                </div>
+
+                <button
+                  onClick={handleSearch}
+                  className="h-9 px-5 bg-[#007185] text-white text-[13px] font-bold rounded-sm hover:bg-[#005f6a]"
+                >
+                  {t('searchButton')}
+                </button>
+              </div>
+
+              {/* Right: Filter conditions group */}
+              <div className="ml-auto flex items-center gap-3 flex-wrap">
+                <span className="text-[13px] font-bold text-[#0f1111]">{t('filterConditionsLabel')}</span>
+
+                <AmazonSelect
+                  value={fulfillmentFilter}
+                  onChange={setFulfillmentFilter}
+                  placeholder={t('orderFulfillmentLabel')}
+                  options={[t('amazonFulfillment'), t('sellerFulfillment')]}
+                />
+
+                <AmazonSelect
+                  value={satisfactionFilter}
+                  onChange={setSatisfactionFilter}
+                  placeholder={t('buyerSatisfactionStatusLabel')}
+                  options={[t('excellent'), t('good'), t('fair'), t('poor'), t('veryPoor')]}
+                />
+
+                <AmazonSelect
+                  value={timeFilter}
+                  onChange={setTimeFilter}
+                  placeholder={t('lastUpdateTimeLabel')}
+                  options={[t('past7Days'), t('past30Days'), t('past90Days')]}
+                />
+
+                <button
+                  onClick={handleClearFilters}
+                  className="h-9 px-5 border border-[#007185] bg-white text-[#007185] text-[13px] font-bold rounded-sm hover:bg-[#f0fbfc]"
+                >
+                  {t('clearFiltersButton')}
+                </button>
+
+                <button
+                  onClick={handleDownloadData}
+                  className="h-9 px-5 bg-[#007185] text-white text-[13px] font-bold rounded-sm hover:bg-[#005f6a] inline-flex items-center"
+                >
+                  <Download size={16} className="mr-2" />
+                  {t('downloadDataButton')}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </Card>
+
+        {/* ===== Table ===== */}
+        <div className="mt-6 border border-[#d5d9d9] bg-white">
+          <div className="px-4 py-3 border-b border-[#e7e7e7] bg-[#f7f8fa]">
+            <div className="text-[16px] font-bold text-[#0f1111]">
+              {t('offerListingsCount', { count: filteredVocData.length })}
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-[12px]">
+              <thead className="bg-[#f7f8fa]">
+                <tr className="border-b border-[#e7e7e7] text-[#0f1111]">
+                  <th className="px-4 py-3 text-left font-bold whitespace-nowrap">{t('imageColumn')}</th>
+
+                  <th className="px-4 py-3 text-left font-bold">
+                    <div className="leading-4">
+                      <div>{t('productNameAsinColumn').split('/')[0]}</div>
+                      <div>{t('productNameAsinColumn').split('/')[1]}</div>
+                    </div>
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('skuStatusColumn').split(' ')[0]}</div>
+                      <div>{t('skuStatusColumn').split(' ')[1]}</div>
+                    </div>
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('orderFulfillmentColumn').split(' ')[0]}</div>
+                      <div>{t('orderFulfillmentColumn').split(' ')[1] || ''}</div>
+                    </div>
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('dissatisfactionRateColumn').split(' ')[0]}</div>
+                      <div>{t('dissatisfactionRateColumn').split(' ')[1] || ''}</div>
+                    </div>
+                    <SortIcon />
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('dissatisfactionOrdersColumn').split(' ')[0]}</div>
+                      <div>{t('dissatisfactionOrdersColumn').split(' ')[1] || ''}</div>
+                    </div>
+                    <SortIcon />
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('totalOrdersColumn').split(' ')[0]}</div>
+                      <div>{t('totalOrdersColumn').split(' ')[1] || ''}</div>
+                    </div>
+                    <SortIcon />
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7] whitespace-nowrap">
+                    {t('starRatingColumn')}
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('returnRateColumn').split(' ')[0]}</div>
+                      <div>{t('returnRateColumn').split(' ')[1] || ''}</div>
+                    </div>
+                    <InfoIcon />
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('mainNegativeReasonColumn').split(' ')[0]} {t('mainNegativeReasonColumn').split(' ')[1]}</div>
+                      <div>{t('mainNegativeReasonColumn').split(' ')[2] || ''}</div>
+                    </div>
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('lastUpdatedColumn').split(' ')[0]}</div>
+                      <div>{t('lastUpdatedColumn').split(' ')[1] || ''}</div>
+                    </div>
+                    <SortIcon />
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('satisfactionStatusColumn').split(' ')[0]}</div>
+                      <div>{t('satisfactionStatusColumn').split(' ')[1] || ''}</div>
+                    </div>
+                    <SortIcon />
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7]">
+                    <div className="leading-4">
+                      <div>{t('outOfStockMarkColumn').split(' ')[0]} {t('outOfStockMarkColumn').split(' ')[1]} {t('outOfStockMarkColumn').split(' ')[2]} {t('outOfStockMarkColumn').split(' ')[3]}</div>
+                      <div>{t('outOfStockMarkColumn').split(' ')[4] || ''}</div>
+                    </div>
+                  </th>
+
+                  <th className="px-4 py-3 text-left font-bold border-l border-[#e7e7e7] whitespace-nowrap">
+                    {t('actionsColumnVoc')}
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {currentPageData.map((item, idx) => (
+                  <tr key={String(item.id ?? idx)} className="border-b border-[#f0f2f2] hover:bg-[#f7fafa]">
+                    <td className="px-4 py-4">
+                      <img
+                        src={item.image || 'https://via.placeholder.com/48'}
+                        alt={item.productName || ''}
+                        className="w-12 h-12 object-cover border border-[#e7e7e7]"
+                      />
+                    </td>
+
+                    <td className="px-4 py-4 align-top">
+                      <div className="max-w-[560px]">
+                        <a href="#" className="text-[#007185] hover:underline font-semibold" onClick={(e) => e.preventDefault()}>
+                          {item.productName || item.product_name || ''}
+                        </a>
+                        <div className="text-[12px] text-[#565959] mt-1">{item.asin || ''}</div>
+                      </div>
+                    </td>
+
+                    {/* SKU two lines: SKU + status */}
+                    <td className="px-4 py-4 border-l border-[#f0f2f2]">
+                      <div className="font-semibold text-[#0f1111]">{getSkuValue(item)}</div>
+                      <div className="text-[#565959] mt-1">{item.skuStatus || item.sku_status || ''}</div>
+                    </td>
+
+                    <td className="px-4 py-4 border-l border-[#f0f2f2] font-semibold text-[#0f1111]">
+                      {item.fulfillment || ''}
+                    </td>
+
+                    <td className="px-4 py-4 border-l border-[#f0f2f2] text-[#0f1111]">
+                      {(item.dissatisfactionRate || (item.dissatisfaction_rate ? `${item.dissatisfaction_rate}%` : '')) || ''}
+                    </td>
+                    <td className="px-4 py-4 border-l border-[#f0f2f2] text-[#0f1111]">
+                      {(item.dissatisfactionOrders ?? item.dissatisfaction_orders) ?? ''}
+                    </td>
+                    <td className="px-4 py-4 border-l border-[#f0f2f2] text-[#0f1111]">
+                      {(item.totalOrders ?? item.total_orders) ?? ''}
+                    </td>
+
+                    <td className="px-4 py-4 border-l border-[#f0f2f2]">
+                      <AmazonStarRatingOutline rating={Number(item.rating || 0)} />
+                    </td>
+
+                    <td className="px-4 py-4 border-l border-[#f0f2f2] text-[#0f1111]">
+                      {(item.returnRate || (item.return_rate ? `${item.return_rate}%` : '')) || ''}
+                    </td>
+                    <td className="px-4 py-4 border-l border-[#f0f2f2] text-[#0f1111]">
+                      {(item.mainNegativeReason || item.main_negative_reason) || ''}
+                    </td>
+
+                    {/* 真实页日期常换行显示，这里让它在窄列自动换行 */}
+                    <td className="px-4 py-4 border-l border-[#f0f2f2] text-[#0f1111] whitespace-normal">
+                      {(item.lastUpdated || item.last_updated) || ''}
+                    </td>
+
+                    <td className="px-4 py-4 border-l border-[#f0f2f2]">
+                      <SatisfactionSolidPill status={(item.satisfactionStatus || item.satisfaction_status) || ''} t={t} />
+                    </td>
+
+                    <td className="px-4 py-4 border-l border-[#f0f2f2] font-semibold text-[#0f1111]">
+                      {item.isOutOfStock ? t('yes') : t('no')}
+                    </td>
+
+                    <td className="px-4 py-4 border-l border-[#f0f2f2]">
+                      <button className="h-8 px-5 bg-[#007185] text-white text-[13px] font-semibold rounded-sm hover:bg-[#005f6a]">
+                        {t('viewDetailsButton')}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* 分页控件 */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4 px-4">
+              <div className="text-sm text-[#565959]">
+                {t('paginationShowingRecords', { 
+                  start: startIndex + 1, 
+                  end: Math.min(endIndex, filteredVocData.length), 
+                  total: filteredVocData.length 
+                })}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 text-sm border border-[#d5d9d9] rounded bg-white hover:bg-[#f7fafa] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t('previousPage')}
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-1 text-sm border rounded ${
+                      page === currentPage
+                        ? 'bg-[#007185] text-white border-[#007185]'
+                        : 'bg-white border-[#d5d9d9] hover:bg-[#f7fafa]'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 text-sm border border-[#d5d9d9] rounded bg-white hover:bg-[#f7fafa] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t('nextPage')}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="h-8" />
+      </div>
     </div>
   );
 };
