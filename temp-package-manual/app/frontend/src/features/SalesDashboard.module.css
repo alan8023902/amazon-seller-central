@@ -1,0 +1,477 @@
+/* Sales Dashboard专用样式文件 */
+
+/* 全局容器 */
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* 顶部信息通知条 */
+.banner {
+  background-color: #EBF7FF;
+  border: 1px solid #B3D7FF;
+  border-radius: 2px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  border-left: 4px solid #007185;
+}
+
+.bannerIcon {
+  margin-right: 12px;
+  color: #007185;
+  flex-shrink: 0;
+}
+
+.bannerContent {
+  flex: 1;
+  font-size: 13px;
+  line-height: 18px;
+  color: #0F1111;
+}
+
+.bannerClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #565959;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+
+.bannerClose:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.bannerLink {
+  color: #007185;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.bannerLink:hover {
+  text-decoration: underline;
+}
+
+/* 页面标题与右侧按钮 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 0;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.title {
+  font-size: 42px;
+  font-weight: 350;
+  color: #0F1111;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleLink {
+  font-size: 14px;
+  color: #007185;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+.titleLink:hover {
+  text-decoration: underline;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.button {
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.refreshButton {
+  background-color: white;
+  color: #0F1111;
+}
+
+.refreshButton:hover {
+  background-color: #F7F8F8;
+  border-color: #B0BEC5;
+}
+
+.downloadButton {
+  background-color: #007185;
+  color: white;
+  border-color: #007185;
+}
+
+.downloadButton:hover {
+  background-color: #005F6B;
+  border-color: #005F6B;
+}
+
+.iconButton {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background-color: white;
+  color: #565959;
+  justify-content: center;
+}
+
+.iconButton:hover {
+  background-color: #F7F8F8;
+  border-color: #B0BEC5;
+}
+
+/* Business Performance Insights卡片 */
+.insightsCard {
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  background-color: white;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.insightsHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid #D5DBDB;
+  background-color: #F8F8F8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.insightsTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0F1111;
+  margin: 0;
+}
+
+.expandIcon {
+  font-size: 14px;
+  color: #565959;
+  cursor: pointer;
+}
+
+.insightsContent {
+  padding: 16px;
+  font-size: 13px;
+  line-height: 18px;
+  color: #0F1111;
+}
+
+.insightsFooter {
+  padding: 12px 16px;
+  border-top: 1px solid #D5DBDB;
+  background-color: #F8F8F8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feedbackText {
+  font-size: 12px;
+  color: #565959;
+}
+
+.feedbackButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.feedbackButton {
+  background: none;
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #565959;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.feedbackButton:hover {
+  background-color: #F7F8F8;
+  border-color: #B0BEC5;
+}
+
+/* 过滤器工具条 */
+.filtersBar {
+  background-color: #F2F3F3;
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  padding: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.filterLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #565959;
+  text-transform: uppercase;
+}
+
+.filterControl {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.select {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  background-color: white;
+  font-size: 13px;
+  color: #0F1111;
+  min-width: 150px;
+}
+
+.dateInput {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  background-color: white;
+  font-size: 13px;
+  color: #0F1111;
+  width: 120px;
+}
+
+.applyButton {
+  height: 28px;
+  padding: 0 16px;
+  background-color: #007185;
+  color: white;
+  border: 1px solid #007185;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-self: flex-end;
+}
+
+.applyButton:hover {
+  background-color: #005F6B;
+  border-color: #005F6B;
+}
+
+/* Sales Snapshot */
+.snapshotCard {
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  background-color: white;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.snapshotHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid #D5DBDB;
+  background-color: #F8F8F8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.snapshotTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0F1111;
+  margin: 0;
+}
+
+.snapshotSubtitle {
+  font-size: 12px;
+  color: #565959;
+  margin: 0;
+}
+
+.snapshotGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+}
+
+.snapshotItem {
+  padding: 16px;
+  border-right: 1px solid #D5DBDB;
+  border-bottom: 1px solid #D5DBDB;
+  text-align: center;
+}
+
+.snapshotItem:last-child {
+  border-right: none;
+}
+
+.snapshotLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #565959;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.snapshotValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0F1111;
+  margin-bottom: 4px;
+}
+
+.snapshotDescription {
+  font-size: 12px;
+  color: #565959;
+}
+
+/* Compare Sales */
+.compareCard {
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  background-color: white;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.compareHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid #D5DBDB;
+  background-color: #F8F8F8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.compareTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0F1111;
+  margin: 0;
+}
+
+.viewToggle {
+  display: flex;
+  border: 1px solid #D5DBDB;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.viewButton {
+  padding: 6px 12px;
+  background-color: white;
+  border: none;
+  font-size: 13px;
+  color: #0F1111;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewButton.active {
+  background-color: #007185;
+  color: white;
+}
+
+.viewButton:not(.active):hover {
+  background-color: #F7F8F8;
+}
+
+.compareContent {
+  padding: 16px;
+}
+
+/* 响应式适配 */
+@media (max-width: 1200px) {
+  .snapshotGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .snapshotItem {
+    border-right: none;
+    border-bottom: 1px solid #D5DBDB;
+  }
+  
+  .snapshotItem:nth-child(2n) {
+    border-right: 1px solid #D5DBDB;
+  }
+  
+  .filtersBar {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .filterGroup {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .applyButton {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .title {
+    font-size: 32px;
+  }
+  
+  .snapshotGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .snapshotItem {
+    border-right: none !important;
+  }
+}

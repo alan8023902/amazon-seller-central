@@ -1,0 +1,50 @@
+[
+  {
+    "id": "tax-info-store-us-main",
+    "store_id": "store-us-main",
+    "legal_business_name": "TechNest LLC",
+    "place_of_establishment": "1234 Business Ave, Suite 100, New York, NY 10001, United States",
+    "vat_registration_number": "US123456789",
+    "rfc_id": "",
+    "tax_interview_completed": true,
+    "tax_information_complete": true,
+    "updated_at": "2026-01-29T00:17:11.052Z",
+    "created_at": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "tax-info-jp-main",
+    "store_id": "store-jp-main",
+    "legal_business_name": "TechNest Japan KK",
+    "place_of_establishment": "東京都渋谷区渋谷1-1-1, 日本",
+    "vat_registration_number": "JP987654321",
+    "rfc_id": "",
+    "tax_interview_completed": true,
+    "tax_information_complete": true,
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-01-20T10:00:00.000Z"
+  },
+  {
+    "id": "tax-info-uk-main",
+    "store_id": "store-uk-main",
+    "legal_business_name": "TechNest UK Ltd",
+    "place_of_establishment": "123 Business Street, London, EC1A 1BB, United Kingdom",
+    "vat_registration_number": "GB123456789",
+    "rfc_id": "",
+    "tax_interview_completed": true,
+    "tax_information_complete": true,
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-01-20T10:00:00.000Z"
+  },
+  {
+    "id": "tax-info-de-main",
+    "store_id": "store-de-main",
+    "legal_business_name": "TechNest Deutschland GmbH",
+    "place_of_establishment": "Musterstraße 123, 10115 Berlin, Deutschland",
+    "vat_registration_number": "DE123456789",
+    "rfc_id": "",
+    "tax_interview_completed": true,
+    "tax_information_complete": true,
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-01-20T10:00:00.000Z"
+  }
+]

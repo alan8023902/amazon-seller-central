@@ -1,0 +1,45 @@
+
+{
+  "salesToday": 15420.50,
+  "openOrders": 142,
+  "messages": 0,
+  "inventory": [
+    {
+      "id": "mock-101",
+      "name": "Amazon Basics Ergonomic Wireless PC Mouse - Black",
+      "sku": "AB-MOUSE-001",
+      "asin": "B00KMPB8W8",
+      "status": "Active",
+      "price": 14.99,
+      "units": 850,
+      "image": "https://picsum.photos/100/100?random=11"
+    },
+    {
+      "id": "mock-102",
+      "name": "Sony WH-1000XM5 Wireless Industry Leading Noise Canceling Headphones",
+      "sku": "SONY-WH-XM5-SLV",
+      "asin": "B09XS7JWHH",
+      "status": "Active",
+      "price": 398.00,
+      "units": 42,
+      "image": "https://picsum.photos/100/100?random=12"
+    },
+    {
+      "id": "mock-103",
+      "name": "Apple 2023 MacBook Pro Laptop M3 Pro chip",
+      "sku": "AAPL-MBP-M3P",
+      "asin": "B0CM5N3K6Z",
+      "status": "Active",
+      "price": 2499.00,
+      "units": 15,
+      "image": "https://picsum.photos/100/100?random=13"
+    }
+  ],
+  "salesHistory": [
+    { "time": "00:00", "today": 1200, "lastYear": 850 },
+    { "time": "06:00", "today": 4500, "lastYear": 3200 },
+    { "time": "12:00", "today": 9800, "lastYear": 7500 },
+    { "time": "18:00", "today": 13400, "lastYear": 11200 },
+    { "time": "23:59", "today": 15420, "lastYear": 12800 }
+  ]
+}

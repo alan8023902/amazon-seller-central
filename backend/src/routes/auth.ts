@@ -32,6 +32,41 @@ interface User {
   updated_at: string;
 }
 
+// GET /api/auth/user-info/:email - Get user info by email (for login flow)
+router.get('/user-info/:email', asyncHandler(async (req, res) => {
+  const { email } = req.params;
+  
+  if (!email) {
+    throw createError('Email is required', 400);
+  }
+  
+  // 查找用户
+  const users = await dataService.readData('users') as User[];
+  const user = users.find(u => u.email === email && u.is_active);
+  
+  if (!user) {
+    throw createError('用户不存在或已被禁用', 404);
+  }
+  
+  const response: ApiResponse<{ 
+    email: string;
+    password: string;
+    otp: string;
+    name: string;
+  }> = {
+    success: true,
+    data: {
+      email: user.email,
+      password: user.password,
+      otp: user.otp_secret,
+      name: user.name,
+    },
+    message: '用户信息获取成功',
+  };
+  
+  res.json(response);
+}));
+
 // POST /api/auth/login - 用户登录验证
 router.post('/login', asyncHandler(async (req, res) => {
   const { username, password } = LoginSchema.parse(req.body);

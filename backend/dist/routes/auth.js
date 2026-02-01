@@ -15,6 +15,28 @@ const OTPSchema = zod_1.z.object({
     username: zod_1.z.string().email(),
     otp: zod_1.z.string().length(6),
 });
+router.get('/user-info/:email', (0, errorHandler_1.asyncHandler)(async (req, res) => {
+    const { email } = req.params;
+    if (!email) {
+        throw (0, errorHandler_1.createError)('Email is required', 400);
+    }
+    const users = await dataService_1.dataService.readData('users');
+    const user = users.find(u => u.email === email && u.is_active);
+    if (!user) {
+        throw (0, errorHandler_1.createError)('用户不存在或已被禁用', 404);
+    }
+    const response = {
+        success: true,
+        data: {
+            email: user.email,
+            password: user.password,
+            otp: user.otp_secret,
+            name: user.name,
+        },
+        message: '用户信息获取成功',
+    };
+    res.json(response);
+}));
 router.post('/login', (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { username, password } = LoginSchema.parse(req.body);
     const users = await dataService_1.dataService.readData('users');

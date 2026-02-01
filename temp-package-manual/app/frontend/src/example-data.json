@@ -1,0 +1,28 @@
+
+{
+  "salesToday": 12500.75,
+  "openOrders": 42,
+  "messages": 1,
+  "salesHistory": [
+    { "time": "00:00", "today": 800, "lastYear": 600 },
+    { "time": "04:00", "today": 1500, "lastYear": 1400 },
+    { "time": "08:00", "today": 4200, "lastYear": 3800 },
+    { "time": "12:00", "today": 7500, "lastYear": 6800 },
+    { "time": "16:00", "today": 9800, "lastYear": 8900 },
+    { "time": "20:00", "today": 11200, "lastYear": 10500 },
+    { "time": "23:59", "today": 12500, "lastYear": 11800 }
+  ],
+  "inventory": [
+    {
+      "id": "ext-99",
+      "name": "Sony PlayStation 5 Console - Slim Edition",
+      "sku": "PS5-SLIM-WHT",
+      "asin": "B0CL61HW92",
+      "status": "Active",
+      "price": 499.99,
+      "units": 24,
+      "image": "https://picsum.photos/100/100?random=20"
+    }
+  ],
+  "orders": []
+}

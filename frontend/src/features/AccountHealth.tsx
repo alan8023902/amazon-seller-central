@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Phone, ShieldCheck, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
 import { useI18n } from '../hooks/useI18n';
+import { useStore } from '../store';
+import { apiGet } from '../config/api';
 
 const Panel: React.FC<{ title: string; right?: React.ReactNode; children: React.ReactNode }> = ({
   title,
@@ -18,9 +20,58 @@ const Panel: React.FC<{ title: string; right?: React.ReactNode; children: React.
   );
 };
 
+interface AccountHealthData {
+  order_defect_rate: {
+    seller_fulfilled: number;
+    fulfilled_by_amazon: number;
+  };
+  policy_violations: {
+    negative_feedback: number;
+    a_to_z_claims: number;
+    chargeback_claims: number;
+  };
+  account_health_rating: number;
+  shipping_performance: {
+    late_shipment_rate: number;
+    pre_fulfillment_cancel_rate: number;
+    valid_tracking_rate: number;
+    on_time_delivery_rate: number | null;
+  };
+  policy_compliance: {
+    product_policy_violations: number;
+    listing_policy_violations: number;
+    intellectual_property_violations: number;
+    customer_product_reviews: number;
+    other_policy_violations: number;
+  };
+}
+
 const AccountHealth: React.FC = () => {
   const { t } = useI18n();
-  const [loading] = useState(false);
+  const { currentStore } = useStore();
+  const [loading, setLoading] = useState(false);
+  const [accountHealthData, setAccountHealthData] = useState<AccountHealthData | null>(null);
+
+  // Load account health data from backend
+  useEffect(() => {
+    const loadAccountHealthData = async () => {
+      if (!currentStore?.id) return;
+
+      try {
+        setLoading(true);
+        const response = await apiGet(`/api/account-health/${currentStore.id}`);
+        if (response.success && response.data) {
+          setAccountHealthData(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to load account health data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAccountHealthData();
+  }, [currentStore]);
 
   if (loading) {
     return (
@@ -79,13 +130,13 @@ const AccountHealth: React.FC = () => {
                         <div className="flex gap-8 text-right flex-shrink-0">
                           <div className="min-w-[130px]">
                             <div className="text-xs text-[#565959] mb-1">{t('sellerFulfilled')}</div>
-                            <div className="text-lg font-semibold text-[#0f1111]">3%</div>
+                            <div className="text-lg font-semibold text-[#0f1111]">{accountHealthData?.order_defect_rate?.seller_fulfilled || 3}%</div>
                             <div className="text-[11px] text-[#565959] mt-1">{t('ofOrders', { count: '317', total: '10570' })}</div>
                             <div className="text-[11px] text-[#565959]">60 {t('days')}</div>
                           </div>
                           <div className="min-w-[130px]">
                             <div className="text-xs text-[#565959] mb-1">{t('fulfilledByAmazon')}</div>
-                            <div className="text-lg font-semibold text-[#0f1111]">2%</div>
+                            <div className="text-lg font-semibold text-[#0f1111]">{accountHealthData?.order_defect_rate?.fulfilled_by_amazon || 2}%</div>
                             <div className="text-[11px] text-[#565959] mt-1">{t('ofOrders', { count: '317', total: '15856' })}</div>
                             <div className="text-[11px] text-[#565959]">60 {t('days')}</div>
                           </div>
@@ -106,17 +157,21 @@ const AccountHealth: React.FC = () => {
                         <div className="w-[110px] text-right">{t('fulfilledByAmazon')}</div>
                       </div>
 
-                      {[t('negativeFeedback'), t('aToZClaims'), t('chargebackClaims')].map((name) => (
-                        <div key={name}>
+                      {[
+                        { name: t('negativeFeedback'), value: accountHealthData?.policy_violations?.negative_feedback || 0 },
+                        { name: t('aToZClaims'), value: accountHealthData?.policy_violations?.a_to_z_claims || 0 },
+                        { name: t('chargebackClaims'), value: accountHealthData?.policy_violations?.chargeback_claims || 0 }
+                      ].map((item) => (
+                        <div key={item.name}>
                           <div className="px-4 py-3 flex justify-between items-center border-b border-[#e7e7e7]">
                             <div className="flex items-center gap-2 flex-1">
                               <span className="text-[#565959]">•</span>
                               <a href="#" className="text-[#007185] hover:underline text-[13px]">
-                                {name}
+                                {item.name}
                               </a>
                             </div>
-                            <div className="w-[110px] text-right text-[#0f1111] text-[13px]">0%</div>
-                            <div className="w-[110px] text-right text-[#0f1111] text-[13px]">0%</div>
+                            <div className="w-[110px] text-right text-[#0f1111] text-[13px]">{item.value}%</div>
+                            <div className="w-[110px] text-right text-[#0f1111] text-[13px]">{item.value}%</div>
                           </div>
                         </div>
                       ))}
@@ -176,10 +231,10 @@ const AccountHealth: React.FC = () => {
                       </div>
 
                       <div className="text-right flex-shrink-0 min-w-[180px]">
-                        <div className="text-2xl font-semibold text-[#0f1111]">982</div>
+                        <div className="text-2xl font-semibold text-[#0f1111]">{accountHealthData?.account_health_rating || 982}</div>
                         <div className="mt-2">
                           <div className="h-1.5 bg-gray-200 rounded-sm overflow-hidden">
-                            <div className="h-1.5 bg-[#1d8102]" style={{ width: '82%' }} />
+                            <div className="h-1.5 bg-[#1d8102]" style={{ width: `${((accountHealthData?.account_health_rating || 982) / 1000) * 100}%` }} />
                           </div>
                           <div className="flex justify-between text-[10px] text-[#565959] mt-1">
                             <span>0</span>
@@ -203,28 +258,28 @@ const AccountHealth: React.FC = () => {
                   {/* Issues list */}
                   <div>
                     {[
-                      t('suspectedIPViolations'),
-                      t('receivedIPComplaints'),
-                      t('productAuthComplaints'),
-                      t('productConditionComplaints'),
-                      t('foodSafetyIssues'),
-                      t('listingPolicyViolations'),
-                      t('restrictedProductViolations'),
-                      t('reviewPolicyViolations'),
-                      t('otherPolicyViolations'),
-                      t('regulatoryCompliance'),
+                      { name: t('suspectedIPViolations'), value: accountHealthData?.policy_compliance?.intellectual_property_violations || 0 },
+                      { name: t('receivedIPComplaints'), value: accountHealthData?.policy_compliance?.intellectual_property_violations || 0 },
+                      { name: t('productAuthComplaints'), value: accountHealthData?.policy_compliance?.product_policy_violations || 0 },
+                      { name: t('productConditionComplaints'), value: accountHealthData?.policy_compliance?.product_policy_violations || 0 },
+                      { name: t('foodSafetyIssues'), value: 0 },
+                      { name: t('listingPolicyViolations'), value: accountHealthData?.policy_compliance?.listing_policy_violations || 0 },
+                      { name: t('restrictedProductViolations'), value: accountHealthData?.policy_compliance?.product_policy_violations || 0 },
+                      { name: t('reviewPolicyViolations'), value: accountHealthData?.policy_compliance?.customer_product_reviews || 0 },
+                      { name: t('otherPolicyViolations'), value: accountHealthData?.policy_compliance?.other_policy_violations || 0 },
+                      { name: t('regulatoryCompliance'), value: 0 },
                     ].map((item, idx, arr) => (
                       <div
-                        key={item}
+                        key={item.name}
                         className={[
                           'flex items-center justify-between px-4 py-2 text-[13px]',
                           idx !== arr.length - 1 ? 'border-b border-[#e7e7e7]' : '',
                         ].join(' ')}
                       >
                         <a href="#" className="text-[#007185] hover:underline flex-1">
-                          {item}
+                          {item.name}
                         </a>
-                        <span className="text-[#0f1111] ml-2">0</span>
+                        <span className="text-[#0f1111] ml-2">{item.value}</span>
                       </div>
                     ))}
                   </div>
@@ -274,28 +329,28 @@ const AccountHealth: React.FC = () => {
                     {
                       name: t('lateShipmentRate'),
                       target: `${t('target')}: ${t('underPercent', { percent: '4' })}`,
-                      value: '0%',
+                      value: `${accountHealthData?.shipping_performance?.late_shipment_rate || 0}%`,
                       meta1: t('ofOrders', { count: '0', total: '5329' }),
                       meta2: `30 ${t('days')}`,
                     },
                     {
                       name: t('preFulfillmentCancelRate'),
                       target: `${t('target')}: ${t('underPercent', { percent: '2.5' })}`,
-                      value: '0%',
+                      value: `${accountHealthData?.shipping_performance?.pre_fulfillment_cancel_rate || 0}%`,
                       meta1: t('ofOrders', { count: '0', total: '3265' }),
                       meta2: `7 ${t('days')}`,
                     },
                     {
                       name: t('validTrackingRate'),
                       target: `${t('target')}: ${t('overPercent', { percent: '95' })}`,
-                      value: '99%',
+                      value: `${accountHealthData?.shipping_performance?.valid_tracking_rate || 99}%`,
                       meta1: t('ofOrders', { count: '7914', total: '7994' }),
                       meta2: `30 ${t('days')}`,
                     },
                     {
                       name: t('onTimeDeliveryRate'),
                       target: `${t('target')}: ${t('overPercent', { percent: '90' })}`,
-                      value: 'N/A',
+                      value: accountHealthData?.shipping_performance?.on_time_delivery_rate ? `${accountHealthData.shipping_performance.on_time_delivery_rate}%` : 'N/A',
                       meta1: '',
                       meta2: '',
                     },

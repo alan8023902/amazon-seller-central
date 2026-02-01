@@ -308,6 +308,10 @@ export interface ApiResponse<T = any> {
   data?: T;
   error?: string;
   message?: string;
+  yAxisConfig?: {
+    unitsConfig: { ticks: number[]; domain: [number, number] };
+    salesConfig: { ticks: number[]; domain: [number, number] };
+  };
 }
 
 export interface PaginatedResponse<T> extends ApiResponse<T[]> {

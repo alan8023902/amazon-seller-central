@@ -33,24 +33,62 @@ router.get('/', (0, errorHandler_1.asyncHandler)(async (req, res) => {
 }));
 router.get('/snapshot/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { storeId } = req.params;
-    let snapshots = await dataService_1.dataService.findByStoreId('sales_snapshots', storeId);
-    let snapshot = snapshots[0];
-    if (!snapshot) {
-        snapshot = await dataService_1.dataService.create('sales_snapshots', {
-            store_id: storeId,
-            total_order_items: 248,
-            units_ordered: 192260,
-            ordered_product_sales: 18657478,
-            avg_units_per_order: 1.14,
-            avg_sales_per_order: 110.29,
-            snapshot_time: new Date().toISOString(),
-        });
+    try {
+        const chartDataPath = require('path').join(__dirname, '../../data/chart_data.json');
+        let chartData = [];
+        try {
+            const allChartData = require('fs-extra').readJsonSync(chartDataPath);
+            chartData = allChartData.filter((item) => item.store_id === storeId);
+        }
+        catch (error) {
+            console.log('No chart data file found');
+        }
+        let snapshot;
+        if (chartData.length > 0) {
+            const totalUnits = chartData.reduce((sum, item) => sum + (item.units || 0), 0);
+            const totalSales = chartData.reduce((sum, item) => sum + (item.sales || 0), 0);
+            const totalOrders = chartData.length;
+            snapshot = {
+                store_id: storeId,
+                total_order_items: Math.floor(totalUnits * 0.8),
+                units_ordered: totalUnits,
+                ordered_product_sales: totalSales,
+                avg_units_per_order: totalOrders > 0 ? Number((totalUnits / totalOrders).toFixed(2)) : 0,
+                avg_sales_per_order: totalOrders > 0 ? Number((totalSales / totalOrders).toFixed(2)) : 0,
+                snapshot_time: new Date().toISOString(),
+            };
+            console.log(`Calculated snapshot from chart data for store ${storeId}:`, {
+                totalUnits,
+                totalSales,
+                totalOrders,
+                snapshot
+            });
+        }
+        else {
+            let snapshots = await dataService_1.dataService.findByStoreId('sales_snapshots', storeId);
+            snapshot = snapshots[0];
+            if (!snapshot) {
+                snapshot = await dataService_1.dataService.create('sales_snapshots', {
+                    store_id: storeId,
+                    total_order_items: 248,
+                    units_ordered: 192260,
+                    ordered_product_sales: 18657478,
+                    avg_units_per_order: 1.14,
+                    avg_sales_per_order: 110.29,
+                    snapshot_time: new Date().toISOString(),
+                });
+            }
+        }
+        const response = {
+            success: true,
+            data: snapshot,
+        };
+        res.json(response);
     }
-    const response = {
-        success: true,
-        data: snapshot,
-    };
-    res.json(response);
+    catch (error) {
+        console.error('Snapshot calculation error:', error);
+        throw (0, errorHandler_1.createError)('Failed to calculate sales snapshot', 500);
+    }
 }));
 router.put('/snapshot/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { storeId } = req.params;
@@ -147,6 +185,36 @@ router.post('/generate-daily/:storeId', (0, errorHandler_1.asyncHandler)(async (
 router.get('/chart-data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, res) => {
     const { storeId } = req.params;
     const { startDate, endDate } = req.query;
+    const calculateYAxisTicks = (maxValue, defaultMax, defaultInterval) => {
+        if (maxValue <= defaultMax) {
+            const ticks = [];
+            for (let i = 0; i <= 3; i++) {
+                ticks.push(i * defaultInterval);
+            }
+            return {
+                ticks,
+                domain: [0, defaultMax]
+            };
+        }
+        else {
+            const targetMax = Math.ceil(maxValue * 1.1);
+            const interval = Math.ceil(targetMax / 3);
+            let niceInterval;
+            if (interval <= 1000) {
+                niceInterval = Math.ceil(interval / 100) * 100;
+            }
+            else if (interval <= 10000) {
+                niceInterval = Math.ceil(interval / 1000) * 1000;
+            }
+            else {
+                niceInterval = Math.ceil(interval / 10000) * 10000;
+            }
+            return {
+                ticks: [0, niceInterval, niceInterval * 2, niceInterval * 3],
+                domain: [0, niceInterval * 3]
+            };
+        }
+    };
     try {
         const chartDataPath = require('path').join(__dirname, '../../data/chart_data.json');
         let chartData = [];
@@ -154,10 +222,57 @@ router.get('/chart-data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, 
             const allChartData = require('fs-extra').readJsonSync(chartDataPath);
             chartData = allChartData.filter((item) => item.store_id === storeId);
             if (startDate && endDate && chartData.length > 0) {
-                chartData = chartData.filter((item) => {
+                const filteredData = chartData.filter((item) => {
                     const itemDate = new Date(item.date);
                     return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
                 });
+                const dataWithLastYear = filteredData.map((item) => {
+                    const currentUnits = item.units || 0;
+                    const currentSales = item.sales || 0;
+                    const seed = new Date(item.date).getTime();
+                    const seededRandom = (seed) => {
+                        const x = Math.sin(seed) * 10000;
+                        return x - Math.floor(x);
+                    };
+                    const lastYearMultiplier = 0.85 + (seededRandom(seed) - 0.5) * 0.3;
+                    return {
+                        ...item,
+                        lastYearUnits: Math.max(250, Math.round(currentUnits * lastYearMultiplier)),
+                        lastYearSales: Math.max(12000, Math.round(currentSales * lastYearMultiplier))
+                    };
+                });
+                const thirteenMonthsStructure = [];
+                const now = new Date();
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                for (let i = 12; i >= 0; i--) {
+                    const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const month = targetDate.getMonth();
+                    const year = targetDate.getFullYear();
+                    const yearShort = year.toString().slice(2);
+                    const monthName = monthNames[month];
+                    const monthLabel = `${monthName} '${yearShort}`;
+                    const monthData = dataWithLastYear.find((item) => {
+                        const itemDate = new Date(item.date);
+                        return itemDate.getMonth() === month && itemDate.getFullYear() === year;
+                    });
+                    if (monthData) {
+                        thirteenMonthsStructure.push({
+                            ...monthData,
+                            name: monthLabel
+                        });
+                    }
+                    else {
+                        thirteenMonthsStructure.push({
+                            name: monthLabel,
+                            date: `${year}-${String(month + 1).padStart(2, '0')}-01`,
+                            units: 0,
+                            sales: 0,
+                            lastYearUnits: 0,
+                            lastYearSales: 0
+                        });
+                    }
+                }
+                chartData = thirteenMonthsStructure;
             }
             if (chartData.length > 0) {
                 console.log(`Using admin-configured chart data for store ${storeId}: ${chartData.length} entries`);
@@ -165,14 +280,22 @@ router.get('/chart-data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, 
                     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                     .map((item) => ({
                     date: item.date,
+                    name: item.name,
                     units: item.units,
                     sales: item.sales,
                     lastYearUnits: item.lastYearUnits,
                     lastYearSales: item.lastYearSales,
                 }));
+                const maxUnits = Math.max(...sortedData.map((d) => Math.max(d.units || 0, d.lastYearUnits || 0)));
+                const maxSales = Math.max(...sortedData.map((d) => Math.max(d.sales || 0, d.lastYearSales || 0)));
+                const yAxisConfig = {
+                    unitsConfig: calculateYAxisTicks(maxUnits, 7500, 2500),
+                    salesConfig: calculateYAxisTicks(maxSales, 150000, 50000)
+                };
                 const response = {
                     success: true,
                     data: sortedData,
+                    yAxisConfig,
                 };
                 res.json(response);
                 return;
@@ -183,28 +306,128 @@ router.get('/chart-data/:storeId', (0, errorHandler_1.asyncHandler)(async (req, 
         }
         let dailySales = await dataService_1.dataService.findByStoreId('daily_sales', storeId);
         if (!dailySales || dailySales.length < 100) {
-            console.log('Generating spiky chart data for store:', storeId);
+            console.log('Generating daily chart data for store:', storeId);
             const chartData = [];
-            const startGenDate = new Date('2025-01-01');
-            const endGenDate = new Date('2026-01-31');
-            let currentDate = new Date(startGenDate);
-            while (currentDate <= endGenDate) {
-                const baseUnit = 500;
-                const baseSales = 50000;
-                const variance = 1.2;
-                const spikeMultiplier = Math.random() < 0.1 ? (2 + Math.random() * 2) : 1;
+            const now = new Date();
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const thirteenMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 12, now.getDate());
+            const currentDate = new Date(thirteenMonthsAgo);
+            while (currentDate <= now) {
+                const month = currentDate.getMonth();
+                const year = currentDate.getFullYear();
+                const day = currentDate.getDate();
+                const yearShort = year.toString().slice(2);
+                const monthName = monthNames[month];
+                const seed = year * 10000 + month * 100 + day;
+                const seededRandom = (seed) => {
+                    const x = Math.sin(seed) * 10000;
+                    return x - Math.floor(x);
+                };
+                const baseUnits = 2000 + Math.sin(seed * 0.001) * 1500;
+                const baseSales = 60000 + Math.sin(seed * 0.0008) * 35000;
+                const unitsNoise = (seededRandom(seed) - 0.5) * 1500;
+                const salesNoise = (seededRandom(seed + 1) - 0.5) * 40000;
+                const spikeChance = seededRandom(seed + 2) < 0.15 ? (1.3 + seededRandom(seed + 3) * 0.7) : 1;
+                const dayOfWeek = currentDate.getDay();
+                const weekendMultiplier = (dayOfWeek === 0 || dayOfWeek === 6) ? 0.7 : 1.0;
+                const midWeekBoost = (dayOfWeek === 2 || dayOfWeek === 3) ? 1.2 : 1.0;
+                const displayName = day === 1 ? `${monthName} '${yearShort}` : '';
+                const currentUnits = Math.max(300, Math.round((baseUnits + unitsNoise) * spikeChance * weekendMultiplier * midWeekBoost));
+                const currentSales = Math.max(15000, Math.round((baseSales + salesNoise) * spikeChance * weekendMultiplier * midWeekBoost));
+                const lastYearSeed = (year - 1) * 10000 + month * 100 + day;
+                const lastYearBaseUnits = 2000 + Math.sin(lastYearSeed * 0.001) * 1500;
+                const lastYearBaseSales = 60000 + Math.sin(lastYearSeed * 0.0008) * 35000;
+                const lastYearUnitsNoise = (seededRandom(lastYearSeed) - 0.5) * 1500;
+                const lastYearSalesNoise = (seededRandom(lastYearSeed + 1) - 0.5) * 40000;
+                const lastYearSpikeChance = seededRandom(lastYearSeed + 2) < 0.15 ? (1.3 + seededRandom(lastYearSeed + 3) * 0.7) : 1;
+                const lastYearUnits = Math.max(250, Math.round((lastYearBaseUnits + lastYearUnitsNoise) * lastYearSpikeChance * weekendMultiplier * midWeekBoost));
+                const lastYearSales = Math.max(12000, Math.round((lastYearBaseSales + lastYearSalesNoise) * lastYearSpikeChance * weekendMultiplier * midWeekBoost));
                 chartData.push({
-                    date: currentDate.toISOString().split('T')[0],
-                    units: Math.floor(baseUnit * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-                    sales: Math.floor(baseSales * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-                    lastYearUnits: Math.floor(baseUnit * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-                    lastYearSales: Math.floor(baseSales * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                    name: displayName,
+                    date: `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
+                    units: currentUnits,
+                    sales: currentSales,
+                    lastYearUnits: lastYearUnits,
+                    lastYearSales: lastYearSales
                 });
                 currentDate.setDate(currentDate.getDate() + 1);
             }
+            if (startDate && endDate) {
+                const filteredData = chartData.filter((item) => {
+                    const itemDate = new Date(item.date);
+                    return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+                });
+                const dataWithLastYear = filteredData.map((item) => {
+                    const currentUnits = item.units || 0;
+                    const currentSales = item.sales || 0;
+                    const seed = new Date(item.date).getTime();
+                    const seededRandom = (seed) => {
+                        const x = Math.sin(seed) * 10000;
+                        return x - Math.floor(x);
+                    };
+                    const lastYearMultiplier = 0.85 + (seededRandom(seed) - 0.5) * 0.3;
+                    return {
+                        ...item,
+                        lastYearUnits: Math.max(250, Math.round(currentUnits * lastYearMultiplier)),
+                        lastYearSales: Math.max(12000, Math.round(currentSales * lastYearMultiplier))
+                    };
+                });
+                const thirteenMonthsStructure = [];
+                const now = new Date();
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                for (let i = 12; i >= 0; i--) {
+                    const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const month = targetDate.getMonth();
+                    const year = targetDate.getFullYear();
+                    const yearShort = year.toString().slice(2);
+                    const monthName = monthNames[month];
+                    const monthLabel = `${monthName} '${yearShort}`;
+                    const monthData = dataWithLastYear.find((item) => {
+                        const itemDate = new Date(item.date);
+                        return itemDate.getMonth() === month && itemDate.getFullYear() === year;
+                    });
+                    if (monthData) {
+                        thirteenMonthsStructure.push({
+                            ...monthData,
+                            name: monthLabel
+                        });
+                    }
+                    else {
+                        thirteenMonthsStructure.push({
+                            name: monthLabel,
+                            date: `${year}-${String(month + 1).padStart(2, '0')}-01`,
+                            units: 0,
+                            sales: 0,
+                            lastYearUnits: 0,
+                            lastYearSales: 0
+                        });
+                    }
+                }
+                const maxUnits = Math.max(...dataWithLastYear.map(d => Math.max(d.units || 0, d.lastYearUnits || 0)));
+                const maxSales = Math.max(...dataWithLastYear.map(d => Math.max(d.sales || 0, d.lastYearSales || 0)));
+                const yAxisConfigWithLastYear = {
+                    unitsConfig: calculateYAxisTicks(maxUnits, 7500, 2500),
+                    salesConfig: calculateYAxisTicks(maxSales, 150000, 50000)
+                };
+                console.log(`Filtered data for date range ${startDate} to ${endDate}: ${dataWithLastYear.length} entries, maintaining 13-month structure`);
+                const response = {
+                    success: true,
+                    data: thirteenMonthsStructure,
+                    yAxisConfig: yAxisConfigWithLastYear,
+                };
+                res.json(response);
+                return;
+            }
+            const maxUnits = Math.max(...chartData.map(d => d.units || 0));
+            const maxSales = Math.max(...chartData.map(d => d.sales || 0));
+            const yAxisConfig = {
+                unitsConfig: calculateYAxisTicks(maxUnits, 7500, 2500),
+                salesConfig: calculateYAxisTicks(maxSales, 150000, 50000)
+            };
             const response = {
                 success: true,
                 data: chartData,
+                yAxisConfig,
             };
             res.json(response);
             return;
@@ -341,27 +564,30 @@ router.post('/admin/sales-data/generate/:storeId', (0, errorHandler_1.asyncHandl
             console.log('Creating new chart data file');
         }
         chartData = chartData.filter((item) => item.store_id !== storeId);
-        const startDate = new Date('2025-01-01');
-        const endDate = new Date('2026-01-31');
-        let currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
-            const baseUnit = 500;
-            const baseSales = 50000;
-            const variance = 1.2;
-            const spikeMultiplier = Math.random() < 0.1 ? (2 + Math.random() * 2) : 1;
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        for (let i = 12; i >= 0; i--) {
+            const targetDate = new Date(currentYear, currentMonth - i, 1);
+            const month = targetDate.getMonth();
+            const year = targetDate.getFullYear();
+            const baseUnit = 2000 + Math.sin(i * 0.3) * 1000;
+            const baseSales = 60000 + Math.sin(i * 0.4) * 30000;
+            const shouldExceedDefault = Math.random() < 0.1;
+            const unitsMultiplier = shouldExceedDefault ? (2.5 + Math.random() * 2) : (0.8 + Math.random() * 0.4);
+            const salesMultiplier = shouldExceedDefault ? (2.2 + Math.random() * 1.8) : (0.9 + Math.random() * 0.2);
             const newEntry = {
                 id: require('crypto').randomUUID(),
                 store_id: storeId,
-                date: currentDate.toISOString().split('T')[0],
-                units: Math.floor(baseUnit * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-                sales: Math.floor(baseSales * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-                lastYearUnits: Math.floor(baseUnit * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-                lastYearSales: Math.floor(baseSales * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
+                date: `${year}-${String(month + 1).padStart(2, '0')}-01`,
+                units: Math.floor(baseUnit * unitsMultiplier),
+                sales: Math.floor(baseSales * salesMultiplier),
+                lastYearUnits: Math.floor(baseUnit * 0.9 * unitsMultiplier),
+                lastYearSales: Math.floor(baseSales * 0.9 * salesMultiplier),
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
             };
             chartData.push(newEntry);
-            currentDate.setDate(currentDate.getDate() + 1);
         }
         require('fs-extra').writeJsonSync(filePath, chartData, { spaces: 2 });
         const response = {

@@ -201,7 +201,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
               </Col>
               <Col span={6}>
                 <Statistic
-                  title="FBA Defect Rate"
+                  title={t('fulfilledByAmazon') + ' Defect Rate'}
                   value={accountHealthData?.order_defect_rate?.fulfilled_by_amazon || 0}
                   suffix="%"
                   precision={1}
@@ -287,7 +287,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={`${t('sellerFulfilled')} (%)`}
                     name="seller_fulfilled_defect_rate"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('sellerFulfilled')}缺陷率` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('sellerFulfilled')}${t('orderDefectRate')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -303,7 +303,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={`${t('fulfilledByAmazon')} (%)`}
                     name="fulfilled_by_amazon_defect_rate"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}FBA缺陷率` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('fulfilledByAmazon')}${t('orderDefectRate')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -324,7 +324,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={`${t('negativeFeedback')} (%)`}
                     name="negative_feedback"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}负面反馈率` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('negativeFeedbackRateValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -340,7 +340,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={`${t('aToZClaims')} (%)`}
                     name="a_to_z_claims"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}A-to-Z申诉率` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('aToZClaimsRateValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -356,7 +356,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={`${t('chargebackClaims')} (%)`}
                     name="chargeback_claims"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}退单申诉率` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('chargebackClaimsRateValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -377,7 +377,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={`${t('lateShipmentRate')} (%)`}
                     name="late_shipment_rate"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}延迟发货率` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('lateShipmentRateValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -393,7 +393,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={`${t('preFulfillmentCancelRate')} (%)`}
                     name="pre_fulfillment_cancel_rate"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}预履行取消率` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('preFulfillmentCancelRateValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -412,7 +412,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={`${t('validTrackingRate')} (%)`}
                     name="valid_tracking_rate"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}有效跟踪率` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('validTrackingRateValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -448,7 +448,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={t('productPolicyViolations')}
                     name="product_policy_violations"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}产品政策违规数` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('productPolicyViolationsValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -462,7 +462,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={t('listingPolicyViolations')}
                     name="listing_policy_violations"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}列表政策违规数` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('listingPolicyViolationsValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -479,7 +479,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={t('intellectualPropertyViolations')}
                     name="intellectual_property_violations"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}知识产权违规数` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('intellectualPropertyViolationsValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -493,7 +493,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={t('customerProductReviews')}
                     name="customer_product_reviews"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}客户产品评论问题数` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('customerProductReviewsValidation')}` }]}
                   >
                     <InputNumber
                       min={0}
@@ -507,7 +507,7 @@ const AccountHealthConfig: React.FC<AccountHealthConfigProps> = ({
                   <Form.Item
                     label={t('otherPolicyViolations')}
                     name="other_policy_violations"
-                    rules={[{ required: true, message: `${t('pleaseEnter')}其他政策违规数` }]}
+                    rules={[{ required: true, message: `${t('pleaseEnter')}${t('otherPolicyViolationsValidation')}` }]}
                   >
                     <InputNumber
                       min={0}

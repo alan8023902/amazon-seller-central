@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 interface DatePickerProps {
@@ -10,10 +10,10 @@ interface DatePickerProps {
   maxDate?: Date;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ 
-  value = "", 
-  onChange, 
-  placeholder = "Select date",
+const DatePicker: React.FC<DatePickerProps> = ({
+  value = '',
+  onChange,
+  placeholder = 'Select date',
   minDate,
   maxDate
 }) => {
@@ -22,12 +22,10 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const [selectedDate, setSelectedDate] = useState(value);
   const [error, setError] = useState<string>('');
 
-  // Update selected date when value prop changes
   useEffect(() => {
     setSelectedDate(value);
   }, [value]);
 
-  // Initialize current month based on selected date or current date
   useEffect(() => {
     if (selectedDate) {
       const parts = selectedDate.split('/');
@@ -41,205 +39,213 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
   }, [selectedDate]);
 
-  const monthNames = [
+  const monthNames = useMemo(() => ([
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
-  ];
+  ]), []);
 
-  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const daysOfWeek = useMemo(() => (["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]), []);
 
   const validateDate = (dateStr: string): boolean => {
+    setError('');
+    if (!dateStr) return true;
+
     const parts = dateStr.split('/');
-    if (parts.length !== 3) return false;
-    
+    if (parts.length !== 3) {
+      setError('Invalid date format');
+      return false;
+    }
+
     const month = parseInt(parts[0]);
     const day = parseInt(parts[1]);
     const year = parseInt(parts[2]);
-    
-    if (isNaN(month) || isNaN(day) || isNaN(year)) return false;
-    if (month < 1 || month > 12) return false;
-    if (day < 1 || day > 31) return false;
-    if (year < 1900 || year > 2100) return false;
-    
-    // Check if date is valid (handles leap years, month boundaries)
-    const date = new Date(year, month - 1, day);
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+
+    if (isNaN(month) || isNaN(day) || isNaN(year)) {
+      setError('Invalid date');
       return false;
     }
-    
-    // Check min/max date constraints
-    if (minDate && date < minDate) return false;
-    if (maxDate && date > maxDate) return false;
-    
+    if (month < 1 || month > 12) {
+      setError('Invalid month');
+      return false;
+    }
+    if (day < 1 || day > 31) {
+      setError('Invalid day');
+      return false;
+    }
+    if (year < 1900 || year > 2100) {
+      setError('Invalid year');
+      return false;
+    }
+
+    const date = new Date(year, month - 1, day);
+    if (date.getMonth() !== month - 1) {
+      setError('Invalid date');
+      return false;
+    }
+
+    if (minDate && date < minDate) {
+      setError('Date too early');
+      return false;
+    }
+    if (maxDate && date > maxDate) {
+      setError('Date too late');
+      return false;
+    }
+
     return true;
-  };
-
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-
-    const days = [];
-    
-    // Add empty cells for days before the first day of the month
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(null);
-    }
-    
-    // Add days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(day);
-    }
-    
-    return days;
-  };
-
-  const handleDateClick = (day: number) => {
-    const newDate = `${currentMonth.getMonth() + 1}/${day}/${currentMonth.getFullYear()}`;
-    
-    if (validateDate(newDate)) {
-      setSelectedDate(newDate);
-      onChange?.(newDate);
-      setError('');
-      setIsOpen(false);
-    } else {
-      setError('Invalid date selected');
-    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setSelectedDate(newValue);
-    
-    if (newValue && !validateDate(newValue)) {
-      setError('Invalid date format (MM/DD/YYYY)');
-    } else {
-      setError('');
+    if (validateDate(newValue)) {
       onChange?.(newValue);
     }
   };
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentMonth(prev => {
-      const newMonth = new Date(prev);
-      if (direction === 'prev') {
-        newMonth.setMonth(prev.getMonth() - 1);
-      } else {
-        newMonth.setMonth(prev.getMonth() + 1);
-      }
-      return newMonth;
-    });
-  };
+  const prevMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+  const nextMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
 
-  const isDateDisabled = (day: number): boolean => {
-    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+  const getDaysInMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  const getFirstDayOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+
+  const handleDayClick = (day: number) => {
+    const month = currentMonth.getMonth() + 1;
+    const year = currentMonth.getFullYear();
+    const selectedDate = new Date(year, month - 1, day);
     const today = new Date();
-    today.setHours(23, 59, 59, 999); // Set to end of today
+    today.setHours(23, 59, 59, 999); // 设置为今天的最后一刻
     
-    // Disable future dates (after today)
-    if (date > today) return true;
+    // 如果选择的日期在今天之后，不允许选择
+    if (selectedDate > today) {
+      return;
+    }
     
-    if (minDate && date < minDate) return true;
-    if (maxDate && date > maxDate) return true;
-    return false;
+    const formatted = `${month}/${day}/${year}`;
+
+    if (!validateDate(formatted)) return;
+
+    setSelectedDate(formatted);
+    onChange?.(formatted);
+    setIsOpen(false);
   };
 
-  const isDateSelected = (day: number): boolean => {
-    if (!selectedDate) return false;
-    const parts = selectedDate.split('/');
-    if (parts.length !== 3) return false;
-    
-    const selectedDay = parseInt(parts[1]);
-    const selectedMonth = parseInt(parts[0]) - 1;
-    const selectedYear = parseInt(parts[2]);
-    
-    return day === selectedDay && 
-           currentMonth.getMonth() === selectedMonth && 
-           currentMonth.getFullYear() === selectedYear;
-  };
+  const daysInMonth = getDaysInMonth(currentMonth);
+  const firstDay = getFirstDayOfMonth(currentMonth);
 
-  const days = getDaysInMonth(currentMonth);
+  const dayCells: (number | null)[] = [];
+  for (let i = 0; i < firstDay; i++) dayCells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) dayCells.push(d);
 
   return (
     <div className="relative">
-      <div 
-        className={cn(
-          "flex items-center border bg-white h-[29px] px-2 cursor-pointer w-[140px] min-w-[140px]",
-          error ? "border-red-500" : "border-[#a6a6a6] border-t-[#949494] rounded-[3px] shadow-[0_1px_0_rgba(255,255,255,.5),0_1px_0_rgba(0,0,0,.07)_inset] bg-gradient-to-b from-[#f7f8fa] to-[#e7e9ec]"
-        )}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <Calendar size={12} className="text-[#0F1111] mr-1 flex-shrink-0" />
-        <input 
-          type="text" 
-          className="border-none outline-none flex-1 text-[13px] text-[#0F1111] cursor-pointer bg-transparent"
+      {/* ✅ Seller Central：分体控件（左日历按钮 + 右白底输入） - 调小高度 */}
+      <div className={cn("flex items-center h-[25px] w-[140px] min-w-[140px] max-w-[140px]")}>
+        <div
+          className={cn(
+            "w-[32px] h-[25px] flex items-center justify-center cursor-pointer",
+            "border border-[#a6a6a6] border-t-[#949494] border-r-0 rounded-l-[3px]",
+            "shadow-[0_1px_0_rgba(255,255,255,.5),0_1px_0_rgba(0,0,0,.07)_inset] bg-gradient-to-b from-[#f7f8fa] to-[#e7e9ec]",
+            error && "border-red-500 border-r-0"
+          )}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {/* ✅ 修复日历图标 - 黑色鲜艳，调小点的大小 */}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-black">
+            {/* 日历主体 */}
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="1.8"/>
+            {/* 顶部加粗线条 */}
+            <rect x="3" y="4" width="18" height="3" rx="2" ry="2" fill="currentColor"/>
+            {/* 左侧挂钩 */}
+            <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2.2"/>
+            {/* 右侧挂钩 */}
+            <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2.2"/>
+            {/* 分割线 */}
+            <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="1.2"/>
+            {/* 6个日期点 - 2行3列，调小尺寸 */}
+            <circle cx="8" cy="13" r="1.0" fill="currentColor"/>
+            <circle cx="12" cy="13" r="1.0" fill="currentColor"/>
+            <circle cx="16" cy="13" r="1.0" fill="currentColor"/>
+            <circle cx="8" cy="17" r="1.0" fill="currentColor"/>
+            <circle cx="12" cy="17" r="1.0" fill="currentColor"/>
+            <circle cx="16" cy="17" r="1.0" fill="currentColor"/>
+          </svg>
+        </div>
+
+        <input
+          type="text"
+          className={cn(
+            "h-[25px] w-[108px] px-2 text-[11px] text-[#0F1111] outline-none", /* ✅ 调整字体大小 */
+            "border border-[#a6a6a6] border-t-[#949494] rounded-r-[3px]",
+            "shadow-[0_1px_0_rgba(255,255,255,.5),0_1px_0_rgba(0,0,0,.07)_inset]",
+            error && "border-red-500"
+          )}
+          style={{ backgroundColor: '#ffffff' }} // ✅ 强制白色背景
           value={selectedDate}
           onChange={handleInputChange}
           placeholder={placeholder}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(true);
+          }}
         />
       </div>
 
       {error && (
-        <div className="absolute top-full left-0 text-red-500 text-xs mt-1 z-40">
-          {error}
-        </div>
+        <div className="absolute top-full left-0 text-red-500 text-xs mt-1 z-40">{error}</div>
       )}
 
       {isOpen && (
-        <div className="absolute top-full left-0 z-50 bg-white border border-[#888] shadow-lg mt-1 w-64 rounded-md">
-          {/* Calendar Header */}
-          <div className="flex items-center justify-between p-2 border-b border-gray-200 bg-gray-50 rounded-t-md">
-            <button 
-              onClick={() => navigateMonth('prev')}
-              className="p-1 hover:bg-gray-200 rounded transition-colors"
-            >
+        <div className="absolute top-full left-0 z-50 bg-white border border-[#888] shadow-lg mt-1 w-[240px] rounded-md">
+          <div className="flex items-center justify-between p-1 border-b border-gray-200 bg-gray-50 rounded-t-md">
+            <button className="p-1 hover:bg-gray-200 rounded transition-colors" onClick={prevMonth} type="button">
               <ChevronLeft size={14} />
             </button>
-            <span className="font-medium text-xs">
+            <div className="font-medium text-[10px]">
               {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-            </span>
-            <button 
-              onClick={() => navigateMonth('next')}
-              className="p-1 hover:bg-gray-200 rounded transition-colors"
-            >
+            </div>
+            <button className="p-1 hover:bg-gray-200 rounded transition-colors" onClick={nextMonth} type="button">
               <ChevronRight size={14} />
             </button>
           </div>
 
-          {/* Days of week header */}
           <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
-            {daysOfWeek.map(day => (
-              <div key={day} className="p-1 text-center text-[10px] font-medium text-gray-600">
-                {day}
-              </div>
+            {daysOfWeek.map(d => (
+              <div key={d} className="text-center text-[9px] py-1 font-medium text-gray-600">{d}</div>
             ))}
           </div>
 
-          {/* Calendar grid */}
-          <div className="grid grid-cols-7 p-1">
-            {days.map((day, index) => (
-              <div key={index} className="aspect-square p-0.5">
-                {day && (
-                  <button
-                    onClick={() => handleDateClick(day)}
-                    disabled={isDateDisabled(day)}
-                    className={cn(
-                      "w-full h-full flex items-center justify-center text-[10px] rounded transition-colors",
-                      isDateSelected(day) 
-                        ? "bg-[#008296] text-white hover:bg-[#007185]" 
-                        : "hover:bg-gray-100",
-                      isDateDisabled(day) && "text-gray-300 cursor-not-allowed hover:bg-transparent"
-                    )}
-                  >
-                    {day}
-                  </button>
-                )}
-              </div>
-            ))}
+          <div className="grid grid-cols-7 p-1 gap-1">
+            {dayCells.map((day, idx) => {
+              if (!day) return <div key={idx} className="h-6" />;
+
+              const selectedDateStr = `${currentMonth.getMonth() + 1}/${day}/${currentMonth.getFullYear()}`;
+              const isSelected = selectedDate === selectedDateStr;
+              
+              // 检查是否是未来日期
+              const cellDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+              const today = new Date();
+              today.setHours(23, 59, 59, 999); // 设置为今天的最后一刻
+              const isFutureDate = cellDate > today;
+              
+              return (
+                <button
+                  key={idx}
+                  className={cn(
+                    "h-6 w-6 text-[10px] rounded",
+                    isFutureDate 
+                      ? "text-gray-500 bg-gray-200 cursor-not-allowed" // ✅ 未来日期深灰色背景和文字
+                      : "hover:bg-gray-100 cursor-pointer", // 可选择日期
+                    isSelected && !isFutureDate && "bg-[#008296] text-white hover:bg-[#007185]"
+                  )}
+                  onClick={() => handleDayClick(day)}
+                  type="button"
+                  disabled={isFutureDate}
+                >
+                  {day}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

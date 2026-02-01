@@ -1,0 +1,33 @@
+/* 强制Custom下拉框白色背景 - 与filterSelect完全一致 */
+.customSelect {
+  width: 288px !important;
+  min-width: 288px !important;
+  height: 29px !important;
+  font-size: 11px !important;
+  padding: 0 8px !important;
+  border-radius: 3px !important;
+  border: 1px solid #a6a6a6 !important;
+  border-top-color: #949494 !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5), 0 1px 0 rgba(0,0,0,0.07) inset !important;
+  outline: none !important;
+  color: #0f1111 !important;
+}
+
+.customSelect:hover,
+.customSelect:focus,
+.customSelect:active {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+/* 下拉框选项样式 - 与Marketplace Total保持一致 */
+.customSelect option {
+  font-size: 11px;
+  color: #0f1111;
+  background: #ffffff;
+  padding: 4px 8px;
+}

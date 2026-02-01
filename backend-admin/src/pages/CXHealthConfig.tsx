@@ -16,10 +16,12 @@ import {
   Select,
   Switch,
   Popconfirm,
-  Tag
+  Tag,
+  Upload,
+  Image
 } from 'antd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { SaveOutlined, ReloadOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SaveOutlined, ReloadOutlined, PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { ADMIN_API_CONFIG, adminApiGet, adminApiPut, adminApiPost, adminApiDelete } from '../config/api';
 
 const { Title } = Typography;
@@ -37,6 +39,8 @@ const CXHealthConfig: React.FC<CXHealthConfigProps> = ({
   const [vocForm] = Form.useForm();
   const [isVocModalVisible, setIsVocModalVisible] = useState(false);
   const [editingVocItem, setEditingVocItem] = useState<any>(null);
+  const [imageUrl, setImageUrl] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
 
   // 获取CX Health数据
@@ -96,12 +100,14 @@ const CXHealthConfig: React.FC<CXHealthConfigProps> = ({
   // VOC产品数据处理函数
   const handleEditVoc = (record: any) => {
     setEditingVocItem(record);
+    setImageUrl(record.image || '');
     vocForm.setFieldsValue(record);
     setIsVocModalVisible(true);
   };
 
   const handleAddVoc = () => {
     setEditingVocItem(null);
+    setImageUrl('');
     vocForm.resetFields();
     vocForm.setFieldsValue({
       store_id: selectedStoreId,
@@ -118,9 +124,15 @@ const CXHealthConfig: React.FC<CXHealthConfigProps> = ({
     try {
       const values = await vocForm.validateFields();
       
+      // Add image URL to form values
+      const submitValues = {
+        ...values,
+        image: imageUrl
+      };
+      
       if (editingVocItem) {
         // Update existing item
-        const data = await adminApiPut(`/api/voc/data/${selectedStoreId}/${editingVocItem.id}`, values);
+        const data = await adminApiPut(`/api/voc/data/${selectedStoreId}/${editingVocItem.id}`, submitValues);
         if (data.success) {
           message.success('VOC数据更新成功！');
         } else {
@@ -128,7 +140,7 @@ const CXHealthConfig: React.FC<CXHealthConfigProps> = ({
         }
       } else {
         // Create new item
-        const data = await adminApiPost(`/api/voc/data/${selectedStoreId}`, values);
+        const data = await adminApiPost(`/api/voc/data/${selectedStoreId}`, submitValues);
         if (data.success) {
           message.success('VOC数据创建成功！');
         } else {
@@ -139,10 +151,44 @@ const CXHealthConfig: React.FC<CXHealthConfigProps> = ({
       queryClient.invalidateQueries({ queryKey: ['vocData'] });
       queryClient.invalidateQueries({ queryKey: ['cxHealthData'] });
       setIsVocModalVisible(false);
+      setImageUrl('');
     } catch (error) {
       console.error('Form validation failed:', error);
       message.error('操作失败');
     }
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (file: any) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      setUploading(true);
+      const response = await fetch('http://localhost:3001/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setImageUrl(result.data.url);
+          message.success('图片上传成功！');
+        } else {
+          message.error('图片上传失败');
+        }
+      } else {
+        message.error('图片上传失败');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      message.error('图片上传失败');
+    } finally {
+      setUploading(false);
+    }
+
+    return false; // Prevent default upload behavior
   };
 
   const handleDeleteVoc = async (id: string) => {
@@ -194,6 +240,28 @@ const CXHealthConfig: React.FC<CXHealthConfigProps> = ({
   };
 
   const vocColumns = [
+    {
+      title: '产品图片',
+      dataIndex: 'image',
+      key: 'image',
+      width: 80,
+      render: (image: string) => (
+        image ? (
+          <Image
+            width={50}
+            height={50}
+            src={image}
+            alt="Product"
+            style={{ objectFit: 'cover' }}
+            fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RnG4W+FgYxN"
+          />
+        ) : (
+          <div style={{ width: 50, height: 50, backgroundColor: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#999' }}>
+            无图片
+          </div>
+        )
+      ),
+    },
     {
       title: '产品名称',
       dataIndex: 'product_name',
@@ -551,7 +619,10 @@ const CXHealthConfig: React.FC<CXHealthConfigProps> = ({
         title={editingVocItem ? '编辑VOC产品数据' : '添加VOC产品数据'}
         open={isVocModalVisible}
         onOk={handleVocModalOk}
-        onCancel={() => setIsVocModalVisible(false)}
+        onCancel={() => {
+          setIsVocModalVisible(false);
+          setImageUrl('');
+        }}
         width={800}
         destroyOnClose
       >
@@ -719,7 +790,39 @@ const CXHealthConfig: React.FC<CXHealthConfigProps> = ({
             label="图片URL"
             name="image"
           >
-            <Input placeholder="请输入图片URL" />
+            <Input placeholder="请输入图片URL" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+          </Form.Item>
+
+          <Form.Item label="上传产品图片">
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+              <Upload
+                beforeUpload={handleImageUpload}
+                showUploadList={false}
+                accept="image/*"
+              >
+                <Button icon={<UploadOutlined />} loading={uploading}>
+                  {uploading ? '上传中...' : '选择图片'}
+                </Button>
+              </Upload>
+              {imageUrl && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <Image
+                    width={100}
+                    height={100}
+                    src={imageUrl}
+                    alt="Product preview"
+                    style={{ objectFit: 'cover', border: '1px solid #d9d9d9' }}
+                  />
+                  <Button 
+                    size="small" 
+                    danger 
+                    onClick={() => setImageUrl('')}
+                  >
+                    删除图片
+                  </Button>
+                </div>
+              )}
+            </div>
           </Form.Item>
         </Form>
       </Modal>

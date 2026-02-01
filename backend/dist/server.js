@@ -38,6 +38,8 @@ const communications_1 = __importDefault(require("./routes/communications"));
 const accountHealth_1 = __importDefault(require("./routes/accountHealth"));
 const taxInfo_1 = __importDefault(require("./routes/taxInfo"));
 const legalEntity_1 = __importDefault(require("./routes/legalEntity"));
+const sellingApplications_1 = __importDefault(require("./routes/sellingApplications"));
+const upload_1 = __importDefault(require("./routes/upload"));
 const errorHandler_1 = require("./middleware/errorHandler");
 const requestLogger_1 = require("./middleware/requestLogger");
 const app = (0, express_1.default)();
@@ -70,6 +72,8 @@ app.use('/api/communications', communications_1.default);
 app.use('/api/account-health', accountHealth_1.default);
 app.use('/api/tax-info', taxInfo_1.default);
 app.use('/api/legal-entity', legalEntity_1.default);
+app.use('/api/selling-applications', sellingApplications_1.default);
+app.use('/api/upload', upload_1.default);
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
@@ -88,6 +92,7 @@ app.listen(PORT, () => {
     console.log(`🚀 Backend server running on http://localhost:${PORT}`);
     console.log(`📁 Uploads directory: ${path_1.default.join(__dirname, '../uploads')}`);
     console.log(`📊 API endpoints available at http://localhost:${PORT}/api`);
+    console.log(`✅ Server started successfully at ${new Date().toISOString()}`);
 });
 if (process.env.ENABLE_HTTPS === 'true') {
     const httpsPort = process.env.HTTPS_PORT || 443;

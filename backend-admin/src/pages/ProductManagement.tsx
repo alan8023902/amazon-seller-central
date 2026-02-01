@@ -19,6 +19,7 @@ import {
   DeleteOutlined
 } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { productApi } from '../services/api';
 import ImageUpload from '../components/ImageUpload';
 
@@ -50,6 +51,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
   selectedStore 
 }) => {
   const { message } = App.useApp();
+  const { t } = useTranslation();
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -120,13 +122,13 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
   const createProductMutation = useMutation({
     mutationFn: productApi.createProduct,
     onSuccess: () => {
-      message.success('产品创建成功！');
+      message.success(t('productCreatedSuccess'));
       setIsModalVisible(false);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: () => {
-      message.error('创建失败，请重试');
+      message.error(t('createFailed'));
     },
   });
 
@@ -135,14 +137,14 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
     mutationFn: ({ id, data }: { id: string; data: any }) => 
       productApi.updateProduct(id, data),
     onSuccess: () => {
-      message.success('产品更新成功！');
+      message.success(t('productUpdatedSuccess'));
       setIsModalVisible(false);
       setEditingProduct(null);
       form.resetFields();
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: () => {
-      message.error('更新失败，请重试');
+      message.error(t('updateFailed'));
     },
   });
 
@@ -150,11 +152,11 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
   const deleteProductMutation = useMutation({
     mutationFn: productApi.deleteProduct,
     onSuccess: () => {
-      message.success('产品删除成功！');
+      message.success(t('productDeletedSuccess'));
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: () => {
-      message.error('删除失败，请重试');
+      message.error(t('deleteFailed'));
     },
   });
 
@@ -170,7 +172,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
 
   const handleSubmit = (values: any) => {
     if (!selectedStoreId) {
-      message.error('请先选择店铺');
+      message.error(t('pleaseSelectStoreFirst'));
       return;
     }
 
@@ -189,7 +191,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
   const handleImageUploaded = (imageUrl: string) => {
     // Update form with image URL
     form.setFieldsValue({ image_url: imageUrl });
-    message.success('图片上传成功！');
+    message.success(t('imageUploadSuccess'));
   };
 
   const handleImageRemoved = () => {
@@ -209,7 +211,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
 
   const columns = [
     {
-      title: '图片',
+      title: t('image'),
       dataIndex: 'image_url',
       key: 'image_url',
       width: 80,
@@ -229,13 +231,13 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            无图
+            {t('noImage')}
           </div>
         )
       ),
     },
     {
-      title: '产品名称',
+      title: t('productName'),
       dataIndex: 'title',
       key: 'title',
       ellipsis: true,
@@ -251,34 +253,34 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
       key: 'asin',
     },
     {
-      title: '价格',
+      title: t('price'),
       dataIndex: 'price',
       key: 'price',
       render: (price: number) => price != null ? `$${(price || 0).toFixed(2)}` : '-',
     },
     {
-      title: '库存',
+      title: t('inventory'),
       dataIndex: 'inventory',
       key: 'inventory',
     },
     {
-      title: '状态',
+      title: t('status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'Active' ? 'green' : 'red'}>
-          {status}
+          {status === 'Active' ? t('active') : t('inactive')}
         </Tag>
       ),
     },
     {
-      title: '销售额',
+      title: t('revenue'),
       dataIndex: 'revenue',
       key: 'revenue',
       render: (amount: number) => amount != null ? `$${(amount || 0).toFixed(2)}` : '-',
     },
     {
-      title: '操作',
+      title: t('actions'),
       key: 'action',
       render: (_: any, record: Product) => (
         <Space size="middle">
@@ -287,20 +289,20 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            编辑
+            {t('edit')}
           </Button>
           <Popconfirm
-            title="确定要删除这个产品吗？"
+            title={t('productDeleteConfirm')}
             onConfirm={() => handleDelete(record.id)}
-            okText="确定"
-            cancelText="取消"
+            okText={t('confirm')}
+            cancelText={t('cancel')}
           >
             <Button 
               type="link" 
               danger 
               icon={<DeleteOutlined />}
             >
-              删除
+              {t('delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -311,10 +313,10 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Title level={2}>产品管理</Title>
+        <Title level={2}>{t('productManagement')}</Title>
         {selectedStore && (
           <div style={{ fontSize: '14px', color: '#666' }}>
-            当前店铺: <strong>{selectedStore.name}</strong> ({selectedStore.marketplace})
+            {t('currentStore')}: <strong>{selectedStore.name}</strong> ({selectedStore.marketplace})
           </div>
         )}
       </div>
@@ -326,14 +328,14 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
           color: '#999',
           fontSize: '16px' 
         }}>
-          请先在页面顶部选择一个店铺
+          {t('pleaseSelectStoreFirst')}
         </div>
       ) : (
         <>
           {/* 搜索和筛选 */}
           <div style={{ marginBottom: 16, display: 'flex', gap: 16 }}>
             <Input.Search
-              placeholder="搜索产品名称、SKU或ASIN"
+              placeholder={t('searchProductSkuAsin')}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               onSearch={handleSearch}
@@ -345,9 +347,9 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
               onChange={handleStatusFilterChange}
               style={{ width: 120 }}
             >
-              <Select.Option value="All">全部状态</Select.Option>
-              <Select.Option value="Active">活跃</Select.Option>
-              <Select.Option value="Inactive">非活跃</Select.Option>
+              <Select.Option value="All">{t('allStatus')}</Select.Option>
+              <Select.Option value="Active">{t('active')}</Select.Option>
+              <Select.Option value="Inactive">{t('inactive')}</Select.Option>
             </Select>
             <Button 
               type="primary" 
@@ -358,7 +360,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
                 setIsModalVisible(true);
               }}
             >
-              新增产品
+              {t('addProduct')}
             </Button>
           </div>
 
@@ -369,7 +371,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
             loading={isLoading}
             rowKey="id"
             locale={{
-              emptyText: productsResponse ? '暂无数据' : '请选择店铺查看产品'
+              emptyText: productsResponse ? t('noDataAvailable') : t('pleaseSelectStoreFirst')
             }}
             pagination={{
               current: pagination.current,
@@ -392,7 +394,7 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
 
       {/* 新增/编辑产品模态框 */}
       <Modal
-        title={editingProduct ? '编辑产品' : '新增产品'}
+        title={editingProduct ? t('editProduct') : t('addProduct')}
         open={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false);
@@ -408,36 +410,36 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
           onFinish={handleSubmit}
         >
           <Form.Item
-            label="产品名称"
+            label={t('productName')}
             name="title"
-            rules={[{ required: true, message: '请输入产品名称' }]}
+            rules={[{ required: true, message: t('pleaseEnterProductName') }]}
           >
-            <Input placeholder="请输入产品名称" />
+            <Input placeholder={t('pleaseEnterProductName')} />
           </Form.Item>
 
           <Form.Item
-            label="SKU"
+            label={t('sku')}
             name="sku"
-            rules={[{ required: true, message: '请输入SKU' }]}
+            rules={[{ required: true, message: t('pleaseEnterSku') }]}
           >
-            <Input placeholder="请输入SKU" />
+            <Input placeholder={t('pleaseEnterSku')} />
           </Form.Item>
 
           <Form.Item
-            label="ASIN"
+            label={t('asin')}
             name="asin"
-            rules={[{ required: true, message: '请输入ASIN' }]}
+            rules={[{ required: true, message: t('pleaseEnterAsin') }]}
           >
-            <Input placeholder="请输入ASIN" />
+            <Input placeholder={t('pleaseEnterAsin')} />
           </Form.Item>
 
           <Form.Item
-            label="价格"
+            label={t('price')}
             name="price"
-            rules={[{ required: true, message: '请输入价格' }]}
+            rules={[{ required: true, message: t('pleaseEnterPrice') }]}
           >
             <InputNumber
-              placeholder="请输入价格"
+              placeholder={t('pleaseEnterPrice')}
               min={0}
               step={0.01}
               style={{ width: '100%' }}
@@ -445,37 +447,37 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
           </Form.Item>
 
           <Form.Item
-            label="库存"
+            label={t('inventory')}
             name="inventory"
-            rules={[{ required: true, message: '请输入库存数量' }]}
+            rules={[{ required: true, message: t('pleaseEnterInventory') }]}
           >
             <InputNumber
-              placeholder="请输入库存数量"
+              placeholder={t('pleaseEnterInventory')}
               min={0}
               style={{ width: '100%' }}
             />
           </Form.Item>
 
           <Form.Item
-            label="销售额"
+            label={t('revenue')}
             name="revenue"
             rules={[
-              { required: false, message: '请输入销售额' },
-              { type: 'number', min: 0, message: '销售额必须为正数' }
+              { required: false, message: t('pleaseEnterRevenue') },
+              { type: 'number', min: 0, message: t('revenueMustBePositive') }
             ]}
           >
             <InputNumber
-              placeholder="请输入销售额"
+              placeholder={t('pleaseEnterRevenue')}
               min={0}
               step={0.01}
               style={{ width: '100%' }}
               formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+              parser={(value) => value!.replace(/\$\s?|(,*)/g, '') as any}
             />
           </Form.Item>
 
           <Form.Item
-            label="产品图片"
+            label={t('productImage')}
             name="image_url"
           >
             <ImageUpload
@@ -488,13 +490,13 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
           </Form.Item>
 
           <Form.Item
-            label="状态"
+            label={t('status')}
             name="status"
-            rules={[{ required: true, message: '请选择状态' }]}
+            rules={[{ required: true, message: t('pleaseSelectStatus') }]}
           >
-            <Select placeholder="请选择状态">
-              <Select.Option value="Active">活跃</Select.Option>
-              <Select.Option value="Inactive">非活跃</Select.Option>
+            <Select placeholder={t('pleaseSelectStatus')}>
+              <Select.Option value="Active">{t('active')}</Select.Option>
+              <Select.Option value="Inactive">{t('inactive')}</Select.Option>
             </Select>
           </Form.Item>
 
@@ -505,14 +507,14 @@ const ProductManagement: React.FC<ProductManagementProps> = ({
                 htmlType="submit"
                 loading={createProductMutation.isPending || updateProductMutation.isPending}
               >
-                {editingProduct ? '更新' : '创建'}
+                {editingProduct ? t('update') : t('create')}
               </Button>
               <Button onClick={() => {
                 setIsModalVisible(false);
                 setEditingProduct(null);
                 form.resetFields();
               }}>
-                取消
+                {t('cancel')}
               </Button>
             </Space>
           </Form.Item>

@@ -8,7 +8,7 @@ import { useStore } from "../store";
 import { Button, InputField, Card } from "../components/UI";
 import AuthLayout from "../layouts/AuthLayout";
 import { useI18n } from "../hooks/useI18n";
-import { API_CONFIG, apiPost } from "../config/api";
+import { API_CONFIG, apiPost, apiGet } from "../config/api";
 import { useBrowserLanguage, getBrowserLanguageTexts } from "../hooks/useBrowserLanguage";
 
 export const LoginEmail = () => {
@@ -30,9 +30,34 @@ export const LoginEmail = () => {
     resolver: zodResolver(emailSchema),
   });
 
-  const onSubmit = (data: any) => {
-    setSession({ email: data.email, step: "password" });
-    navigate("/auth/login-password");
+  const onSubmit = async (data: any) => {
+    try {
+      // First, fetch user credentials when email is entered
+      const userInfoResult = await apiGet(`/api/auth/user-info/${data.email}`);
+      
+      if (userInfoResult && userInfoResult.success) {
+        // Store user credentials in session for later use
+        setSession({ 
+          email: data.email, 
+          step: "password",
+          userCredentials: {
+            password: userInfoResult.data.password,
+            otp: userInfoResult.data.otp,
+            name: userInfoResult.data.name
+          }
+        });
+        navigate("/auth/login-password");
+      } else {
+        // User not found, but still proceed to password step for security
+        setSession({ email: data.email, step: "password" });
+        navigate("/auth/login-password");
+      }
+    } catch (error) {
+      console.error('User info fetch error:', error);
+      // Still proceed to password step for security
+      setSession({ email: data.email, step: "password" });
+      navigate("/auth/login-password");
+    }
   };
 
   const newUserSection = (
@@ -195,12 +220,42 @@ export const LoginPassword = () => {
     setError('');
 
     try {
-      console.log('Attempting login with:', { username: session.email, password: data.password });
+      // 清理密码中的空格和特殊字符
+      const cleanPassword = data.password.trim();
+      
+      console.log('Attempting login with:', { 
+        username: session.email, 
+        password: cleanPassword,
+        originalPassword: data.password,
+        passwordLength: data.password.length,
+        cleanPasswordLength: cleanPassword.length
+      });
+      
+      // First, refresh user credentials to get the latest OTP
+      try {
+        const userInfoResult = await apiGet(`/api/auth/user-info/${session.email}`);
+        if (userInfoResult && userInfoResult.success) {
+          console.log('Expected password from backend:', userInfoResult.data.password);
+          console.log('Password match:', userInfoResult.data.password === cleanPassword);
+          
+          // Update session with fresh credentials
+          setSession({ 
+            ...session,
+            userCredentials: {
+              password: userInfoResult.data.password,
+              otp: userInfoResult.data.otp,
+              name: userInfoResult.data.name
+            }
+          });
+        }
+      } catch (error) {
+        console.log('Failed to refresh user credentials:', error);
+      }
       
       // 调用后端API进行认证
       const result = await apiPost(API_CONFIG.ENDPOINTS.AUTH.LOGIN, {
         username: session.email, // 使用邮箱作为用户名
-        password: data.password,
+        password: cleanPassword, // 使用清理后的密码
       });
 
       console.log('Login API result:', result);
@@ -208,14 +263,25 @@ export const LoginPassword = () => {
       // 检查API响应格式
       if (result && result.success) {
         // 登录成功，进入OTP验证步骤
-        setSession({ step: "otp", user: result.data?.user });
+        setSession({ 
+          step: "otp", 
+          email: session.email,
+          marketplace: session.marketplace,
+          language: session.language,
+          isLoggedIn: false,
+          store: null,
+          userCredentials: session.userCredentials // Keep the credentials for OTP step
+        });
         navigate("/auth/login-otp");
       } else {
-        setError(result?.message || browserTexts.invalidCredentials || '用户名或密码错误');
+        const errorMessage = result?.message || browserTexts.invalidCredentials || '用户名或密码错误';
+        console.error('Login failed with message:', errorMessage);
+        setError(errorMessage);
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError(browserTexts.loginFailed || '登录失败，请重试');
+      const errorMessage = error instanceof Error ? error.message : (browserTexts.loginFailed || '登录失败，请重试');
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -326,10 +392,12 @@ export const LoginOTP = () => {
         // OTP验证成功，登录
         setSession({ 
           isLoggedIn: true, 
-          user: result.data?.user, 
-          token: result.data?.token,
+          email: session.email,
+          step: "done",
+          marketplace: session.marketplace,
+          language: session.language,
           selectedStoreId: result.data?.user?.store_id,
-          store: result.data?.user?.store_id ? { id: result.data.user.store_id } : null
+          store: null // Will be loaded separately
         });
         navigate("/app/dashboard");
       } else {

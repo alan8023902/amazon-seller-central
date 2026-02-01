@@ -281,6 +281,83 @@ sequenceDiagram
 - Add proper error messaging
 - Handle edge cases (leap years, month boundaries)
 
+### 12. Account Health Data Synchronization
+
+**Components**: `AccountHealthConfig.tsx` (Admin Panel) and `AccountHealth.tsx` (Frontend)
+**Issue**: Account Health data changes in backend admin not reflecting in frontend
+
+**Current Implementation Analysis**:
+- Admin panel modifies Account Health data via API
+- Frontend fetches Account Health data independently
+- No real-time synchronization mechanism
+- Possible caching issues preventing data refresh
+
+**Design Solution**:
+- Implement proper API data flow verification
+- Add cache invalidation mechanisms
+- Ensure frontend properly fetches updated data
+- Add real-time data synchronization if needed
+- Implement proper error handling for data sync failures
+
+**Data Flow Architecture**:
+```mermaid
+sequenceDiagram
+    participant A as Admin Panel
+    participant B as Backend API
+    participant F as Frontend App
+    participant D as Data Store
+    
+    A->>B: Update Account Health Data
+    B->>D: Persist Changes
+    B->>A: Confirm Update
+    F->>B: Request Account Health Data
+    B->>D: Fetch Latest Data
+    D->>B: Return Updated Data
+    B->>F: Send Updated Data
+```
+
+### 13. VOC Product Image Upload Management
+
+**Components**: `CXHealthConfig.tsx` (Admin Panel) and `VoiceOfTheCustomer.tsx` (Frontend)
+**Issue**: VOC product data management lacks image upload functionality
+
+**Current Implementation Analysis**:
+- CX Health config manages VOC product data
+- No image upload component integrated
+- Frontend VOC page expects product images
+- Missing image upload API integration
+
+**Design Solution**:
+- Integrate ImageUpload component into VOC product management
+- Add image upload API endpoints for VOC products
+- Implement proper image storage and retrieval
+- Ensure frontend displays uploaded VOC product images
+- Add image validation and error handling
+
+**Interface Changes**:
+```typescript
+interface VOCProduct {
+  id: string;
+  store_id: string;
+  product_name: string;
+  asin: string;
+  sku: string;
+  image_url?: string; // Enhanced for image support
+  satisfaction_rating: number;
+  fulfillment_method: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface VOCImageUploadProps {
+  productId: string;
+  currentImage?: string;
+  onImageUploaded: (imageUrl: string) => void;
+  onImageRemoved?: () => void;
+}
+```
+
 ## Data Models
 
 ### Enhanced Product Model
@@ -498,6 +575,42 @@ Now I'll use the prework tool to analyze the acceptance criteria before writing 
 ### Property 33: Date Edge Case Handling
 *For any* date selection involving edge cases (leap years, month boundaries), the system should handle them correctly
 **Validates: Requirements 11.5**
+
+### Property 34: Account Health Data Synchronization
+*For any* Account Health data update in the admin panel, the frontend should display the updated data without manual refresh
+**Validates: Requirements 12.1, 12.3**
+
+### Property 35: Account Health Data Persistence
+*For any* Account Health data modification, the backend API should properly persist changes to the data store
+**Validates: Requirements 12.2**
+
+### Property 36: Account Health Error Handling
+*For any* Account Health data synchronization failure, appropriate error messages should be displayed to users
+**Validates: Requirements 12.4**
+
+### Property 37: Account Health Data Consistency
+*For any* Account Health data flow, consistency should be maintained between admin panel modifications and frontend display
+**Validates: Requirements 12.5**
+
+### Property 38: VOC Image Upload Integration
+*For any* VOC product in CX Health configuration, image upload functionality should be available and properly integrated
+**Validates: Requirements 13.1, 13.6**
+
+### Property 39: VOC Image Storage and Association
+*For any* VOC product image upload, the image should be properly stored and associated with the correct product
+**Validates: Requirements 13.2**
+
+### Property 40: VOC Image Frontend Display
+*For any* VOC product with uploaded images, the frontend Voice of Customer page should display the images correctly
+**Validates: Requirements 13.3**
+
+### Property 41: VOC Image Format and Size Validation
+*For any* VOC image upload, the system should support common formats (JPG, PNG, GIF) with appropriate file size limits
+**Validates: Requirements 13.4**
+
+### Property 42: VOC Image Upload Error Handling
+*For any* failed VOC image upload, clear error messages should be displayed and previous valid image state maintained
+**Validates: Requirements 13.5**
 
 ## Error Handling
 

@@ -39,6 +39,7 @@ import accountHealthRoutes from './routes/accountHealth';
 import taxInfoRoutes from './routes/taxInfo';
 import legalEntityRoutes from './routes/legalEntity';
 import sellingApplicationsRoutes from './routes/sellingApplications';
+import uploadRoutes from './routes/upload';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
@@ -83,6 +84,7 @@ app.use('/api/account-health', accountHealthRoutes);
 app.use('/api/tax-info', taxInfoRoutes);
 app.use('/api/legal-entity', legalEntityRoutes);
 app.use('/api/selling-applications', sellingApplicationsRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -108,6 +110,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Backend server running on http://localhost:${PORT}`);
   console.log(`📁 Uploads directory: ${path.join(__dirname, '../uploads')}`);
   console.log(`📊 API endpoints available at http://localhost:${PORT}/api`);
+  console.log(`✅ Server started successfully at ${new Date().toISOString()}`); // 触发重启
 });
 
 // 开发环境HTTPS服务器配置（用于自定义域名）

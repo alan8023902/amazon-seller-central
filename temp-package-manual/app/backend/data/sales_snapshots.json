@@ -1,0 +1,62 @@
+[
+  {
+    "id": "snapshot-us-1",
+    "store_id": "store-us-1",
+    "total_order_items": 154066,
+    "units_ordered": 174714,
+    "ordered_product_sales": 19701989.13,
+    "avg_units_per_order_item": 1.13,
+    "avg_sales_per_order_item": 127.88,
+    "snapshot_time": "2024-12-30T23:32:21.000Z"
+  },
+  {
+    "id": "snapshot-jp-1",
+    "store_id": "store-jp-1",
+    "total_order_items": 184879,
+    "units_ordered": 209657,
+    "ordered_product_sales": 23642387,
+    "avg_units_per_order_item": 1.13,
+    "avg_sales_per_order_item": 153.46,
+    "snapshot_time": "2024-12-30T23:32:21.000Z"
+  },
+  {
+    "id": "snapshot-uk-1",
+    "store_id": "store-uk-1",
+    "total_order_items": 154066,
+    "units_ordered": 174714,
+    "ordered_product_sales": 19701989.13,
+    "avg_units_per_order_item": 1.13,
+    "avg_sales_per_order_item": 127.88,
+    "snapshot_time": "2024-12-30T23:32:21.000Z"
+  },
+  {
+    "id": "snapshot-de-1",
+    "store_id": "store-de-1",
+    "total_order_items": 107846,
+    "units_ordered": 122300,
+    "ordered_product_sales": 13791392.39,
+    "avg_units_per_order_item": 1.13,
+    "avg_sales_per_order_item": 89.52,
+    "snapshot_time": "2024-12-30T23:32:21.000Z"
+  },
+  {
+    "store_id": "store-us-main",
+    "total_order_items": 9999,
+    "units_ordered": 112121,
+    "ordered_product_sales": 54545454,
+    "avg_units_per_order": 1.14,
+    "avg_sales_per_order": 110.29,
+    "snapshot_time": "2026-01-28T17:52:44.255Z",
+    "id": "c722c893-91af-4aae-aab2-2c7a45c1f15a"
+  },
+  {
+    "store_id": "store-jp-main",
+    "total_order_items": 248,
+    "units_ordered": 192260,
+    "ordered_product_sales": 18657478,
+    "avg_units_per_order": 1.14,
+    "avg_sales_per_order": 110.29,
+    "snapshot_time": "2026-01-24T11:51:43.932Z",
+    "id": "4de63074-84cd-4557-9620-180a445fd639"
+  }
+]

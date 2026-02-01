@@ -68,9 +68,9 @@ const Sidebar: React.FC<SidebarProps> = ({ config, onClose }) => {
         {hasChildren ? (
           <div
             className={cn(
-              "flex items-center justify-between px-4 py-2 text-[13px] cursor-pointer transition-colors whitespace-normal leading-tight",
+              "flex items-center justify-between px-4 py-1 text-[13px] cursor-pointer transition-colors whitespace-normal leading-tight", // ✅ 进一步减少垂直padding从py-1.5到py-1
               shouldShowActive ? "bg-white text-[#007185] font-bold" : "text-[#007185] hover:bg-white/50",
-              level > 0 && "pl-8"
+              level > 0 && "pl-6 text-[12px]" // ✅ 子菜单缩进减少到pl-6，字体调小到12px
             )}
             onClick={() => toggleSection(item.id)}
           >
@@ -84,9 +84,9 @@ const Sidebar: React.FC<SidebarProps> = ({ config, onClose }) => {
           <Link
             to={item.path}
             className={cn(
-              "flex items-center px-4 py-2 text-[13px] transition-colors whitespace-normal leading-tight",
-              shouldShowActive ? "bg-white text-[#007185] font-bold" : "text-[#007185] hover:bg-white/50",
-              level > 0 || (!item.isHeader && item.id !== 'sales-dashboard' && !item.children) ? "pl-8" : "pl-4"
+              "flex items-center px-4 py-1 text-[13px] transition-colors whitespace-normal leading-tight", // ✅ 进一步减少垂直padding从py-1.5到py-1
+              shouldShowActive ? (level > 0 || item.id === 'sales-dashboard' ? "bg-white text-[#0F1111] font-bold" : "bg-white text-[#007185] font-bold") : "text-[#007185] hover:bg-white/50", // ✅ 子菜单选中时显示黑色文字
+              level > 0 || (!item.isHeader && item.id !== 'sales-dashboard' && !item.children) || item.id === 'sales-dashboard' ? "pl-6 text-[12px]" : "pl-4" // ✅ 特别处理sales-dashboard，也应用子菜单样式
             )}
           >
             {item.icon && <span className="mr-3">{item.icon}</span>}
@@ -110,7 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ config, onClose }) => {
         onClick={onClose}
       >
         <X size={16} />
-        <span className="text-[13px] font-bold uppercase tracking-tight">{t('closeReportsMenu')}</span>
+        <span className="text-[13px] font-normal uppercase tracking-tight">{t('closeReportsMenu')}</span> {/* ✅ 移除font-bold，改为font-normal */}
       </div>
       <div className="py-2">
         {config.items.map(item => renderMenuItem(item))}

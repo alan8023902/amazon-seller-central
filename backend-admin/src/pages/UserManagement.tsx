@@ -23,6 +23,7 @@ import {
   ReloadOutlined,
   CopyOutlined 
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { ADMIN_API_CONFIG, adminApiGet, adminApiPost, adminApiPut, adminApiDelete } from '../config/api';
 
 const { Text } = Typography;
@@ -49,6 +50,7 @@ interface UserManagementProps {
 
 const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, selectedStore }) => {
   const { message } = App.useApp();
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -72,10 +74,10 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
         setUsers(result);
       } else {
         console.error('Users data is not array:', result); // 添加调试日志
-        message.error('用户数据格式错误');
+        message.error(t('loadingData'));
       }
     } catch (error) {
-      message.error('加载用户列表失败');
+      message.error(t('loadingData'));
       console.error('Load users error:', error);
     } finally {
       setLoading(false);
@@ -95,18 +97,18 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
       console.log('User save result:', result);
       
       if (result && result.success) {
-        message.success(editingUser ? '用户更新成功！' : '用户创建成功！');
+        message.success(editingUser ? t('userUpdatedSuccess') : t('userCreatedSuccess'));
         setModalVisible(false);
         setEditingUser(null);
         form.resetFields();
         // 立即刷新用户列表
         await loadUsers();
       } else {
-        message.error(result?.message || '操作失败');
+        message.error(result?.message || t('operationFailed'));
         console.error('Save failed, result:', result);
       }
     } catch (error) {
-      message.error('操作失败，请重试');
+      message.error(t('operationFailed'));
       console.error('Save user error:', error);
     } finally {
       setLoading(false);
@@ -118,7 +120,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
       const result = await adminApiPost(ADMIN_API_CONFIG.ENDPOINTS.USERS.REFRESH_OTP(userId));
       
       if (result.success) {
-        message.success('验证码已刷新！');
+        message.success(t('otpRefreshed'));
         await loadUsers(); // Ensure refresh after OTP update
       } else {
         message.error(result.message || '刷新失败');
@@ -134,7 +136,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
       const result = await adminApiPost(ADMIN_API_CONFIG.ENDPOINTS.USERS.REFRESH_PASSWORD(userId));
       
       if (result.success) {
-        message.success('密码已刷新！');
+        message.success(t('passwordRefreshed'));
         await loadUsers(); // Ensure refresh after password update
       } else {
         message.error(result.message || '刷新失败');
@@ -147,9 +149,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
-      message.success('验证码已复制到剪贴板');
+      message.success(t('otpCopied'));
     }).catch(() => {
-      message.error('复制失败');
+      message.error(t('copyFailed'));
     });
   };
 
@@ -159,7 +161,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
       const result = await adminApiDelete(ADMIN_API_CONFIG.ENDPOINTS.USERS.DELETE(userId));
       
       if (result.success) {
-        message.success('用户删除成功！');
+        message.success(t('userDeletedSuccess'));
         await loadUsers(); // Ensure refresh after delete
       } else {
         message.error(result.message || '删除失败');
@@ -193,7 +195,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
 
   const columns = [
     {
-      title: '用户名 (邮箱)',
+      title: t('userName') + ' (' + t('email') + ')',
       dataIndex: 'name',
       key: 'name',
       render: (name: string, record: User) => (
@@ -204,19 +206,19 @@ const UserManagement: React.FC<UserManagementProps> = ({ selectedStoreId, select
       ),
     },
     {
-      title: '角色',
+      title: t('role'),
       dataIndex: 'role',
       key: 'role',
       render: (role: string) => (
         <span style={{ 
           color: role === 'admin' ? '#f50' : role === 'manager' ? '#108ee9' : '#87d068' 
         }}>
-          {role === 'admin' ? '管理员' : role === 'manager' ? '经理' : '用户'}
+          {role === 'admin' ? t('admin') : role === 'manager' ? t('manager') : t('user')}
         </span>
       ),
     },
     {
-      title: '密码',
+      title: t('password'),
       dataIndex: 'password',
       key: 'password',
       render: (password: string, record: User) => (

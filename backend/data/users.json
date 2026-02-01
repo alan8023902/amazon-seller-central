@@ -98,8 +98,8 @@
     "password": "G149113",
     "otp_secret": "149113",
     "created_at": "2026-01-20T15:09:28.855Z",
-    "updated_at": "2026-01-29T00:18:38.350Z",
-    "last_login": "2026-01-29T00:18:38.350Z"
+    "updated_at": "2026-01-31T14:57:45.089Z",
+    "last_login": "2026-01-31T14:57:45.089Z"
   },
   {
     "id": "user-1769016944406-uqy1jxp",
@@ -107,10 +107,10 @@
     "name": "刘荣",
     "role": "admin",
     "is_active": true,
-    "password": "T224131",
+    "password": "J643148",
     "otp_secret": "318770",
     "created_at": "2026-01-21T17:35:44.406Z",
-    "updated_at": "2026-01-28T14:31:02.216Z"
+    "updated_at": "2026-01-31T14:50:56.840Z"
   },
   {
     "id": "user-1769609443628-mglbprk",

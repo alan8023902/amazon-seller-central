@@ -19,7 +19,7 @@ const WithSidebarLayout: React.FC = () => {
     <div className="flex h-full">
       {/* Sidebar - only show if config exists and not collapsed */}
       {sidebarConfig && !isSidebarCollapsed && (
-        <aside className="w-[260px] min-w-[260px] bg-[#EEF0F3] border-r border-gray-200 shrink-0 sticky top-0 h-screen overflow-hidden">
+        <aside className="w-[220px] min-w-[220px] bg-[#EEF0F3] border-r border-gray-200 shrink-0 sticky top-0 h-screen overflow-hidden"> {/* ✅ 从260px调小到220px */}
           <Sidebar
             config={sidebarConfig}
             onClose={() => setIsSidebarCollapsed(true)}

@@ -33,6 +33,11 @@ export interface UserSession {
   language: Language;
   store: Store | null; // Changed from string to Store object
   selectedStoreId?: string; // Add selected store ID for easier access
+  userCredentials?: {
+    password: string;
+    otp: string;
+    name: string;
+  };
 }
 
 export interface SalesHistoryPoint {

@@ -1,40 +1,39 @@
-/* Business Reports 专用样式 - 像素级还原 */
+/* Business Reports - Pixel-match tuning */
 
 .businessReports {
   font-family: "Amazon Ember", Arial, sans-serif;
-  --primary-teal: #008296;
-  --dark-teal: #007185;
-  --text-dark: #0f1111;
-  --text-gray: #565959;
-  --text-light: #888888;
-  --border-gray: #d5d9d9;
-  --bg-white: #ffffff;
-  --bg-light: #f3f3f3;
-  --chart-line: #008296;
-  --link-color: #007185;
+  --teal: #008296;
+  --teal-dark: #007185;
+  --text: #0f1111;
+  --gray: #565959;
+  --border: #d5d9d9;
+  --panel: #eeeeee;
+  --compareBlue: #dfeaf2;
 }
 
 .pageContainer {
   min-height: 100vh;
-  background-color: #ffffff;
   width: 100%;
-  max-width: none;
+  background: #fff; /* ✅ 确保整个页面背景是白色 */
 }
 
+/* ===== Header (no divider line under title) ===== */
 .pageHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
-  background-color: #f7f8f8;
-  border-bottom: 1px solid var(--border-gray);
+  padding: 14px 20px 8px 20px; /* ✅ 减少底部padding */
+  background: #fff; /* ✅ 标题区域白色背景 */
+  margin: 0; /* ✅ 紧贴导航，无间距 */
+  border-bottom: 0;
 }
 
 .pageTitle {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 400;
-  color: #0F1111;
+  color: var(--text);
   margin: 0;
+  line-height: 1.1;
 }
 
 .learnMoreLink {
@@ -45,138 +44,187 @@
   position: relative;
   top: 1px;
 }
-
-.learnMoreLink:hover {
-  text-decoration: underline;
-  color: #c45500;
-}
+.learnMoreLink:hover { text-decoration: underline; color: #c45500; }
 
 .headerButtons {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 
 .btnRefresh,
 .btnDownload {
-  padding: 0 14px;
   height: 29px;
+  padding: 0 14px;
   font-size: 13px;
   border-radius: 2px;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 400;
+  justify-content: center;
+  line-height: 29px;
 }
 
+/* Refresh = teal outline */
 .btnRefresh {
-  color: #0F1111;
-  background-color: var(--bg-white);
-  border: 1px solid var(--border-gray);
-  box-shadow: 0 1px 2px rgba(15, 17, 17, .15);
+  color: var(--teal);
+  background: #fff;
+  border: 1px solid var(--teal);
+  box-shadow: 0 1px 2px rgba(15, 17, 17, 0.15);
 }
+.btnRefresh:hover { background: #f7f8fa; }
 
 .btnDownload {
-  color: var(--bg-white);
-  background-color: var(--primary-teal);
+  color: #fff;
+  background: var(--teal);
   border: 1px solid #006778;
 }
+.btnDownload:hover { background: var(--teal-dark); }
 
-.btnRefresh:hover {
-  background-color: #f7f8fa;
+/* ✅ solid bell - 调大尺寸 */
+.bellBtn{
+  width: 32px;
+  height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.bellSolid{
+  width: 20px; /* ✅ 从18px调大到20px */
+  height: 20px; /* ✅ 从18px调大到20px */
+  display:block;
+  fill: var(--teal);
 }
 
-.btnDownload:hover {
-  background-color: #007185;
-}
-
+/* ===== Insights ===== */
 .insightsCard {
-  background-color: var(--bg-white);
+  background: #fff;
   border: 1px solid #e7e7e7;
   border-radius: 2px;
-  margin: 16px 20px 6px 20px;
-  padding: 16px 20px;
+  margin: 4px 20px 0 20px; /* ✅ 减少顶部margin */
+  padding: 22px 16px 26px 16px; /* ✅ 调大padding增加上下高度 */
   position: relative;
-  min-height: 70px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  min-height: 110px; /* ✅ 调大最小高度 */
 }
 
+/* 左侧：图标 + 文案 */
 .insightsHeader {
   display: flex;
   gap: 10px;
-  align-items: flex-start;
+  align-items: flex-start; /* ✅ 图标与标题顶部对齐 */
+  flex: 1;
+  padding-right: 200px;
+  margin-bottom: 10px; /* ✅ 增加与反馈部分的距离适应更大的高度 */
 }
 
 .sparkleIcon {
-  margin-top: 3px;
+  margin-top: 0; /* ✅ 与标题顶部对齐，不是与文本对齐 */
   flex-shrink: 0;
+}
+
+.insightsContent {
+  flex: 1;
 }
 
 .insightsTitle {
   font-size: 13px;
   font-weight: 700;
-  color: #0F1111;
+  color: var(--text);
   line-height: 1.4;
+  margin: 0 0 6px 0; /* ✅ 增加与下方文本的间距 */
 }
 
 .insightsText {
-  font-size: 13px;
-  color: #0F1111;
-  margin-top: 2px;
+  font-size: 11px; /* ✅ 从12px调小到11px */
+  color: var(--text); /* ✅ 恢复与Total order items一致的颜色 */
+  margin: 12px 0 0 0; /* ✅ 从18px减少到12px，进一步缩小与标题的距离 */
   line-height: 1.4;
+  margin-left: -30px; /* ✅ 让文本与四角星对齐 */
 }
 
+/* ✅ 反馈部分绝对定位到右下角，进一步增加与上方文本的距离 */
 .feedbackSection {
   position: absolute;
+  bottom: 16px; /* ✅ 靠近下边框 */
   right: 16px;
-  bottom: 12px;
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-top: 64px; /* ✅ 从56px增加到64px，进一步增加与上方文本的距离 */
 }
 
 .feedbackText {
   font-size: 11px;
-  color: #565959;
+  color: var(--gray);
   font-style: italic;
+  white-space: nowrap;
 }
 
 .feedbackIcons {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 22px; /* ✅ 进一步增加图标间距 */
 }
-
 .feedbackIcon {
-  color: #888;
+  color: #888; /* ✅ 实心灰色 */
   cursor: pointer;
-  width: 14px;
-  height: 14px;
+  width: 16px; /* ✅ 稍微调大图标 */
+  height: 16px; /* ✅ 稍微调大图标 */
 }
+.feedbackIcon:hover { color: var(--teal); }
 
 .separator {
   width: 1px;
   height: 14px;
-  background-color: #ddd;
+  background: #ddd;
 }
 
-.feedbackIcon:hover {
-  color: var(--primary-teal);
-}
-
+/* ===== Filters ===== */
+/* ✅ 真实：灰底区域内还有一层“带框容器”，且不贴左边 */
+/* ===== Filters ===== */
+/* ✅ 过滤器区域 - 白色页面背景，移除上下分割线 */
 .filtersContainer {
-  background-color: #fcfcfc;
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--border-gray);
-  margin-bottom: 0;
+  background: #fff; /* ✅ 白色背景 */
+  padding: 8px 0 12px 0; /* ✅ 减少上下padding */
+  margin-top: 6px; /* ✅ 减少顶部margin */
+  /* ✅ 完全移除上下分割线 */
+  border: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+/* ===== Filters ===== */
+.filtersContainer {
+  background: #fff; /* ✅ 白色背景 */
+  padding: 8px 0 12px 0; /* ✅ 减少上下padding */
+  margin-top: 6px; /* ✅ 减少顶部margin */
+  border: none;
+}
+
+/* ✅ 外层白色卡片容器 */
+.filtersCard {
+  margin: 0 20px;
+  background: #fff;
+  border: 1px solid #d5d9d9;
+  border-radius: 2px;
+  padding: 0;
+}
+
+/* ✅ 内层灰色容器 */
+.filtersInner {
+  background: #ebeced; /* ✅ 灰色背景 */
+  padding: 16px 16px 18px 36px; /* ✅ 进一步增加左padding从28px到36px，让内容更多右移 */
+  border-radius: 1px;
 }
 
 .filterRow {
   display: flex;
   align-items: flex-start;
-  gap: 20px;
+  gap: 18px;
 }
 
 .filterGroup {
@@ -186,162 +234,162 @@
 }
 
 .filterLabel {
-  font-size: 13px;
+  font-size: 11px; /* ✅ 从12px调小到11px */
   font-weight: 700;
-  color: #0F1111;
-  margin-bottom: 2px;
+  color: var(--text);
+  margin: 0 0 0 2px;
 }
 
-.filterSelect,
-.dateInput {
-  height: 29px;
-  font-size: 13px;
-  border: 1px solid #a6a6a6;
-  border-top-color: #949494;
-  border-radius: 3px;
-  background-color: var(--bg-white);
-  padding: 0 8px;
-  outline: none;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .5), 0 1px 0 rgba(0, 0, 0, .07) inset;
-}
-
-.filterSelect {
-  min-width: 160px;
-  background-image: linear-gradient(to bottom, #f7f8fa, #e7e9ec);
-}
-
+/* Date block */
 .datePicker {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px; /* ✅ 从5px调小到4px，减少上下间距 */
+  width: 288px; /* ✅ 设置固定宽度 */
 }
 
+/* ✅ 日期输入框 - 精确对齐Custom下拉框，调小高度 */
 .dateInputsRow {
   display: flex;
   align-items: center;
-  gap: 4px;
-  width: 288px;
+  gap: 8px;
+  width: 288px; /* ✅ 与Custom下拉框完全一致 */
   min-width: 288px;
 }
 
-.dateInputWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  border: 1px solid #888;
-  background: #fff;
-  height: 29px;
-  padding: 0 4px;
-}
-
-.calendarIconLeft {
-  color: #0F1111;
-  margin-right: 4px;
+/* ✅ 单个日期选择器的宽度和高度调整 */
+.dateInputsRow > * {
+  width: 140px; /* ✅ (288px - 8px gap) / 2 = 140px */
+  min-width: 140px;
   flex-shrink: 0;
+  height: 25px; /* ✅ 从27px调小到25px */
 }
 
-.dateInputBare {
-  border: none;
+/* Seller Central select - Custom下拉框 */
+.scSelect {
+  width: 288px !important;
+  min-width: 288px !important;
+  height: 29px;
+  font-size: 10px; /* ✅ 从11px调小到10px */
+  padding: 0 8px;
+  border-radius: 3px;
+  border: 1px solid #a6a6a6;
+  border-top-color: #949494;
+  background: #ffffff !important; /* ✅ 强制白色背景 */
+  background-color: #ffffff !important; /* ✅ 强制白色背景 */
+  background-image: none !important; /* ✅ 移除背景图片 */
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5), 0 1px 0 rgba(0,0,0,0.07) inset;
   outline: none;
-  width: 80px;
-  font-size: 12px;
-  color: #0F1111;
+  color: var(--text);
+}
+.scSelect:hover { 
+  background: #ffffff !important; /* ✅ 悬停时也强制保持白色 */ 
+  background-color: #ffffff !important; /* ✅ 悬停时也强制保持白色 */ 
+}
+.scSelect:focus { 
+  background: #ffffff !important; /* ✅ 聚焦时也强制保持白色 */ 
+  background-color: #ffffff !important; /* ✅ 聚焦时也强制保持白色 */ 
+}
+.scSelect:active { 
+  background: #ffffff !important; /* ✅ 激活时也强制保持白色 */ 
+  background-color: #ffffff !important; /* ✅ 激活时也强制保持白色 */ 
 }
 
+/* other selects - 其他下拉框也改为白色背景 */
+.filterSelect {
+  height: 29px;
+  font-size: 11px; /* ✅ 从13px调小到11px */
+  border: 1px solid #a6a6a6;
+  border-top-color: #949494;
+  border-radius: 3px;
+  padding: 0 8px;
+  outline: none;
+  min-width: 160px;
+  background: #ffffff !important; /* ✅ 强制白色背景 */
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5), 0 1px 0 rgba(0,0,0,0.07) inset;
+}
+.filterSelect:hover {
+  background: #ffffff !important; /* ✅ 悬停时也强制保持白色 */
+}
+
+/* Apply aligns with selects */
+.applyWrap{ margin-top: 18px; }
 .btnApply {
   height: 29px;
-  padding: 0 20px;
-  font-size: 13px;
+  padding: 0 18px;
+  font-size: 11px; /* ✅ 从13px调小到11px */
   font-weight: 700;
-  color: var(--bg-white);
-  background-color: #008296;
+  color: #fff;
+  background: var(--teal);
   border: 1px solid #006778;
   border-radius: 3px;
   cursor: pointer;
-  margin-top: 21px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.35), 0 1px 0 rgba(0,0,0,.12) inset;
 }
+.btnApply:hover { background: var(--teal-dark); }
 
-.btnApply:hover {
-  background-color: #007185;
-}
-
+/* ===== Snapshot ===== */
 .snapshotSection {
-  background-color: var(--bg-white);
-  border: 1px solid var(--border-gray);
-  margin: 0 20px 6px 20px;
+  background: #fff;
+  border: 1px solid var(--border);
+  margin: 0 20px 4px 20px; /* ✅ 减少底部margin */
 }
 
 .snapshotHeader {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  background-color: #f6f6f6;
+  padding: 10px 16px;
   border-bottom: 1px solid #e7e7e7;
 }
 
 .snapshotTitle {
   font-size: 17px;
-  font-weight: 400;
-  color: #0F1111;
+  font-weight: 400; /* ✅ 与数字粗度一致 */
+  color: var(--text);
+  margin: 0;
 }
 
 .snapshotTimestamp {
   font-size: 11px;
-  color: #565959;
+  color: var(--gray);
   position: relative;
   top: 1px;
 }
 
 .metricsRow {
   display: flex;
-  padding: 12px 16px 20px 16px;
-  background-color: #fcfcfc;
-  gap: 65px;
-  justify-content: flex-start;
+  gap: 28px; /* ✅ 增加数字之间的间距 */
+  padding: 10px 16px 14px 16px; /* ✅ 缩小上下padding */
 }
 
-.metricItem {
-  flex: none;
-  width: auto;
-}
+.metricLabel { font-size: 11px; color: var(--gray); margin-bottom: 2px; } /* ✅ 缩小标签与数字的间距 */
+.metricValue { font-size: 21px; font-weight: 400; color: var(--text); }
 
-.metricLabel {
-  font-size: 11px;
-  color: #565959;
-  margin-bottom: 4px;
-}
-
-.metricValue {
-  font-size: 21px;
-  font-weight: 400;
-  color: #002f36;
-}
-
+/* ===== Compare ===== */
 .compareSection {
-  background-color: #DFEAF2;
-  margin: 0 20px 16px 20px;
-  border: 1px solid var(--border-gray);
+  background: var(--compareBlue);
+  margin: 0 20px 12px 20px; /* ✅ 减少底部margin */
+  border: 1px solid var(--border);
 }
 
 .compareHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
-  background-color: #DFEAF2;
+  padding: 10px 16px;
   border-bottom: 1px solid #e7e7e7;
 }
 
 .compareTitle {
   font-size: 17px;
-  font-weight: 400;
-  color: #0F1111;
+  font-weight: 400; /* ✅ 与数字粗度一致 */
+  color: var(--text);
+  margin: 0;
 }
 
 .viewToggle {
-  display: flex;
-  gap: 0;
+  display: inline-flex;
   border: 1px solid #888;
   border-radius: 3px;
   overflow: hidden;
@@ -351,145 +399,135 @@
   height: 25px;
   padding: 0 12px;
   font-size: 11px;
-  background-color: #fff;
-  color: #0F1111;
-  border: 1px solid transparent;
+  background: #fff;
+  color: var(--text);
+  border: none;
   cursor: pointer;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .5), 0 1px 0 rgba(0, 0, 0, .07) inset;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5), 0 1px 0 rgba(0,0,0,0.07) inset;
 }
+.viewBtn:not(:last-child) { border-right: 1px solid #888; }
+.viewBtnActive { background: var(--teal); color: #fff; }
 
-.viewBtn.active {
-  background-color: #008296;
-  color: #fff;
-  border: 1px solid #006778;
-  margin: -1px;
-  z-index: 1;
-}
-
-.viewBtn:not(:last-child) {
-  border-right: 1px solid #888;
-}
-
+/* ✅ 真实：图表区域不要灰底垫层，紧凑贴合 compare 背景 */
 .chartsContainer {
   display: flex;
-  padding: 0;
   gap: 0;
-  background-color: #e0e0e0;
-  border-top: 1px solid #e7e7e7;
-  margin-top: 0;
+  padding: 0;               /* 取消灰底 padding */
+  background: transparent;  /* 取消灰底 */
 }
 
-.chartDivider {
-  width: 1px;
-  background-color: #ccc;
-  margin: 0;
-}
-
+/* chart cards */
 .chartWrapper {
   flex: 1;
-  height: 260px;
-  border: none;
-  padding: 0;
+  height: 220px; /* ✅ 从270px调小到220px，让图表更紧凑 */
   position: relative;
-  background-color: #e0e0e0;
-}
-
-.chartWrapper:last-child {
-  padding: 0;
-}
-
-.chartWrapper:first-child {
-  border-right: none;
-}
-
-.chartWrapper:last-child {
-  border-left: none;
-}
-
-.compareLegend {
-  display: flex;
-  gap: 60px;
-  margin-top: 20px;
-  padding: 20px;
   background: #fff;
+  border-top: 0;
+  border-bottom: 0;
+  border-left: 0;
+  border-right: 0;
 }
 
-.compareLabel {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.whatsThisLink {
-  font-size: 14px;
-  color: var(--link-color);
-  display: block;
-}
-
-.compareCheckbox {
+/* 外围白色大框（真实两张图在同一白框里） - 左移整个图表区域 */
+.chartsFrame{
+  margin: 4px 14px 10px 4px; /* ✅ 左边距从8px减少到4px，让整个图表区域左移 */
+  background: #fff;
+  border: 1px solid #d0d0d0;
   display: flex;
-  gap: 10px;
 }
 
-.checkboxLabel {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--link-color);
+/* 内部竖分割线 */
+.chartDivider{
+  width: 1px;
+  background: #d0d0d0;
 }
 
-.checkboxValues {
-  font-size: 16px;
-  font-weight: 700;
-  color: #0F1111;
-  margin-top: 4px;
+/* y axis titles - 调整Y轴标题位置适应更小的左边距 */
+.yAxisTitle{
+  position: absolute;
+  top: 50%;
+  font-size: 10px;
+  color: var(--gray);
+  letter-spacing: .6px;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: center center;
+  white-space: nowrap;
 }
+
+/* 第一个图表的Y轴标题 - 保持当前位置 */
+.chartWrapper:first-child .yAxisTitle{
+  left: -6px; /* ✅ 第一个图保持不变 */
+}
+
+/* 第二个图表的Y轴标题 - 继续左移避免与Y轴数字重叠 */
+.chartWrapper:last-child .yAxisTitle{
+  left: -32px; /* ✅ 第二个图继续左移到-32px，确保与Y轴数字有足够距离 */
+}
+
+/* legend area */
 .compareLegend {
   display: flex;
-  gap: 30px;
-  padding: 8px 16px;
-  background-color: #DFEAF2;
+  align-items: stretch;
+  gap: 0;
+  padding: 4px 16px 18px 16px; /* ✅ 进一步增加底部padding到18px，增加更多与下边框的距离 */
   border-top: 1px solid #e7e7e7;
-  border-right: 1px solid #ddd;
-  margin-top: 10px;
 }
 
-.compareLabel {
-  font-size: 17px;
-  font-weight: 700;
-  color: #0F1111;
-  display: block;
-}
+.compareLeft { width: 70px; } /* ✅ 进一步缩小Compare标签区域 */
+.compareLabel { font-size: 17px; font-weight: 700; color: var(--text); display:block; line-height: 1.2; }
 
 .whatsThisLink {
   font-size: 11px;
   color: #007185;
   text-decoration: none;
-  display: block;
+  display:block;
   margin-top: 2px;
 }
+.whatsThisLink:hover{ text-decoration: underline; color:#c45500; }
 
-.whatsThisLink:hover {
-  text-decoration: underline;
-  color: #c45500;
+.compareContent {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  flex: 1;
+  justify-content: flex-start; /* ✅ 让内容靠左对齐 */
 }
 
 .compareCheckbox {
   display: flex;
-  gap: 12px;
+  gap: 3px; /* ✅ 进一步缩小复选框与文本的间距 */
+  align-items: flex-start;
+  flex: 0 0 auto; /* ✅ 不让它们自动扩展填充空间 */
+  min-width: 200px; /* ✅ 设置最小宽度 */
+  max-width: 250px; /* ✅ 设置最大宽度 */
 }
 
 .checkboxLabel {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  color: #007185;
+  color: var(--text);
   display: block;
-  margin-top: 2px;
+  line-height: 1.3;
 }
 
 .checkboxValues {
   font-size: 11px;
-  font-weight: 700;
-  color: #0F1111;
-  line-height: 1.5;
+  color: var(--gray);
   margin-top: 2px;
+  line-height: 1.4;
 }
 
+.deepDiveTitle{
+  margin: 22px 20px 8px 20px; /* ✅ 减少底部margin为后续内容留空间 */
+  font-size: 18px; /* ✅ 从22px调小到18px */
+  font-weight: 400;
+  color: var(--text);
+}
+
+.deepDiveSubtitle{
+  margin: 0 20px 20px 20px;
+  font-size: 11px; /* ✅ 从13px调小到11px */
+  font-weight: 700; /* ✅ 加粗 */
+  color: var(--text); /* ✅ 改为更黑的颜色，使用主文本色 */
+  text-align: center; /* ✅ 居中对齐 */
+}
