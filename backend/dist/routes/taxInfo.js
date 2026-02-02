@@ -97,6 +97,91 @@ router.put('/:storeId', (req, res) => {
             taxInfoData.push(updatedTaxInfo);
         }
         writeTaxInfoData(taxInfoData);
+        try {
+            const legalEntityPath = (0, path_1.join)(process.cwd(), 'data', 'legal_entity.json');
+            let legalEntities = [];
+            try {
+                const legalEntityData = (0, fs_1.readFileSync)(legalEntityPath, 'utf-8');
+                legalEntities = JSON.parse(legalEntityData);
+            }
+            catch (error) {
+                console.log('Legal entity file not found, creating new one');
+            }
+            const legalEntityIndex = legalEntities.findIndex((le) => le.store_id === storeId);
+            let addressParts = { street: '', suite: '', city: '', state: '', zipCode: '', country: '' };
+            if (updatedTaxInfo.place_of_establishment) {
+                const parts = updatedTaxInfo.place_of_establishment.split(',').map((part) => part.trim());
+                if (parts.length >= 2) {
+                    addressParts.street = parts[0] || '';
+                    if (parts.length >= 4) {
+                        addressParts.suite = parts[1] || '';
+                        addressParts.city = parts[2] || '';
+                        const stateZipCountry = parts.slice(3).join(', ');
+                        const lastCommaIndex = stateZipCountry.lastIndexOf(',');
+                        if (lastCommaIndex > -1) {
+                            const stateZip = stateZipCountry.substring(0, lastCommaIndex).trim();
+                            addressParts.country = stateZipCountry.substring(lastCommaIndex + 1).trim();
+                            const stateZipMatch = stateZip.match(/^(.+?)\s+(\d{5,}|\w{3,}\s*\w{3,})$/);
+                            if (stateZipMatch) {
+                                addressParts.state = stateZipMatch[1];
+                                addressParts.zipCode = stateZipMatch[2];
+                            }
+                            else {
+                                addressParts.state = stateZip;
+                            }
+                        }
+                        else {
+                            addressParts.state = stateZipCountry;
+                        }
+                    }
+                    else if (parts.length === 3) {
+                        addressParts.city = parts[1] || '';
+                        addressParts.country = parts[2] || '';
+                    }
+                    else {
+                        addressParts.country = parts[1] || '';
+                    }
+                }
+            }
+            const updatedLegalEntity = {
+                id: `legal-entity-${storeId}`,
+                store_id: storeId,
+                legalBusinessName: updatedTaxInfo.legal_business_name || 'Sample Technology Co., Ltd.',
+                businessAddress: {
+                    street: addressParts.street || '123 Business Street',
+                    suite: addressParts.suite || 'Suite 456',
+                    city: addressParts.city || 'San Francisco',
+                    state: addressParts.state || 'CA',
+                    zipCode: addressParts.zipCode || '94105',
+                    country: addressParts.country || 'United States'
+                },
+                taxInformation: {
+                    status: updatedTaxInfo.tax_information_complete ? 'Complete' : 'Pending',
+                    taxId: updatedTaxInfo.vat_registration_number || '12-3456789',
+                    taxClassification: 'LLC'
+                },
+                businessType: 'Limited Liability Company',
+                registrationDate: '2023-01-15',
+                updated_at: updatedTaxInfo.updated_at
+            };
+            if (legalEntityIndex >= 0) {
+                const existingEntity = legalEntities[legalEntityIndex];
+                updatedLegalEntity.created_at = existingEntity.created_at;
+                updatedLegalEntity.businessType = existingEntity.businessType || updatedLegalEntity.businessType;
+                updatedLegalEntity.registrationDate = existingEntity.registrationDate || updatedLegalEntity.registrationDate;
+                updatedLegalEntity.taxInformation.taxClassification = existingEntity.taxInformation?.taxClassification || updatedLegalEntity.taxInformation.taxClassification;
+                legalEntities[legalEntityIndex] = updatedLegalEntity;
+            }
+            else {
+                updatedLegalEntity.created_at = new Date().toISOString();
+                legalEntities.push(updatedLegalEntity);
+            }
+            (0, fs_1.writeFileSync)(legalEntityPath, JSON.stringify(legalEntities, null, 2));
+            console.log('Legal entity synchronized with tax info update');
+        }
+        catch (legalEntityError) {
+            console.error('Error synchronizing legal entity:', legalEntityError);
+        }
         res.json({
             success: true,
             data: updatedTaxInfo,
