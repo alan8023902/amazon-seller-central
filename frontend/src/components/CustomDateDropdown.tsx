@@ -83,8 +83,9 @@ const CustomDateDropdown: React.FC<CustomDateDropdownProps> = ({
               onClick={() => handleOptionClick(option.value)}
               className={`px-3 py-1 text-[11px] cursor-pointer whitespace-nowrap ${isSelected ? '' : 'hover:bg-gray-100'}`}
               style={{
-                backgroundColor: isSelected ? '#619087' : '#ffffff',
-                color: isSelected ? '#ffffff' : '#0f1111'
+                backgroundColor: isSelected ? '#DFEAF2' : '#ffffff',
+                color: '#0f1111',
+                border: isSelected ? '1px solid #007185' : '1px solid transparent'
               }}
             >
               {option.label}

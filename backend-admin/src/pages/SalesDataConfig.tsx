@@ -109,9 +109,9 @@ const SalesDataConfig: React.FC<SalesDataConfigProps> = ({
 
       let result;
       if (editingData) {
-        result = await adminApiPut(`/api/admin/sales-data/${editingData.id}`, submitData);
+        result = await adminApiPut(`/api/sales/admin/sales-data/${editingData.id}`, submitData);
       } else {
-        result = await adminApiPost('/api/admin/sales-data', submitData);
+        result = await adminApiPost('/api/sales/admin/sales-data', submitData);
       }
       
       console.log('Sales data save result:', result);
@@ -136,7 +136,7 @@ const SalesDataConfig: React.FC<SalesDataConfigProps> = ({
   const handleDelete = async (id: string) => {
     setLoading(true);
     try {
-      const result = await adminApiDelete(`/api/admin/sales-data/${id}`);
+      const result = await adminApiDelete(`/api/sales/admin/sales-data/${id}`);
       
       if (result.success) {
         message.success('销售数据删除成功！');
@@ -178,7 +178,7 @@ const SalesDataConfig: React.FC<SalesDataConfigProps> = ({
 
     setLoading(true);
     try {
-      const result = await adminApiPost(`/api/admin/sales-data/generate/${selectedStoreId}`);
+      const result = await adminApiPost(`/api/sales/admin/sales-data/generate/${selectedStoreId}`);
       
       if (result.success) {
         message.success('样本数据生成成功！');

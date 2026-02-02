@@ -2,13 +2,13 @@
   {
     "id": "tax-info-store-us-main",
     "store_id": "store-us-main",
-    "legal_business_name": "TechNest LLC",
-    "place_of_establishment": "1234 Business Ave, Suite 100, New York, NY 10001, United States",
-    "vat_registration_number": "US123456789",
+    "legal_business_name": "TechNest LLC Final",
+    "place_of_establishment": "9999 Final Business Ave, New York, NY 10003, United States",
+    "vat_registration_number": "US111222333",
     "rfc_id": "",
     "tax_interview_completed": true,
     "tax_information_complete": true,
-    "updated_at": "2026-01-29T00:17:11.052Z",
+    "updated_at": "2026-02-02T14:13:01.432Z",
     "created_at": "2026-01-01T00:00:00.000Z"
   },
   {
@@ -46,5 +46,17 @@
     "tax_information_complete": true,
     "created_at": "2026-01-01T00:00:00.000Z",
     "updated_at": "2026-01-20T10:00:00.000Z"
+  },
+  {
+    "id": "tax-info-d8cd8e6d-793f-4a33-9d70-694b62c5f6e4",
+    "store_id": "d8cd8e6d-793f-4a33-9d70-694b62c5f6e4",
+    "legal_business_name": "飒飒你还是低hi是啊hi还四hi",
+    "place_of_establishment": "萨斯hi 晒iahi是ihi很晒hi撒iihsai是啊hi是啊i",
+    "vat_registration_number": "飒飒仨45212121212",
+    "rfc_id": "飒飒打撒阿萨",
+    "tax_interview_completed": true,
+    "tax_information_complete": true,
+    "updated_at": "2026-02-02T13:59:02.196Z",
+    "created_at": "2026-02-02T13:59:02.196Z"
   }
 ]

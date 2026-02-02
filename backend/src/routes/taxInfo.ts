@@ -116,6 +116,102 @@ router.put('/:storeId', (req, res) => {
     
     writeTaxInfoData(taxInfoData);
     
+    // 同时更新Legal Entity数据
+    try {
+      const legalEntityPath = join(process.cwd(), 'data', 'legal_entity.json');
+      let legalEntities = [];
+      
+      try {
+        const legalEntityData = readFileSync(legalEntityPath, 'utf-8');
+        legalEntities = JSON.parse(legalEntityData);
+      } catch (error) {
+        console.log('Legal entity file not found, creating new one');
+      }
+      
+      const legalEntityIndex = legalEntities.findIndex((le: any) => le.store_id === storeId);
+      
+      // 解析地址字符串
+      let addressParts = { street: '', suite: '', city: '', state: '', zipCode: '', country: '' };
+      if (updatedTaxInfo.place_of_establishment) {
+        const parts = updatedTaxInfo.place_of_establishment.split(',').map((part: string) => part.trim());
+        if (parts.length >= 2) {
+          addressParts.street = parts[0] || '';
+          
+          if (parts.length >= 4) {
+            // Format: Street, Suite, City, State ZipCode, Country
+            addressParts.suite = parts[1] || '';
+            addressParts.city = parts[2] || '';
+            const stateZipCountry = parts.slice(3).join(', ');
+            const lastCommaIndex = stateZipCountry.lastIndexOf(',');
+            if (lastCommaIndex > -1) {
+              const stateZip = stateZipCountry.substring(0, lastCommaIndex).trim();
+              addressParts.country = stateZipCountry.substring(lastCommaIndex + 1).trim();
+              
+              // 尝试提取邮编
+              const stateZipMatch = stateZip.match(/^(.+?)\s+(\d{5,}|\w{3,}\s*\w{3,})$/);
+              if (stateZipMatch) {
+                addressParts.state = stateZipMatch[1];
+                addressParts.zipCode = stateZipMatch[2];
+              } else {
+                addressParts.state = stateZip;
+              }
+            } else {
+              addressParts.state = stateZipCountry;
+            }
+          } else if (parts.length === 3) {
+            // Format: Street, City, Country
+            addressParts.city = parts[1] || '';
+            addressParts.country = parts[2] || '';
+          } else {
+            // Format: Street, Country
+            addressParts.country = parts[1] || '';
+          }
+        }
+      }
+      
+      const updatedLegalEntity: any = {
+        id: `legal-entity-${storeId}`,
+        store_id: storeId,
+        legalBusinessName: updatedTaxInfo.legal_business_name || 'Sample Technology Co., Ltd.',
+        businessAddress: {
+          street: addressParts.street || '123 Business Street',
+          suite: addressParts.suite || 'Suite 456',
+          city: addressParts.city || 'San Francisco',
+          state: addressParts.state || 'CA',
+          zipCode: addressParts.zipCode || '94105',
+          country: addressParts.country || 'United States'
+        },
+        taxInformation: {
+          status: updatedTaxInfo.tax_information_complete ? 'Complete' : 'Pending',
+          taxId: updatedTaxInfo.vat_registration_number || '12-3456789',
+          taxClassification: 'LLC'
+        },
+        businessType: 'Limited Liability Company',
+        registrationDate: '2023-01-15',
+        updated_at: updatedTaxInfo.updated_at
+      };
+      
+      if (legalEntityIndex >= 0) {
+        // 保留原有的一些字段
+        const existingEntity = legalEntities[legalEntityIndex];
+        updatedLegalEntity.created_at = existingEntity.created_at;
+        updatedLegalEntity.businessType = existingEntity.businessType || updatedLegalEntity.businessType;
+        updatedLegalEntity.registrationDate = existingEntity.registrationDate || updatedLegalEntity.registrationDate;
+        updatedLegalEntity.taxInformation.taxClassification = existingEntity.taxInformation?.taxClassification || updatedLegalEntity.taxInformation.taxClassification;
+        
+        legalEntities[legalEntityIndex] = updatedLegalEntity;
+      } else {
+        updatedLegalEntity.created_at = new Date().toISOString();
+        legalEntities.push(updatedLegalEntity);
+      }
+      
+      writeFileSync(legalEntityPath, JSON.stringify(legalEntities, null, 2));
+      console.log('Legal entity synchronized with tax info update');
+    } catch (legalEntityError) {
+      console.error('Error synchronizing legal entity:', legalEntityError);
+      // 不抛出错误，因为主要的税务信息更新已经成功
+    }
+    
     res.json({
       success: true,
       data: updatedTaxInfo,

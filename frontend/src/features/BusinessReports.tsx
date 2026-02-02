@@ -84,14 +84,17 @@ const BusinessReports: React.FC = () => {
   const { currentStore } = useStore();
 
   const [activeView, setActiveView] = useState<'graph' | 'table'>('graph');
+  const formatDateISO = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
   const [startDate, setStartDate] = useState(() => {
     const lastYear = new Date();
     lastYear.setFullYear(lastYear.getFullYear() - 1);
-    return `${lastYear.getMonth() + 1}/${lastYear.getDate()}/${lastYear.getFullYear()}`;
+    return formatDateISO(lastYear);
   });
   const [endDate, setEndDate] = useState(() => {
     const today = new Date();
-    return `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+    return formatDateISO(today);
   });
   const [selectedDateRange, setSelectedDateRange] = useState('custom');
 
@@ -199,6 +202,7 @@ const BusinessReports: React.FC = () => {
 
   const formatDateForAPI = (dateStr: string) => {
     if (!dateStr) return '';
+    if (dateStr.includes('-')) return dateStr;
     const parts = dateStr.split('/');
     if (parts.length !== 3) return '';
     const [month, day, year] = parts;
@@ -380,7 +384,17 @@ const BusinessReports: React.FC = () => {
     let newStartDate = '';
     let newEndDate = '';
 
-    const fmt = (d: Date) => `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+    const fmt = (d: Date) => formatDateISO(d);
+    const addMonths = (date: Date, delta: number) => {
+      const year = date.getFullYear();
+      const month = date.getMonth() + delta;
+      const day = date.getDate();
+      const firstOfMonth = new Date(year, month, 1);
+      const daysInMonth = new Date(firstOfMonth.getFullYear(), firstOfMonth.getMonth() + 1, 0).getDate();
+      const clampedDay = Math.min(day, daysInMonth);
+      return new Date(firstOfMonth.getFullYear(), firstOfMonth.getMonth(), clampedDay);
+    };
+    const addYears = (date: Date, delta: number) => addMonths(date, delta * 12);
 
     switch (value) {
       case 'today':
@@ -394,19 +408,19 @@ const BusinessReports: React.FC = () => {
       }
       case 'week': {
         const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
+        weekStart.setDate(today.getDate() - 6);
         newStartDate = fmt(weekStart);
         newEndDate = fmt(today);
         break;
       }
       case 'month': {
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const monthStart = addMonths(today, -1);
         newStartDate = fmt(monthStart);
         newEndDate = fmt(today);
         break;
       }
       case 'year': {
-        const yearStart = new Date(today.getFullYear(), 0, 1);
+        const yearStart = addYears(today, -1);
         newStartDate = fmt(yearStart);
         newEndDate = fmt(today);
         break;

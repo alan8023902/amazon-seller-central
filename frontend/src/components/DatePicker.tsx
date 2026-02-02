@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 
@@ -26,12 +26,78 @@ const DatePicker: React.FC<DatePickerProps> = ({
     setSelectedDate(value);
   }, [value]);
 
+  const parseDateParts = (dateStr: string) => {
+    if (!dateStr) return null;
+    if (dateStr.includes('-')) {
+      const [yearStr, monthStr, dayStr] = dateStr.split('-');
+      const year = parseInt(yearStr);
+      const month = parseInt(monthStr);
+      const day = parseInt(dayStr);
+      if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) return null;
+      return { year, month, day };
+    }
+    if (dateStr.includes('/')) {
+      const [monthStr, dayStr, yearStr] = dateStr.split('/');
+      const year = parseInt(yearStr);
+      const month = parseInt(monthStr);
+      const day = parseInt(dayStr);
+      if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) return null;
+      return { year, month, day };
+    }
+    return null;
+  };
+
+  const formatISO = (year: number, month: number, day: number) =>
+    `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+  const parseDateFromInput = (dateStr: string): Date | null => {
+    setError('');
+    if (!dateStr) return null;
+
+    const parts = parseDateParts(dateStr);
+    if (!parts) {
+      setError('Invalid date format');
+      return null;
+    }
+
+    const { year, month, day } = parts;
+    if (month < 1 || month > 12) {
+      setError('Invalid month');
+      return null;
+    }
+    if (day < 1 || day > 31) {
+      setError('Invalid day');
+      return null;
+    }
+    if (year < 1900 || year > 2100) {
+      setError('Invalid year');
+      return null;
+    }
+
+    const date = new Date(year, month - 1, day);
+    if (date.getMonth() !== month - 1) {
+      setError('Invalid date');
+      return null;
+    }
+
+    if (minDate && date < minDate) {
+      setError('Date too early');
+      return null;
+    }
+    if (maxDate && date > maxDate) {
+      setError('Date too late');
+      return null;
+    }
+
+    return date;
+  };
+
   useEffect(() => {
     if (selectedDate) {
-      const parts = selectedDate.split('/');
-      if (parts.length === 3) {
-        const month = parseInt(parts[0]) - 1;
-        const year = parseInt(parts[2]);
+      const parts = parseDateParts(selectedDate);
+      if (parts) {
+        const month = parts.month - 1;
+        const year = parts.year;
         if (!isNaN(month) && !isNaN(year)) {
           setCurrentMonth(new Date(year, month));
         }
@@ -47,59 +113,18 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const daysOfWeek = useMemo(() => (["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]), []);
 
   const validateDate = (dateStr: string): boolean => {
-    setError('');
     if (!dateStr) return true;
-
-    const parts = dateStr.split('/');
-    if (parts.length !== 3) {
-      setError('Invalid date format');
-      return false;
-    }
-
-    const month = parseInt(parts[0]);
-    const day = parseInt(parts[1]);
-    const year = parseInt(parts[2]);
-
-    if (isNaN(month) || isNaN(day) || isNaN(year)) {
-      setError('Invalid date');
-      return false;
-    }
-    if (month < 1 || month > 12) {
-      setError('Invalid month');
-      return false;
-    }
-    if (day < 1 || day > 31) {
-      setError('Invalid day');
-      return false;
-    }
-    if (year < 1900 || year > 2100) {
-      setError('Invalid year');
-      return false;
-    }
-
-    const date = new Date(year, month - 1, day);
-    if (date.getMonth() !== month - 1) {
-      setError('Invalid date');
-      return false;
-    }
-
-    if (minDate && date < minDate) {
-      setError('Date too early');
-      return false;
-    }
-    if (maxDate && date > maxDate) {
-      setError('Date too late');
-      return false;
-    }
-
-    return true;
+    return parseDateFromInput(dateStr) !== null;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setSelectedDate(newValue);
-    if (validateDate(newValue)) {
-      onChange?.(newValue);
+    const parsed = parseDateFromInput(newValue);
+    if (parsed) {
+      const formatted = formatISO(parsed.getFullYear(), parsed.getMonth() + 1, parsed.getDate());
+      setSelectedDate(formatted);
+      onChange?.(formatted);
     }
   };
 
@@ -114,14 +139,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
     const year = currentMonth.getFullYear();
     const selectedDate = new Date(year, month - 1, day);
     const today = new Date();
-    today.setHours(23, 59, 59, 999); // 设置为今天的最后一刻
+    today.setHours(23, 59, 59, 999); // 璁剧疆涓轰粖澶╃殑鏈€鍚庝竴鍒?
     
-    // 如果选择的日期在今天之后，不允许选择
+    // 濡傛灉閫夋嫨鐨勬棩鏈熷湪浠婂ぉ涔嬪悗锛屼笉鍏佽閫夋嫨
     if (selectedDate > today) {
       return;
     }
     
-    const formatted = `${month}/${day}/${year}`;
+    const formatted = formatISO(year, month, day);
 
     if (!validateDate(formatted)) return;
 
@@ -132,6 +157,10 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   const daysInMonth = getDaysInMonth(currentMonth);
   const firstDay = getFirstDayOfMonth(currentMonth);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+  const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+  const isFutureMonth = monthStart > todayEnd;
 
   const dayCells: (number | null)[] = [];
   for (let i = 0; i < firstDay; i++) dayCells.push(null);
@@ -139,7 +168,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   return (
     <div className="relative">
-      {/* ✅ Seller Central：分体控件（左日历按钮 + 右白底输入） - 调小高度 */}
+      {/* 鉁?Seller Central锛氬垎浣撴帶浠讹紙宸︽棩鍘嗘寜閽?+ 鍙崇櫧搴曡緭鍏ワ級 - 璋冨皬楂樺害 */}
       <div className={cn("flex items-center h-[25px] w-[140px] min-w-[140px] max-w-[140px]")}>
         <div
           className={cn(
@@ -150,19 +179,19 @@ const DatePicker: React.FC<DatePickerProps> = ({
           )}
           onClick={() => setIsOpen(!isOpen)}
         >
-          {/* ✅ 修复日历图标 - 黑色鲜艳，调小点的大小 */}
+          {/* 鉁?淇鏃ュ巻鍥炬爣 - 榛戣壊椴滆壋锛岃皟灏忕偣鐨勫ぇ灏?*/}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-black">
-            {/* 日历主体 */}
+            {/* 鏃ュ巻涓讳綋 */}
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="1.8"/>
-            {/* 顶部加粗线条 */}
+            {/* 椤堕儴鍔犵矖绾挎潯 */}
             <rect x="3" y="4" width="18" height="3" rx="2" ry="2" fill="currentColor"/>
-            {/* 左侧挂钩 */}
+            {/* 宸︿晶鎸傞挬 */}
             <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2.2"/>
-            {/* 右侧挂钩 */}
+            {/* 鍙充晶鎸傞挬 */}
             <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2.2"/>
-            {/* 分割线 */}
+            {/* 鍒嗗壊绾?*/}
             <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="1.2"/>
-            {/* 6个日期点 - 2行3列，调小尺寸 */}
+            {/* 6涓棩鏈熺偣 - 2琛?鍒楋紝璋冨皬灏哄 */}
             <circle cx="8" cy="13" r="1.0" fill="currentColor"/>
             <circle cx="12" cy="13" r="1.0" fill="currentColor"/>
             <circle cx="16" cy="13" r="1.0" fill="currentColor"/>
@@ -175,12 +204,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
         <input
           type="text"
           className={cn(
-            "h-[25px] w-[108px] px-2 text-[11px] text-[#0F1111] outline-none", /* ✅ 调整字体大小 */
+            "h-[25px] w-[108px] px-2 text-[11px] text-[#0F1111] outline-none", /* 鉁?璋冩暣瀛椾綋澶у皬 */
             "border border-[#a6a6a6] border-t-[#949494] rounded-r-[3px]",
             "shadow-[0_1px_0_rgba(255,255,255,.5),0_1px_0_rgba(0,0,0,.07)_inset]",
             error && "border-red-500"
           )}
-          style={{ backgroundColor: '#ffffff' }} // ✅ 强制白色背景
+          style={{ backgroundColor: '#ffffff' }} // 鉁?寮哄埗鐧借壊鑳屾櫙
           value={selectedDate}
           onChange={handleInputChange}
           placeholder={placeholder}
@@ -215,27 +244,36 @@ const DatePicker: React.FC<DatePickerProps> = ({
             ))}
           </div>
 
-          <div className="grid grid-cols-7 p-1 gap-1">
+          <div className="grid grid-cols-7 p-1 gap-0 auto-rows-[24px]">
             {dayCells.map((day, idx) => {
-              if (!day) return <div key={idx} className="h-6" />;
+              if (!day) {
+                return (
+                  <div
+                    key={idx}
+                    className={cn("h-full w-full", isFutureMonth && "bg-gray-200 rounded-none")}
+                  />
+                );
+              }
 
-              const selectedDateStr = `${currentMonth.getMonth() + 1}/${day}/${currentMonth.getFullYear()}`;
+              const selectedDateStr = formatISO(
+                currentMonth.getFullYear(),
+                currentMonth.getMonth() + 1,
+                day
+              );
               const isSelected = selectedDate === selectedDateStr;
               
-              // 检查是否是未来日期
+              // 妫€鏌ユ槸鍚︽槸鏈潵鏃ユ湡
               const cellDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-              const today = new Date();
-              today.setHours(23, 59, 59, 999); // 设置为今天的最后一刻
-              const isFutureDate = cellDate > today;
+              const isFutureDate = cellDate > todayEnd;
               
               return (
                 <button
                   key={idx}
                   className={cn(
-                    "h-6 w-6 text-[10px] rounded",
+                    "h-full w-full text-[10px] flex items-center justify-center",
                     isFutureDate 
-                      ? "text-gray-500 bg-gray-200 cursor-not-allowed" // ✅ 未来日期深灰色背景和文字
-                      : "hover:bg-gray-100 cursor-pointer", // 可选择日期
+                      ? "text-gray-500 bg-gray-200 cursor-not-allowed rounded-none" // 鉁?鏈潵鏃ユ湡娣辩伆鑹茶儗鏅拰鏂囧瓧
+                      : "hover:bg-gray-100 cursor-pointer rounded", // 鍙€夋嫨鏃ユ湡
                     isSelected && !isFutureDate && "bg-[#008296] text-white hover:bg-[#007185]"
                   )}
                   onClick={() => handleDayClick(day)}
@@ -254,3 +292,4 @@ const DatePicker: React.FC<DatePickerProps> = ({
 };
 
 export default DatePicker;
+

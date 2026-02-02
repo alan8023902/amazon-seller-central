@@ -35,18 +35,36 @@ const seededRandom = (seed: number) => {
   return x - Math.floor(x);
 };
 
-const buildWeights = (start: Date, days: number, seedBase: number) => {
+const createRng = (seed: number) => {
+  let state = seed >>> 0;
+  return () => {
+    state |= 0;
+    state = (state + 0x6D2B79F5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const buildWeights = (start: Date, days: number, rng: () => number) => {
   const weights: number[] = [];
   for (let i = 0; i < days; i++) {
     const date = addDaysUtc(start, i);
     const dayOfWeek = date.getUTCDay();
-    const weekendFactor = dayOfWeek === 0 || dayOfWeek === 6 ? 0.85 : 1;
-    const seasonal =
-      1 +
-      Math.sin((i + seedBase) * (Math.PI * 2 / 30)) * 0.18 +
-      Math.sin((i + seedBase) * (Math.PI * 2 / 90)) * 0.12;
-    const noise = 1 + (seededRandom(seedBase + i) - 0.5) * 0.35;
-    weights.push(Math.max(0.05, seasonal * weekendFactor * noise));
+    const weekendFactor = dayOfWeek === 0 || dayOfWeek === 6 ? 0.9 : 1;
+    const r1 = rng();
+    const r2 = rng();
+    const r3 = rng();
+    const r4 = rng();
+    const base = 0.05 + r1 * 4.95; // 0.05 - 5.0
+    const tail = Math.pow(r2, 1.8); // heavier tail
+    const spread = 0.05 + tail * 12; // 0.05 - 12.05
+    const spike = r3 > 0.92 ? 6.2 : r3 < 0.1 ? 0.05 : 1;
+    const dip = r4 > 0.88 ? 0.4 : 1;
+    const r5 = rng();
+    const nearZero = r5 < 0.06 ? 0.02 : 1;
+    const weight = base * spread * spike * dip * nearZero * weekendFactor;
+    weights.push(Math.max(0.002, Math.min(18, weight)));
   }
   return weights;
 };
@@ -79,20 +97,29 @@ const generateDailySeries = (storeId: string, totalUnits: number, totalSales: nu
   const end = toUtcDate(new Date());
   const start = addDaysUtc(end, -(days - 1));
   const seedBase = hashString(storeId || 'store');
+  const randomSeed = (Date.now() ^ Math.floor(Math.random() * 1e9) ^ seedBase) >>> 0;
+  const unitRng = createRng(randomSeed);
+  const salesRng = createRng(randomSeed + 1013904223);
+  const lastYearUnitRng = createRng(randomSeed + 2027808447);
+  const lastYearSalesRng = createRng(randomSeed + 3101313841);
 
-  const unitWeights = buildWeights(start, days, seedBase);
-  const salesWeights = buildWeights(start, days, seedBase + 1337);
+  const unitWeights = buildWeights(start, days, unitRng);
+  const salesWeights = buildWeights(start, days, salesRng);
 
   const units = allocateTotals(Math.max(0, Math.round(totalUnits)), unitWeights);
   const sales = allocateTotals(Math.max(0, Math.round(totalSales)), salesWeights);
 
+  const lastYearUnitsScale = 0.45 + lastYearUnitRng() * 0.45; // 0.45 - 0.90
+  const lastYearSalesScale = 0.4 + lastYearSalesRng() * 0.5; // 0.40 - 0.90
+  const lastYearUnitWeights = buildWeights(start, days, lastYearUnitRng);
+  const lastYearSalesWeights = buildWeights(start, days, lastYearSalesRng);
   const lastYearUnits = allocateTotals(
-    Math.max(0, Math.round(totalUnits * 0.85)),
-    unitWeights.map((w, i) => w * (0.9 + seededRandom(seedBase + i) * 0.2))
+    Math.max(0, Math.round(totalUnits * lastYearUnitsScale)),
+    lastYearUnitWeights.map(w => w * (0.3 + lastYearUnitRng() * 2.2))
   );
   const lastYearSales = allocateTotals(
-    Math.max(0, Math.round(totalSales * 0.85)),
-    salesWeights.map((w, i) => w * (0.9 + seededRandom(seedBase + 999 + i) * 0.2))
+    Math.max(0, Math.round(totalSales * lastYearSalesScale)),
+    lastYearSalesWeights.map(w => w * (0.3 + lastYearSalesRng() * 2.2))
   );
 
   const entries = [];
@@ -382,6 +409,24 @@ router.get('/chart-data/:storeId', asyncHandler(async (req, res) => {
       console.log('No admin chart data file found, using fallback generation');
     }
 
+    if (chartData.length && chartData.length < 300) {
+      const snapshots = await dataService.findByStoreId<SalesSnapshot>('sales_snapshots', storeId);
+      const snapshot = snapshots[0];
+      const totalUnits = snapshot?.units_ordered ?? 192260;
+      const totalSales = snapshot?.ordered_product_sales ?? 18657478;
+
+      const { entries } = generateDailySeries(storeId, totalUnits, totalSales);
+      saveChartDataForStore(storeId, entries);
+      await saveDailySalesForStore(storeId, entries);
+      chartData = entries.map(entry => ({
+        date: entry.date,
+        units: entry.units,
+        sales: entry.sales,
+        lastYearUnits: entry.lastYearUnits,
+        lastYearSales: entry.lastYearSales,
+      }));
+    }
+
     if (!chartData.length) {
       const snapshots = await dataService.findByStoreId<SalesSnapshot>('sales_snapshots', storeId);
       const snapshot = snapshots[0];
@@ -572,53 +617,18 @@ router.post('/admin/sales-data/generate/:storeId', asyncHandler(async (req, res)
   const { storeId } = req.params;
   
   try {
-    const filePath = require('path').join(__dirname, '../../data/chart_data.json');
-    let chartData = [];
-    
-    try {
-      chartData = require('fs-extra').readJsonSync(filePath);
-    } catch (error) {
-      console.log('Creating new chart data file');
-    }
-    
-    // Remove existing data for this store
-    chartData = chartData.filter((item: any) => item.store_id !== storeId);
-    
-    // Generate 13 months of sample data
-    const startDate = new Date('2025-01-01');
-    const endDate = new Date('2026-01-31');
-    let currentDate = new Date(startDate);
-    
-    while (currentDate <= endDate) {
-      const baseUnit = 500;
-      const baseSales = 50000;
-      const variance = 1.2;
-      
-      // Create dramatic spikes randomly (10% chance of big spike)
-      const spikeMultiplier = Math.random() < 0.1 ? (2 + Math.random() * 2) : 1;
-      
-      const newEntry = {
-        id: require('crypto').randomUUID(),
-        store_id: storeId,
-        date: currentDate.toISOString().split('T')[0],
-        units: Math.floor(baseUnit * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-        sales: Math.floor(baseSales * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-        lastYearUnits: Math.floor(baseUnit * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-        lastYearSales: Math.floor(baseSales * 0.9 * (0.3 + Math.random() * variance * 2) * spikeMultiplier),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      chartData.push(newEntry);
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    
-    // Save to file
-    require('fs-extra').writeJsonSync(filePath, chartData, { spaces: 2 });
+    const snapshots = await dataService.findByStoreId<SalesSnapshot>('sales_snapshots', storeId);
+    const snapshot = snapshots[0];
+    const totalUnits = snapshot?.units_ordered ?? 192260;
+    const totalSales = snapshot?.ordered_product_sales ?? 18657478;
+
+    const { entries } = generateDailySeries(storeId, totalUnits, totalSales);
+    saveChartDataForStore(storeId, entries);
+    await saveDailySalesForStore(storeId, entries);
     
     const response: ApiResponse = {
       success: true,
-      message: `Generated ${chartData.filter((item: any) => item.store_id === storeId).length} sample data entries`
+      message: `Generated ${entries.length} sample data entries`
     };
     
     res.json(response);
@@ -631,3 +641,4 @@ router.post('/admin/sales-data/generate/:storeId', asyncHandler(async (req, res)
 
 
 export = router;
+

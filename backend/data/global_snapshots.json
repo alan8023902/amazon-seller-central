@@ -3706,5 +3706,41 @@
     "ad_impressions": 0,
     "updated_at": "2026-01-21T15:17:30.449Z",
     "id": "ac702d74-45ba-4926-9fb1-46758d2df104"
+  },
+  {
+    "store_id": "c374973d-a953-4746-b2e0-0c7a01872727",
+    "sales_amount": 49.95,
+    "open_orders": 6,
+    "buyer_messages": 0,
+    "featured_offer_percent": 100,
+    "seller_feedback_rating": 5,
+    "seller_feedback_count": 2,
+    "payments_balance": 228.31,
+    "fbm_unshipped": 0,
+    "fbm_pending": 0,
+    "fba_pending": 6,
+    "inventory_performance_index": 400,
+    "ad_sales": 0,
+    "ad_impressions": 0,
+    "updated_at": "2026-02-02T13:37:06.969Z",
+    "id": "259ed17e-c50c-4e99-b011-ea7d09caac76"
+  },
+  {
+    "store_id": "d8cd8e6d-793f-4a33-9d70-694b62c5f6e4",
+    "sales_amount": 49.95,
+    "open_orders": 6,
+    "buyer_messages": 0,
+    "featured_offer_percent": 100,
+    "seller_feedback_rating": 5,
+    "seller_feedback_count": 2,
+    "payments_balance": 228.31,
+    "fbm_unshipped": 0,
+    "fbm_pending": 0,
+    "fba_pending": 6,
+    "inventory_performance_index": 400,
+    "ad_sales": 0,
+    "ad_impressions": 0,
+    "updated_at": "2026-02-02T13:56:08.678Z",
+    "id": "c4f9814a-ddf9-49c3-bf56-275b331819a4"
   }
 ]

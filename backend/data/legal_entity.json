@@ -2,54 +2,54 @@
   {
     "id": "legal-entity-store-us-main",
     "store_id": "store-us-main",
-    "legalBusinessName": "TechCorp Solutions LLC",
+    "legalBusinessName": "TechNest LLC Final",
     "businessAddress": {
-      "street": "1234 Innovation Drive",
-      "suite": "Suite 500",
-      "city": "San Francisco",
-      "state": "CA",
-      "zipCode": "94105",
+      "street": "9999 Final Business Ave",
+      "suite": "Suite 300",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "10003",
       "country": "United States"
     },
     "taxInformation": {
       "status": "Complete",
-      "taxId": "12-3456789",
+      "taxId": "US111222333",
       "taxClassification": "Limited Liability Company"
     },
     "businessType": "Limited Liability Company",
     "registrationDate": "2023-01-15",
-    "created_at": "2023-01-15T10:00:00.000Z",
-    "updated_at": "2024-01-30T15:30:00.000Z"
+    "updated_at": "2026-02-02T14:13:01.429Z",
+    "created_at": "2023-01-15T10:00:00.000Z"
   },
   {
     "id": "legal-entity-store-jp-main",
     "store_id": "store-jp-main",
-    "legalBusinessName": "テックコープ株式会社",
+    "legalBusinessName": "TechNest Japan KK",
     "businessAddress": {
-      "street": "東京都渋谷区恵比寿1-2-3",
-      "suite": "恵比寿ビル10階",
+      "street": "東京都渋谷区渋谷1-1-1",
+      "suite": "",
       "city": "東京",
       "state": "東京都",
-      "zipCode": "150-0013",
-      "country": "Japan"
+      "zipCode": "150-0002",
+      "country": "日本"
     },
     "taxInformation": {
       "status": "Complete",
-      "taxId": "T123456789012",
+      "taxId": "JP987654321",
       "taxClassification": "株式会社"
     },
     "businessType": "株式会社",
     "registrationDate": "2023-02-20",
     "created_at": "2023-02-20T10:00:00.000Z",
-    "updated_at": "2024-01-30T15:30:00.000Z"
+    "updated_at": "2026-01-20T10:00:00.000Z"
   },
   {
     "id": "legal-entity-store-uk-main",
     "store_id": "store-uk-main",
-    "legalBusinessName": "TechCorp Solutions Ltd",
+    "legalBusinessName": "TechNest UK Ltd",
     "businessAddress": {
-      "street": "123 Tech Street",
-      "suite": "Floor 5",
+      "street": "123 Business Street",
+      "suite": "",
       "city": "London",
       "state": "England",
       "zipCode": "EC1A 1BB",
@@ -63,19 +63,19 @@
     "businessType": "Private Limited Company",
     "registrationDate": "2023-03-10",
     "created_at": "2023-03-10T10:00:00.000Z",
-    "updated_at": "2024-01-30T15:30:00.000Z"
+    "updated_at": "2026-01-20T10:00:00.000Z"
   },
   {
     "id": "legal-entity-store-de-main",
     "store_id": "store-de-main",
-    "legalBusinessName": "TechCorp Solutions GmbH",
+    "legalBusinessName": "TechNest Deutschland GmbH",
     "businessAddress": {
-      "street": "Technologiestraße 123",
-      "suite": "Büro 400",
+      "street": "Musterstraße 123",
+      "suite": "",
       "city": "Berlin",
       "state": "Berlin",
       "zipCode": "10115",
-      "country": "Germany"
+      "country": "Deutschland"
     },
     "taxInformation": {
       "status": "Complete",
@@ -85,6 +85,28 @@
     "businessType": "GmbH",
     "registrationDate": "2023-04-05",
     "created_at": "2023-04-05T10:00:00.000Z",
-    "updated_at": "2024-01-30T15:30:00.000Z"
+    "updated_at": "2026-01-20T10:00:00.000Z"
+  },
+  {
+    "id": "legal-entity-d8cd8e6d-793f-4a33-9d70-694b62c5f6e4",
+    "store_id": "d8cd8e6d-793f-4a33-9d70-694b62c5f6e4",
+    "legalBusinessName": "飒飒你还是低hi是啊hi还四hi",
+    "businessAddress": {
+      "street": "萨斯hi 晒iahi是ihi很晒hi撒iihsai是啊hi是啊i",
+      "suite": "",
+      "city": "Unknown",
+      "state": "Unknown",
+      "zipCode": "000000",
+      "country": "China"
+    },
+    "taxInformation": {
+      "status": "Complete",
+      "taxId": "飒飒仨45212121212",
+      "taxClassification": "LLC"
+    },
+    "businessType": "Limited Liability Company",
+    "registrationDate": "2023-01-15",
+    "created_at": "2026-02-02T13:59:02.196Z",
+    "updated_at": "2026-02-02T13:59:02.196Z"
   }
 ]

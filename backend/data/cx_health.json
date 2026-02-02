@@ -26,5 +26,12 @@
     "fair_listings": 0,
     "good_listings": 1,
     "excellent_listings": 0
+  },
+  "d8cd8e6d-793f-4a33-9d70-694b62c5f6e4": {
+    "poor_listings": 0,
+    "fair_listings": 0,
+    "good_listings": 6,
+    "very_good_listings": 1,
+    "excellent_listings": 6
   }
 }
