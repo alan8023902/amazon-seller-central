@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Upload, message, Button, Image } from 'antd';
 import { PlusOutlined, LoadingOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { ADMIN_API_CONFIG } from '../config/api';
 import type { UploadProps, UploadFile } from 'antd';
 
@@ -19,6 +20,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   onImageRemoved,
   disabled = false
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
@@ -31,13 +33,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const beforeUpload = (file: File) => {
     const isValidType = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'].includes(file.type);
     if (!isValidType) {
-      message.error('只能上传 JPEG、PNG、GIF 或 WebP 格式的图片！');
+      message.error(t('imageUploadInvalidFormat') || '只能上传 JPEG、PNG、GIF 或 WebP 格式的图片！');
       return false;
     }
     
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
-      message.error('图片大小不能超过 5MB！');
+      message.error(t('imageUploadSizeLimit') || '图片大小不能超过 5MB！');
       return false;
     }
     
@@ -46,7 +48,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   const handleUpload = async (file: File) => {
     if (!productId) {
-      message.error('请先保存产品后再上传图片');
+      message.error(t('imageUploadSaveProductFirst') || '请先保存产品后再上传图片');
       return;
     }
 
@@ -62,7 +64,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || '上传失败');
+        throw new Error(error.message || t('imageUploadFailed') || '上传失败');
       }
 
       const result = await response.json();
@@ -77,9 +79,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         size: result.data.imageSize
       });
       
-      message.success('图片上传成功！');
+      message.success(t('imageUploadSuccessMsg') || '图片上传成功！');
     } catch (error: any) {
-      message.error(error.message || '上传失败，请重试');
+      message.error(error.message || t('imageUploadFailedRetry') || '上传失败，请重试');
       // Revert to previous state on error
       setImageUrl(currentImage);
     } finally {
@@ -111,7 +113,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     <div style={{ textAlign: 'center' }}>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
       <div style={{ marginTop: 8 }}>
-        {loading ? '上传中...' : '上传图片'}
+        {loading ? (t('imageUploading') || '上传中...') : (t('uploadImageBtn') || '上传图片')}
       </div>
     </div>
   );
@@ -165,7 +167,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       )}
       
       <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
-        支持 JPEG、PNG、GIF、WebP 格式，文件大小不超过 5MB
+        {t('imageUploadFormatInfo') || '支持 JPEG、PNG、GIF、WebP 格式，文件大小不超过 5MB'}
       </div>
     </div>
   );

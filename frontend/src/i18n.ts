@@ -432,6 +432,15 @@ export const translations: Record<LangType, Record<string, string>> = {
     taxInfo: '税务信息',
     accountManagement: '账户管理',
     
+    // Legal Entity 页面
+    legalEntity: '法律实体',
+    legalBusinessName: '法定企业名称',
+    placeOfEstablishmentAddress: '注册地址',
+    businessType: '企业类型',
+    taxId: '税务ID',
+    taxClassification: '税务分类',
+    registrationDate: '注册日期',
+    
     // Business Info 页面
     businessAddress: '企业地址和电话号码',
     businessAddressDesc: '管理您已验证的企业联系详情',

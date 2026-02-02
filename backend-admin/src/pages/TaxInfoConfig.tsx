@@ -70,7 +70,7 @@ const TaxInfoConfig: React.FC<TaxInfoConfigProps> = ({ selectedStoreId, selected
       }
     } catch (error) {
       console.error('Load tax info error:', error);
-      message.error('加载税务信息失败');
+      message.error(t('loadTaxInfoFailed'));
     } finally {
       setLoading(false);
     }
@@ -83,13 +83,13 @@ const TaxInfoConfig: React.FC<TaxInfoConfigProps> = ({ selectedStoreId, selected
       console.log('Save tax info result:', result);
       
       if (result && result.success) {
-        message.success('税务信息保存成功！');
+        message.success(t('taxInfoSaveSuccess'));
         setTaxInfo(result.data);
       } else {
-        message.error(result?.message || '保存失败');
+        message.error(result?.message || t('saveFailed'));
       }
     } catch (error) {
-      message.error('保存失败，请重试');
+      message.error(t('saveFailedRetry'));
       console.error('Save tax info error:', error);
     } finally {
       setSaving(false);
@@ -99,19 +99,19 @@ const TaxInfoConfig: React.FC<TaxInfoConfigProps> = ({ selectedStoreId, selected
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <h2>税务信息配置</h2>
+        <h2>{t('taxInfoConfiguration')}</h2>
         <p style={{ color: '#666' }}>
-          管理店铺的税务注册信息和合规设置，这些信息将在前端Tax Information页面中显示。
+          {t('taxInfoConfigDescription')}
         </p>
       </div>
 
       {selectedStore && (
         <div style={{ marginBottom: 16, padding: 12, background: '#f0f2f5', borderRadius: 6 }}>
-          <strong>当前店铺:</strong> {selectedStore.name} ({selectedStore.marketplace}) - {selectedStore.currency_symbol}
+          <strong>{t('currentStoreLabel')}:</strong> {selectedStore.name} ({selectedStore.marketplace}) - {selectedStore.currency_symbol}
         </div>
       )}
 
-      <Card title="税务信息设置" loading={loading}>
+      <Card title={t('taxInfoSettings')} loading={loading}>
         <Form
           form={form}
           layout="vertical"
@@ -122,64 +122,64 @@ const TaxInfoConfig: React.FC<TaxInfoConfigProps> = ({ selectedStoreId, selected
           }}
         >
           <Form.Item
-            label="法定企业名称"
+            label={t('legalBusinessNameLabel')}
             name="legal_business_name"
-            rules={[{ required: true, message: '请输入法定企业名称' }]}
+            rules={[{ required: true, message: t('legalBusinessNameRequired') }]}
           >
-            <Input placeholder="请输入法定企业名称" />
+            <Input placeholder={t('legalBusinessNamePlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="注册地址"
+            label={t('registrationAddressLabel')}
             name="place_of_establishment"
-            rules={[{ required: true, message: '请输入注册地址' }]}
+            rules={[{ required: true, message: t('registrationAddressRequired') }]}
           >
             <TextArea 
               rows={3}
-              placeholder="请输入完整的注册地址"
+              placeholder={t('registrationAddressPlaceholder')}
             />
           </Form.Item>
 
           <Form.Item
-            label="VAT注册号"
+            label={t('vatRegistrationNumberLabel')}
             name="vat_registration_number"
           >
-            <Input placeholder="请输入VAT注册号（如适用）" />
+            <Input placeholder={t('vatRegistrationNumberPlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="RFC ID"
+            label={t('rfcIdLabel')}
             name="rfc_id"
           >
-            <Input placeholder="请输入RFC ID（如适用）" />
+            <Input placeholder={t('rfcIdPlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="税务访谈状态"
+            label={t('taxInterviewStatusLabel')}
             name="tax_interview_completed"
             valuePropName="checked"
           >
             <Switch 
-              checkedChildren="已完成" 
-              unCheckedChildren="未完成"
+              checkedChildren={t('taxInterviewCompleted')} 
+              unCheckedChildren={t('taxInterviewNotCompleted')}
             />
           </Form.Item>
 
           <Form.Item
-            label="税务信息完整性"
+            label={t('taxInfoCompletenessLabel')}
             name="tax_information_complete"
             valuePropName="checked"
           >
             <Switch 
-              checkedChildren="完整" 
-              unCheckedChildren="不完整"
+              checkedChildren={t('taxInfoComplete')} 
+              unCheckedChildren={t('taxInfoIncomplete')}
             />
           </Form.Item>
 
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
               <Button onClick={() => form.resetFields()}>
-                重置
+                {t('resetForm')}
               </Button>
               <Button 
                 type="primary" 
@@ -187,7 +187,7 @@ const TaxInfoConfig: React.FC<TaxInfoConfigProps> = ({ selectedStoreId, selected
                 loading={saving}
                 icon={<SaveOutlined />}
               >
-                保存配置
+                {t('saveConfiguration')}
               </Button>
             </Space>
           </Form.Item>
@@ -195,38 +195,38 @@ const TaxInfoConfig: React.FC<TaxInfoConfigProps> = ({ selectedStoreId, selected
       </Card>
 
       {taxInfo && (
-        <Card title="当前配置信息" style={{ marginTop: 16 }}>
+        <Card title={t('currentConfigInfo')} style={{ marginTop: 16 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
-              <Text strong>法定企业名称:</Text>
-              <div>{taxInfo.legal_business_name || '未设置'}</div>
+              <Text strong>{t('legalBusinessNameDisplay')}</Text>
+              <div>{taxInfo.legal_business_name || t('notSet')}</div>
             </div>
             <div>
-              <Text strong>VAT注册号:</Text>
-              <div>{taxInfo.vat_registration_number || '未设置'}</div>
+              <Text strong>{t('vatRegistrationNumberDisplay')}</Text>
+              <div>{taxInfo.vat_registration_number || t('notSet')}</div>
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
-              <Text strong>注册地址:</Text>
-              <div>{taxInfo.place_of_establishment || '未设置'}</div>
+              <Text strong>{t('registrationAddressDisplay')}</Text>
+              <div>{taxInfo.place_of_establishment || t('notSet')}</div>
             </div>
             <div>
-              <Text strong>税务访谈:</Text>
+              <Text strong>{t('taxInterviewDisplay')}</Text>
               <div style={{ color: taxInfo.tax_interview_completed ? '#52c41a' : '#ff4d4f' }}>
-                {taxInfo.tax_interview_completed ? '已完成' : '未完成'}
+                {taxInfo.tax_interview_completed ? t('taxInterviewCompleted') : t('taxInterviewNotCompleted')}
               </div>
             </div>
             <div>
-              <Text strong>信息完整性:</Text>
+              <Text strong>{t('infoCompletenessDisplay')}</Text>
               <div style={{ color: taxInfo.tax_information_complete ? '#52c41a' : '#ff4d4f' }}>
-                {taxInfo.tax_information_complete ? '完整' : '不完整'}
+                {taxInfo.tax_information_complete ? t('taxInfoComplete') : t('taxInfoIncomplete')}
               </div>
             </div>
             <div>
-              <Text strong>创建时间:</Text>
+              <Text strong>{t('createdTimeDisplay')}</Text>
               <div>{new Date(taxInfo.created_at).toLocaleString('zh-CN')}</div>
             </div>
             <div>
-              <Text strong>更新时间:</Text>
+              <Text strong>{t('updatedTimeDisplay')}</Text>
               <div>{new Date(taxInfo.updated_at).toLocaleString('zh-CN')}</div>
             </div>
           </div>

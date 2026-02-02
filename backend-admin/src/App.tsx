@@ -118,7 +118,7 @@ function AppContent() {
     {
       key: 'tax-info',
       icon: <SettingOutlined />,
-      label: '税务信息配置',
+      label: t('taxInfoConfiguration'),
     },
   ];
 
@@ -139,7 +139,7 @@ function AppContent() {
       localStorage.setItem('admin-current-user', credentials.username);
       message.success(t('operationSuccess'));
     } else {
-      message.error('用户名或密码错误！');
+      message.error(t('loginFailed'));
       throw new Error('Login failed');
     }
   };
@@ -151,7 +151,7 @@ function AppContent() {
     // Clear login state from localStorage
     localStorage.removeItem('admin-logged-in');
     localStorage.removeItem('admin-current-user');
-    message.success('已退出登录');
+    message.success(t('logoutSuccess'));
   };
 
   // 如果未登录，显示登录页面
@@ -162,7 +162,7 @@ function AppContent() {
   const handleStoreChange = (storeId: string, store: any) => {
     setSelectedStoreId(storeId);
     setSelectedStore(store);
-    message.success(`已切换到店铺: ${store.name}`);
+    message.success(t('storeSwitch', { storeName: store.name }));
   };
 
   const handleMenuClick = (e: any) => {
@@ -233,7 +233,7 @@ function AppContent() {
             onClick={handleLogout}
             style={{ color: 'white' }}
           >
-            退出
+            {t('logout')}
           </Button>
         </div>
       </Header>

@@ -35,6 +35,12 @@ const resources = {
       details: 'Details',
       actions: 'Actions',
       confirm: 'Confirm',
+      logout: 'Logout',
+      
+      // Login messages
+      loginFailed: 'Username or password is incorrect!',
+      logoutSuccess: 'Logged out successfully',
+      storeSwitch: 'Switched to store: {{storeName}}',
       
       // Status
       active: 'Active',
@@ -108,7 +114,6 @@ const resources = {
       status: 'Status',
       revenue: 'Revenue',
       image: 'Image',
-      uploadImage: 'Upload Image',
       
       // User Management
       userList: 'User List',
@@ -272,8 +277,6 @@ const resources = {
       currentStoreDeleteWarning: 'You cannot delete the currently selected store. Please switch to another store first.',
       
       // Product Management
-      productManagement: 'Product Management',
-      productList: 'Product List',
       addProduct: 'Add Product',
       editProduct: 'Edit Product',
       deleteProduct: 'Delete Product',
@@ -294,7 +297,6 @@ const resources = {
       revenueMustBePositive: 'Revenue must be positive',
       pleaseSelectStatus: 'Please select status',
       productImage: 'Product Image',
-      imageUploadSuccess: 'Image uploaded successfully!',
       
       // User Management
       frontendUserManagement: 'Frontend User Management',
@@ -306,8 +308,6 @@ const resources = {
       userCreatedSuccess: 'User created successfully!',
       userUpdatedSuccess: 'User updated successfully!',
       userDeletedSuccess: 'User deleted successfully!',
-      refreshPassword: 'Refresh Password',
-      refreshOTP: 'Refresh OTP',
       passwordCopied: 'Password copied',
       otpCopied: 'OTP copied',
       passwordRefreshed: 'Password refreshed!',
@@ -327,6 +327,53 @@ const resources = {
       enable: 'Enable',
       disable: 'Disable',
       totalRecords: 'Total {{total}} records',
+      
+      // Image Upload
+      imageUploadInvalidFormat: 'Only JPEG, PNG, GIF or WebP format images are allowed!',
+      imageUploadSizeLimit: 'Image size cannot exceed 5MB!',
+      imageUploadSaveProductFirst: 'Please save the product first before uploading images',
+      imageUploadFailed: 'Upload failed',
+      imageUploadSuccessMsg: 'Image uploaded successfully!',
+      imageUploadFailedRetry: 'Upload failed, please try again',
+      imageUploading: 'Uploading...',
+      uploadImageBtn: 'Upload Image',
+      imageUploadFormatInfo: 'Supports JPEG, PNG, GIF, WebP formats, file size not exceeding 5MB',
+      
+      // Tax Info Configuration
+      taxInfoConfiguration: 'Tax Information Configuration',
+      taxInfoConfigDescription: 'Manage store tax registration information and compliance settings. This information will be displayed on the frontend Tax Information page.',
+      taxInfoSettings: 'Tax Information Settings',
+      legalBusinessNameLabel: 'Legal Business Name',
+      legalBusinessNamePlaceholder: 'Please enter legal business name',
+      legalBusinessNameRequired: 'Please enter legal business name',
+      registrationAddressLabel: 'Registration Address',
+      registrationAddressPlaceholder: 'Please enter complete registration address',
+      registrationAddressRequired: 'Please enter registration address',
+      vatRegistrationNumberLabel: 'VAT Registration Number',
+      vatRegistrationNumberPlaceholder: 'Please enter VAT registration number (if applicable)',
+      rfcIdLabel: 'RFC ID',
+      rfcIdPlaceholder: 'Please enter RFC ID (if applicable)',
+      taxInterviewStatusLabel: 'Tax Interview Status',
+      taxInterviewCompleted: 'Completed',
+      taxInterviewNotCompleted: 'Not Completed',
+      taxInfoCompletenessLabel: 'Tax Information Completeness',
+      taxInfoComplete: 'Complete',
+      taxInfoIncomplete: 'Incomplete',
+      resetForm: 'Reset',
+      saveConfiguration: 'Save Configuration',
+      currentConfigInfo: 'Current Configuration Information',
+      legalBusinessNameDisplay: 'Legal Business Name:',
+      vatRegistrationNumberDisplay: 'VAT Registration Number:',
+      registrationAddressDisplay: 'Registration Address:',
+      taxInterviewDisplay: 'Tax Interview:',
+      infoCompletenessDisplay: 'Information Completeness:',
+      createdTimeDisplay: 'Created Time:',
+      updatedTimeDisplay: 'Updated Time:',
+      notSet: 'Not Set',
+      loadTaxInfoFailed: 'Failed to load tax information',
+      taxInfoSaveSuccess: 'Tax information saved successfully!',
+      saveFailed: 'Save failed',
+      saveFailedRetry: 'Save failed, please try again',
     }
   },
   zh: {
@@ -361,6 +408,12 @@ const resources = {
       details: '详情',
       actions: '操作',
       confirm: '确定',
+      logout: '退出',
+      
+      // Login messages
+      loginFailed: '用户名或密码错误！',
+      logoutSuccess: '已退出登录',
+      storeSwitch: '已切换到店铺: {{storeName}}',
       
       // Status
       active: '活跃',
@@ -434,7 +487,6 @@ const resources = {
       status: '状态',
       revenue: '收入',
       image: '图片',
-      uploadImage: '上传图片',
       
       // User Management
       userList: '用户列表',
@@ -598,8 +650,6 @@ const resources = {
       currentStoreDeleteWarning: '您不能删除当前选中的店铺，请先切换到其他店铺。',
       
       // Product Management
-      productManagement: '产品管理',
-      productList: '产品列表',
       addProduct: '新增产品',
       editProduct: '编辑产品',
       deleteProduct: '删除产品',
@@ -620,7 +670,6 @@ const resources = {
       revenueMustBePositive: '销售额必须为正数',
       pleaseSelectStatus: '请选择状态',
       productImage: '产品图片',
-      imageUploadSuccess: '图片上传成功！',
       
       // User Management
       frontendUserManagement: '前端用户管理',
@@ -632,8 +681,6 @@ const resources = {
       userCreatedSuccess: '用户创建成功！',
       userUpdatedSuccess: '用户更新成功！',
       userDeletedSuccess: '用户删除成功！',
-      refreshPassword: '刷新密码',
-      refreshOTP: '刷新验证码',
       passwordCopied: '密码已复制',
       otpCopied: '验证码已复制',
       passwordRefreshed: '密码已刷新！',
@@ -653,6 +700,53 @@ const resources = {
       enable: '启用',
       disable: '禁用',
       totalRecords: '共 {{total}} 条记录',
+      
+      // Image Upload
+      imageUploadInvalidFormat: '只能上传 JPEG、PNG、GIF 或 WebP 格式的图片！',
+      imageUploadSizeLimit: '图片大小不能超过 5MB！',
+      imageUploadSaveProductFirst: '请先保存产品后再上传图片',
+      imageUploadFailed: '上传失败',
+      imageUploadSuccessMsg: '图片上传成功！',
+      imageUploadFailedRetry: '上传失败，请重试',
+      imageUploading: '上传中...',
+      uploadImageBtn: '上传图片',
+      imageUploadFormatInfo: '支持 JPEG、PNG、GIF、WebP 格式，文件大小不超过 5MB',
+      
+      // Tax Info Configuration
+      taxInfoConfiguration: '税务信息配置',
+      taxInfoConfigDescription: '管理店铺的税务注册信息和合规设置，这些信息将在前端Tax Information页面中显示。',
+      taxInfoSettings: '税务信息设置',
+      legalBusinessNameLabel: '法定企业名称',
+      legalBusinessNamePlaceholder: '请输入法定企业名称',
+      legalBusinessNameRequired: '请输入法定企业名称',
+      registrationAddressLabel: '注册地址',
+      registrationAddressPlaceholder: '请输入完整的注册地址',
+      registrationAddressRequired: '请输入注册地址',
+      vatRegistrationNumberLabel: 'VAT注册号',
+      vatRegistrationNumberPlaceholder: '请输入VAT注册号（如适用）',
+      rfcIdLabel: 'RFC ID',
+      rfcIdPlaceholder: '请输入RFC ID（如适用）',
+      taxInterviewStatusLabel: '税务访谈状态',
+      taxInterviewCompleted: '已完成',
+      taxInterviewNotCompleted: '未完成',
+      taxInfoCompletenessLabel: '税务信息完整性',
+      taxInfoComplete: '完整',
+      taxInfoIncomplete: '不完整',
+      resetForm: '重置',
+      saveConfiguration: '保存配置',
+      currentConfigInfo: '当前配置信息',
+      legalBusinessNameDisplay: '法定企业名称:',
+      vatRegistrationNumberDisplay: 'VAT注册号:',
+      registrationAddressDisplay: '注册地址:',
+      taxInterviewDisplay: '税务访谈:',
+      infoCompletenessDisplay: '信息完整性:',
+      createdTimeDisplay: '创建时间:',
+      updatedTimeDisplay: '更新时间:',
+      notSet: '未设置',
+      loadTaxInfoFailed: '加载税务信息失败',
+      taxInfoSaveSuccess: '税务信息保存成功！',
+      saveFailed: '保存失败',
+      saveFailedRetry: '保存失败，请重试',
     }
   }
 };
