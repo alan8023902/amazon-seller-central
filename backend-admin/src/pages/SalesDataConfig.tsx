@@ -1,40 +1,51 @@
-﻿import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Form, 
-  Input, 
-  Button, 
-  Table, 
-  Modal, 
-  Space,
-  Popconfirm,
-  Typography,
-  DatePicker,
-  InputNumber,
-  message,
-  App
-} from 'antd';
-import { 
-  PlusOutlined, 
-  EditOutlined, 
-  DeleteOutlined, 
-  SaveOutlined,
-  ReloadOutlined
-} from '@ant-design/icons';
-import { ADMIN_API_CONFIG, adminApiGet, adminApiPost, adminApiPut, adminApiDelete } from '../config/api';
+import React, { useEffect, useState } from 'react';
+import { Card, Table, Typography, Space, Button, Tabs, App } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
+import { adminApiGet, adminApiPost } from '../config/api';
 
 const { Title } = Typography;
 
-interface SalesData {
-  id: string;
-  store_id: string;
+interface HourlyPoint {
+  hour: number;
+  units: number;
+  sales: number;
+}
+
+interface HourlySeries {
+  date: string;
+  hours: HourlyPoint[];
+}
+
+interface DailyPoint {
   date: string;
   units: number;
   sales: number;
-  lastYearUnits: number;
-  lastYearSales: number;
-  created_at: string;
-  updated_at: string;
+  lastYearUnits?: number;
+  lastYearSales?: number;
+}
+
+interface SalesTimeSeries {
+  store_id: string;
+  updated_at?: string;
+  day?: {
+    today?: HourlySeries;
+    yesterday?: HourlySeries;
+    sameDayLastWeek?: HourlySeries;
+    sameDayLastYear?: HourlySeries;
+  };
+  week?: {
+    current: DailyPoint[];
+    lastWeek: DailyPoint[];
+    lastYear: DailyPoint[];
+  };
+  month?: {
+    current: DailyPoint[];
+    lastMonth: DailyPoint[];
+    lastYear: DailyPoint[];
+  };
+  year?: {
+    days: DailyPoint[];
+  };
 }
 
 interface SalesDataConfigProps {
@@ -43,225 +54,163 @@ interface SalesDataConfigProps {
   onStoreChange: (storeId: string, store: any) => void;
 }
 
-const SalesDataConfig: React.FC<SalesDataConfigProps> = ({ 
-  selectedStoreId, 
-  selectedStore 
+const formatHourLabel = (hour: number) => {
+  const normalized = hour % 24;
+  const suffix = normalized < 12 ? 'AM' : 'PM';
+  const display = normalized % 12 === 0 ? 12 : normalized % 12;
+  return `${display}${suffix}`;
+};
+
+const formatCurrency = (value: number) => `$${Number(value || 0).toLocaleString()}`;
+
+const SalesDataConfig: React.FC<SalesDataConfigProps> = ({
+  selectedStoreId,
+  selectedStore
 }) => {
   const { message } = App.useApp();
-  const [salesData, setSalesData] = useState<SalesData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editingData, setEditingData] = useState<SalesData | null>(null);
-  const [form] = Form.useForm();
+  const [timeSeries, setTimeSeries] = useState<SalesTimeSeries | null>(null);
 
-  useEffect(() => {
-    if (selectedStoreId) {
-      loadSalesData();
-    }
-  }, [selectedStoreId]);
-
-  const loadSalesData = async () => {
+  const loadTimeSeries = async () => {
     if (!selectedStoreId) return;
-    
     setLoading(true);
     try {
-      const result = await adminApiGet(`/api/sales/chart-data/${selectedStoreId}`);
-      console.log('Load sales data result:', result);
-      
-      if (Array.isArray(result)) {
-        // Convert backend format to admin format
-        const formattedData = result.map((item: any, index: number) => ({
-          id: item.id || `temp-${index}`,
-          store_id: selectedStoreId,
-          date: item.date,
-          units: item.units || 0,
-          sales: item.sales || 0,
-          lastYearUnits: item.lastYearUnits || 0,
-          lastYearSales: item.lastYearSales || 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }));
-        setSalesData(formattedData);
+      const result = await adminApiGet(`/api/sales/admin/time-series/${selectedStoreId}`);
+      if (result) {
+        setTimeSeries(result || null);
       } else {
-        message.error('销售数据格式错误');
+        message.error('加载销售数据失败');
       }
     } catch (error) {
       message.error('加载销售数据失败');
-      console.error('Load sales data error:', error);
+      console.error('Load sales time series error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSave = async (values: any) => {
+  useEffect(() => {
+    if (selectedStoreId) {
+      loadTimeSeries();
+    } else {
+      setTimeSeries(null);
+    }
+  }, [selectedStoreId]);
+
+  const regenerateTimeSeries = async () => {
     if (!selectedStoreId) {
       message.error('请先选择店铺');
       return;
     }
-
     setLoading(true);
     try {
-      const submitData = {
-        ...values,
-        store_id: selectedStoreId,
-        date: values.date.toISOString().split('T')[0],
-      };
-
-      let result;
-      if (editingData) {
-        result = await adminApiPut(`/api/sales/admin/sales-data/${editingData.id}`, submitData);
-      } else {
-        result = await adminApiPost('/api/sales/admin/sales-data', submitData);
-      }
-      
-      console.log('Sales data save result:', result);
-      
-      if (result && result.success) {
-        message.success(editingData ? '销售数据更新成功！' : '销售数据创建成功！');
-        setModalVisible(false);
-        setEditingData(null);
-        form.resetFields();
-        await loadSalesData();
-      } else {
-        message.error(result?.message || '操作失败');
-      }
-    } catch (error) {
-      message.error('操作失败，请重试');
-      console.error('Save sales data error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    setLoading(true);
-    try {
-      const result = await adminApiDelete(`/api/sales/admin/sales-data/${id}`);
-      
-      if (result.success) {
-        message.success('销售数据删除成功！');
-        await loadSalesData();
-      } else {
-        message.error(result.message || '删除失败');
-      }
-    } catch (error) {
-      message.error('删除失败，请重试');
-      console.error('Delete sales data error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (data: SalesData) => {
-    setEditingData(data);
-    form.setFieldsValue({
-      date: new Date(data.date),
-      units: data.units,
-      sales: data.sales,
-      lastYearUnits: data.lastYearUnits,
-      lastYearSales: data.lastYearSales,
-    });
-    setModalVisible(true);
-  };
-
-  const handleAdd = () => {
-    setEditingData(null);
-    form.resetFields();
-    setModalVisible(true);
-  };
-
-  const generateSampleData = async () => {
-    if (!selectedStoreId) {
-      message.error('请先选择店铺');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await adminApiPost(`/api/sales/admin/sales-data/generate/${selectedStoreId}`);
-      
-      if (result.success) {
+      const result = await adminApiPost(`/api/sales/admin/time-series/generate/${selectedStoreId}`);
+      if (result?.success) {
         message.success('样本数据生成成功！');
-        await loadSalesData();
+        await loadTimeSeries();
       } else {
-        message.error(result.message || '生成失败');
+        message.error(result?.message || '生成失败');
       }
     } catch (error) {
       message.error('生成失败，请重试');
-      console.error('Generate sample data error:', error);
+      console.error('Generate time series error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const columns = [
+  const hourlyColumns = [
     {
-      title: '日期',
-      dataIndex: 'date',
-      key: 'date',
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      title: '小时',
+      dataIndex: 'hour',
+      key: 'hour',
+      render: (value: number) => formatHourLabel(value),
+      width: 120,
     },
     {
       title: '销量 (Units)',
       dataIndex: 'units',
       key: 'units',
-      render: (units: number) => units.toLocaleString(),
+      render: (value: number) => Number(value || 0).toLocaleString(),
     },
     {
       title: '销售额 ($)',
       dataIndex: 'sales',
       key: 'sales',
-      render: (sales: number) => `$${sales.toLocaleString()}`,
+      render: (value: number) => formatCurrency(value),
     },
+  ];
+
+  const dailyColumns = [
+    {
+      title: '日期',
+      dataIndex: 'date',
+      key: 'date',
+      render: (value: string) => new Date(value).toLocaleDateString(),
+      width: 140,
+    },
+    {
+      title: '销量 (Units)',
+      dataIndex: 'units',
+      key: 'units',
+      render: (value: number) => Number(value || 0).toLocaleString(),
+    },
+    {
+      title: '销售额 ($)',
+      dataIndex: 'sales',
+      key: 'sales',
+      render: (value: number) => formatCurrency(value),
+    },
+  ];
+
+  const yearColumns = [
+    ...dailyColumns,
     {
       title: '去年销量',
       dataIndex: 'lastYearUnits',
       key: 'lastYearUnits',
-      render: (units: number) => units.toLocaleString(),
+      render: (value: number) => Number(value || 0).toLocaleString(),
     },
     {
       title: '去年销售额',
       dataIndex: 'lastYearSales',
       key: 'lastYearSales',
-      render: (sales: number) => `$${sales.toLocaleString()}`,
-    },
-    {
-      title: '操作',
-      key: 'actions',
-      render: (_, record: SalesData) => (
-        <Space>
-          <Button 
-            type="link" 
-            icon={<EditOutlined />} 
-            onClick={() => handleEdit(record)}
-          >
-            编辑
-          </Button>
-          <Popconfirm
-            title="确定要删除这条销售数据吗？"
-            onConfirm={() => handleDelete(record.id)}
-            okText="确定"
-            cancelText="取消"
-          >
-            <Button 
-              type="link" 
-              danger 
-              icon={<DeleteOutlined />}
-            >
-              删除
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (value: number) => formatCurrency(value),
     },
   ];
+
+  const renderHourlyCard = (title: string, series?: HourlySeries) => (
+    <Card size="small" title={title} style={{ marginBottom: 16 }}>
+      <Table
+        columns={hourlyColumns}
+        dataSource={(series?.hours || []).map(point => ({ ...point, key: point.hour }))}
+        pagination={false}
+        loading={loading}
+        size="small"
+        scroll={{ y: 240 }}
+      />
+    </Card>
+  );
+
+  const renderDailyCard = (title: string, data?: DailyPoint[], useYearColumns = false) => (
+    <Card size="small" title={title} style={{ marginBottom: 16 }}>
+      <Table
+        columns={useYearColumns ? yearColumns : dailyColumns}
+        dataSource={(data || []).map((item, index) => ({ ...item, key: `${item.date}-${index}` }))}
+        pagination={false}
+        loading={loading}
+        size="small"
+        scroll={{ y: 260 }}
+      />
+    </Card>
+  );
 
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
         <Title level={2}>销售数据配置</Title>
         <p style={{ color: '#666' }}>
-          管理前端Sales Dashboard显示的销售数据。可以添加、编辑、删除销售数据，这些数据将在前端图表中显示。
+          管理前端 Sales Snapshot 与 Business Reports 图表使用的数据。Today 小时数据来自 Global Snapshot，其余维度来自 Business Reports 配置。
         </p>
         {selectedStore && (
           <div style={{ fontSize: '14px', color: '#666', marginTop: 8 }}>
@@ -271,159 +220,94 @@ const SalesDataConfig: React.FC<SalesDataConfigProps> = ({
       </div>
 
       {!selectedStoreId ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '60px 0', 
+        <div style={{
+          textAlign: 'center',
+          padding: '60px 0',
           color: '#999',
-          fontSize: '16px' 
+          fontSize: '16px'
         }}>
           请先在页面顶部选择一个店铺
         </div>
       ) : (
-        <Card 
-          title="销售数据列表" 
+        <Card
+          title="销售数据配置"
           extra={
             <Space>
-              <Button 
+              <Button
                 icon={<ReloadOutlined />}
-                onClick={generateSampleData}
+                onClick={regenerateTimeSeries}
                 loading={loading}
               >
                 生成样本数据
               </Button>
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />} 
-                onClick={handleAdd}
-              >
-                添加销售数据
-              </Button>
             </Space>
           }
         >
-          <Table
-            columns={columns}
-            dataSource={salesData}
-            rowKey="id"
-            loading={loading}
-            pagination={{
-              pageSize: 20,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total) => `共 ${total} 条记录`,
-            }}
-            scroll={{ y: 400 }}
+          <Tabs
+            defaultActiveKey="day"
+            items={[
+              {
+                key: 'day',
+                label: '日维度（小时）',
+                children: (
+                  <>
+                    {renderHourlyCard('Today (24小时)', timeSeries?.day?.today)}
+                    {renderHourlyCard('Yesterday (24小时)', timeSeries?.day?.yesterday)}
+                    {renderHourlyCard('Same day last week', timeSeries?.day?.sameDayLastWeek)}
+                    {renderHourlyCard('Same day last year', timeSeries?.day?.sameDayLastYear)}
+                  </>
+                )
+              },
+              {
+                key: 'week',
+                label: '周维度（7天）',
+                children: (
+                  <>
+                    {renderDailyCard('This week to date', timeSeries?.week?.current)}
+                    {renderDailyCard('Last week', timeSeries?.week?.lastWeek)}
+                    {renderDailyCard('Same week last year', timeSeries?.week?.lastYear)}
+                  </>
+                )
+              },
+              {
+                key: 'month',
+                label: '月维度（1-31天）',
+                children: (
+                  <>
+                    {renderDailyCard('This month to date', timeSeries?.month?.current)}
+                    {renderDailyCard('Last month', timeSeries?.month?.lastMonth)}
+                    {renderDailyCard('Same month last year', timeSeries?.month?.lastYear)}
+                  </>
+                )
+              },
+              {
+                key: 'year',
+                label: '年维度（按天）',
+                children: (
+                  <Card size="small" title="Year to date (按天)">
+                    <Table
+                      columns={yearColumns}
+                      dataSource={(timeSeries?.year?.days || []).map((item, index) => ({
+                        ...item,
+                        key: `${item.date}-${index}`
+                      }))}
+                      pagination={{
+                        pageSize: 20,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        showTotal: total => `共 ${total} 条记录`,
+                      }}
+                      loading={loading}
+                      size="small"
+                      scroll={{ y: 400 }}
+                    />
+                  </Card>
+                )
+              }
+            ]}
           />
         </Card>
       )}
-
-      <Modal
-        title={editingData ? '编辑销售数据' : '添加销售数据'}
-        open={modalVisible}
-        onCancel={() => {
-          setModalVisible(false);
-          setEditingData(null);
-          form.resetFields();
-        }}
-        footer={null}
-        width={600}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSave}
-        >
-          <Form.Item
-            label="日期"
-            name="date"
-            rules={[{ required: true, message: '请选择日期' }]}
-          >
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item
-            label="销量 (Units)"
-            name="units"
-            rules={[
-              { required: true, message: '请输入销量' },
-              { type: 'number', min: 0, message: '销量必须为正数' }
-            ]}
-          >
-            <InputNumber
-              placeholder="请输入销量"
-              min={0}
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="销售额 ($)"
-            name="sales"
-            rules={[
-              { required: true, message: '请输入销售额' },
-              { type: 'number', min: 0, message: '销售额必须为正数' }
-            ]}
-          >
-            <InputNumber
-              placeholder="请输入销售额"
-              min={0}
-              step={0.01}
-              style={{ width: '100%' }}
-              formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={(value) => value!.replace(/\$\s?|(,*)/g, '') as any}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="去年同期销量"
-            name="lastYearUnits"
-            rules={[
-              { required: true, message: '请输入去年同期销量' },
-              { type: 'number', min: 0, message: '销量必须为正数' }
-            ]}
-          >
-            <InputNumber
-              placeholder="请输入去年同期销量"
-              min={0}
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="去年同期销售额 ($)"
-            name="lastYearSales"
-            rules={[
-              { required: true, message: '请输入去年同期销售额' },
-              { type: 'number', min: 0, message: '销售额必须为正数' }
-            ]}
-          >
-            <InputNumber
-              placeholder="请输入去年同期销售额"
-              min={0}
-              step={0.01}
-              style={{ width: '100%' }}
-              formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={(value) => value!.replace(/\$\s?|(,*)/g, '') as any}
-            />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-            <Space>
-              <Button onClick={() => setModalVisible(false)}>
-                取消
-              </Button>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
-                loading={loading}
-                icon={<SaveOutlined />}
-              >
-                {editingData ? '更新' : '创建'}
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };

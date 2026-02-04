@@ -53,13 +53,30 @@ const BusinessReportsConfig: React.FC<BusinessReportsConfigProps> = ({
     }
   }, [salesSnapshotData, form]);
 
+  const computeAverages = (totalItems: number, units: number, sales: number) => {
+    const safeTotal = totalItems > 0 ? totalItems : 0;
+    const avgUnits = safeTotal > 0 ? units / safeTotal : 0;
+    const avgSales = safeTotal > 0 ? sales / safeTotal : 0;
+    return {
+      avgUnits: Number(avgUnits.toFixed(2)),
+      avgSales: Number(avgSales.toFixed(2)),
+    };
+  };
+
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
+      const { avgUnits, avgSales } = computeAverages(
+        Number(values.total_order_items || 0),
+        Number(values.units_ordered || 0),
+        Number(values.ordered_product_sales || 0)
+      );
       
       // 转换日期格式
       const formattedValues = {
         ...values,
+        avg_units_per_order_item: avgUnits,
+        avg_sales_per_order_item: avgSales,
         snapshot_time: values.snapshot_time ? values.snapshot_time.toISOString() : new Date().toISOString()
       };
       
@@ -97,6 +114,17 @@ const BusinessReportsConfig: React.FC<BusinessReportsConfigProps> = ({
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat('en-US').format(num);
   };
+
+  const computedAverages = React.useMemo(() => {
+    if (!salesSnapshotData) {
+      return { avgUnits: 0, avgSales: 0 };
+    }
+    return computeAverages(
+      Number(salesSnapshotData.total_order_items || 0),
+      Number(salesSnapshotData.units_ordered || 0),
+      Number(salesSnapshotData.ordered_product_sales || 0)
+    );
+  }, [salesSnapshotData]);
 
   return (
     <div>
@@ -149,14 +177,14 @@ const BusinessReportsConfig: React.FC<BusinessReportsConfigProps> = ({
               <Col span={4}>
                 <Statistic
                   title="Avg Units/Order Item"
-                  value={salesSnapshotData?.avg_units_per_order_item || 0}
+                  value={salesSnapshotData?.avg_units_per_order_item ?? computedAverages.avgUnits}
                   precision={2}
                 />
               </Col>
               <Col span={4}>
                 <Statistic
                   title="Avg Sales/Order Item"
-                  value={salesSnapshotData?.avg_sales_per_order_item || 0}
+                  value={salesSnapshotData?.avg_sales_per_order_item ?? computedAverages.avgSales}
                   formatter={(value) => formatCurrency(Number(value))}
                 />
               </Col>
@@ -257,43 +285,53 @@ const BusinessReportsConfig: React.FC<BusinessReportsConfigProps> = ({
                     />
                   </Form.Item>
                 </Col>
-
-                <Col span={12}>
-                  <Form.Item
-                    label="Avg. Units/Order Item"
-                    name="avg_units_per_order_item"
-                    rules={[{ required: true, message: '请输入Avg Units per Order Item' }]}
-                  >
-                    <InputNumber
-                      min={0}
-                      precision={2}
-                      placeholder="1.13"
-                      style={{ width: '100%' }}
-                      size="large"
-                    />
-                  </Form.Item>
-                </Col>
               </Row>
 
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    label="Avg. Sales/Order Item ($)"
-                    name="avg_sales_per_order_item"
-                    rules={[{ required: true, message: '请输入Avg Sales per Order Item' }]}
-                  >
-                    <InputNumber
-                      min={0}
-                      precision={2}
-                      placeholder="127.88"
-                      style={{ width: '100%' }}
-                      size="large"
-                      formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                      parser={value => Number(value!.replace(/\$\s?|(,*)/g, '')) as any}
-                    />
-                  </Form.Item>
-                </Col>
+              <Form.Item
+                noStyle
+                shouldUpdate={(prev, cur) =>
+                  prev.total_order_items !== cur.total_order_items ||
+                  prev.units_ordered !== cur.units_ordered ||
+                  prev.ordered_product_sales !== cur.ordered_product_sales
+                }
+              >
+                {() => {
+                  const totalItems = Number(form.getFieldValue('total_order_items') || 0);
+                  const units = Number(form.getFieldValue('units_ordered') || 0);
+                  const sales = Number(form.getFieldValue('ordered_product_sales') || 0);
+                  const { avgUnits, avgSales } = computeAverages(totalItems, units, sales);
+                  return (
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item label="Avg. Units/Order Item">
+                          <InputNumber
+                            value={avgUnits}
+                            precision={2}
+                            style={{ width: '100%' }}
+                            size="large"
+                            disabled
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="Avg. Sales/Order Item ($)">
+                          <InputNumber
+                            value={avgSales}
+                            precision={2}
+                            style={{ width: '100%' }}
+                            size="large"
+                            disabled
+                            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            parser={value => Number(value!.replace(/\$\s?|(,*)/g, '')) as any}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  );
+                }}
+              </Form.Item>
 
+              <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
                     label="Snapshot Time"
@@ -320,8 +358,8 @@ const BusinessReportsConfig: React.FC<BusinessReportsConfigProps> = ({
                 <li><strong>Total Order Items</strong>: 订单项目总数</li>
                 <li><strong>Units Ordered</strong>: 订购单位数</li>
                 <li><strong>Ordered Product Sales</strong>: 订购商品销售额</li>
-                <li><strong>Avg. Units/Order Item</strong>: 平均单位数/订单项目</li>
-                <li><strong>Avg. Sales/Order Item</strong>: 平均销售额/订单项目</li>
+                <li><strong>Avg. Units/Order Item</strong>: 平均单位数/订单项目（自动计算）</li>
+                <li><strong>Avg. Sales/Order Item</strong>: 平均销售额/订单项目（自动计算）</li>
               </ul>
               <p><strong>注意：</strong>修改这些数值后，前端Business Reports页面的Sales Snapshot部分会实时更新。</p>
             </div>

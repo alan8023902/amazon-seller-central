@@ -124,40 +124,91 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 // ==================== Sparkline Component ====================
-function TinySparkline({ strokeWidth = 2 }: { strokeWidth?: number }) {
+function TinySparkline({
+  data,
+  strokeWidth = 2
+}: {
+  data: number[];
+  strokeWidth?: number;
+}) {
+  const values = data && data.length ? data : Array.from({ length: 24 }, () => 0);
+  const maxValue = Math.max(...values, 0);
+  const yMax = maxValue > 0 ? Math.ceil(maxValue) : 0;
+  const yMid = yMax > 0 ? Math.round(yMax / 2) : 0;
+  const yTicks = [yMax, yMid, 0];
+
+  const formatTick = (value: number) => {
+    if (value === 0) return '0';
+    if (value >= 1000 && value % 1000 === 0) return `${value / 1000}k`;
+    return `${Math.round(value)}`;
+  };
+
+  const width = 300;
+  const height = 60;
+  const topPadding = 6;
+  const bottomPadding = 10;
+  const chartHeight = height - topPadding - bottomPadding;
+  const step = values.length > 1 ? width / (values.length - 1) : width;
+
+  const toY = (value: number) => {
+    if (yMax === 0) return topPadding + chartHeight;
+    return topPadding + (1 - value / yMax) * chartHeight;
+  };
+
+  const path = values
+    .map((value, index) => {
+      const x = index * step;
+      const y = toY(value);
+      return `${index === 0 ? 'M' : 'L'}${x},${y}`;
+    })
+    .join(' ');
+
+  const xLabels = ['12AM', '12PM', '11PM'];
+
   return (
     <div className="mt-2 ml-4">
       <div className="h-[44px] w-full relative">
-        <svg viewBox="0 0 300 60" className="w-full h-full overflow-visible">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
           {/* Y-axis ticks */}
           <g className="text-[9px] text-[#565959]">
-            <text x="-5" y="10" textAnchor="end">100</text>
-            <text x="-5" y="30" textAnchor="end">50</text>
-            <text x="-5" y="50" textAnchor="end">0</text>
+            {yTicks.map((tick, idx) => (
+              <text key={idx} x="-5" y={toY(tick) + 3} textAnchor="end">
+                {formatTick(tick)}
+              </text>
+            ))}
           </g>
 
           {/* Grid lines */}
-          <line x1="0" y1="10" x2="300" y2="10" stroke="#E7EAEA" strokeWidth="1" opacity="0.5" />
-          <line x1="0" y1="30" x2="300" y2="30" stroke="#E7EAEA" strokeWidth="1" opacity="0.5" />
-          <line x1="0" y1="50" x2="300" y2="50" stroke="#E7EAEA" strokeWidth="1" opacity="0.5" />
+          {yTicks.map((tick, idx) => (
+            <line
+              key={idx}
+              x1="0"
+              y1={toY(tick)}
+              x2={width}
+              y2={toY(tick)}
+              stroke="#E7EAEA"
+              strokeWidth="1"
+              opacity="0.5"
+            />
+          ))}
 
           {/* Left border */}
-          <line x1="0" y1="0" x2="0" y2="60" stroke="#E7EAEA" strokeWidth="1" />
+          <line x1="0" y1="0" x2="0" y2={height} stroke="#E7EAEA" strokeWidth="1" />
 
           {/* Main line */}
           <path
-            d="M0,50 L50,40 L100,20 L150,35 L200,10 L250,25 L300,18"
+            d={path || `M0,${toY(0)}`}
             fill="none"
             stroke="#007185"
             strokeWidth={strokeWidth}
           />
-          <circle cx="300" cy="18" r="2" fill="#007185" />
+          <circle cx={width} cy={toY(values[values.length - 1] || 0)} r="2" fill="#007185" />
         </svg>
       </div>
       <div className="flex justify-between text-[11px] text-[#565959] mt-1">
-        <span>Jan 1</span>
-        <span>4</span>
-        <span>7</span>
+        {xLabels.map(label => (
+          <span key={label}>{label}</span>
+        ))}
       </div>
     </div>
   );
@@ -185,6 +236,7 @@ export default function Dashboard() {
   // State for API data
   const [currentStore, setCurrentStore] = useState<StoreData | null>(null);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [salesSparkline, setSalesSparkline] = useState<number[]>(Array.from({ length: 24 }, () => 0));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -260,11 +312,12 @@ export default function Dashboard() {
         setCurrentStore(storeData);
 
         // Load dashboard data from backend API using unified API config
-        const [snapshotResponse, productsResponse, actionsResponse, communicationsResponse] = await Promise.all([
+        const [snapshotResponse, productsResponse, actionsResponse, communicationsResponse, salesChartResponse] = await Promise.all([
           apiGet(API_CONFIG.ENDPOINTS.DASHBOARD.SNAPSHOT(currentStore.id)),
           apiGet(API_CONFIG.ENDPOINTS.PRODUCTS.BY_STORE(currentStore.id) + '&limit=10'),
           apiGet(API_CONFIG.ENDPOINTS.DASHBOARD.ACTIONS(currentStore.id)),
-          apiGet(API_CONFIG.ENDPOINTS.COMMUNICATIONS.BY_STORE(currentStore.id))
+          apiGet(API_CONFIG.ENDPOINTS.COMMUNICATIONS.BY_STORE(currentStore.id)),
+          apiGet(`/api/sales/chart-data/${currentStore.id}?dimension=today`)
         ]);
 
         // Extract data from API responses
@@ -272,6 +325,15 @@ export default function Dashboard() {
         const products = Array.isArray(productsResponse.data) ? productsResponse.data : [];
         const actions = Array.isArray(actionsResponse.data) ? actionsResponse.data : [];
         const communications = Array.isArray(communicationsResponse.data) ? communicationsResponse.data : [];
+
+        const salesChartData = Array.isArray(salesChartResponse?.data)
+          ? salesChartResponse.data
+          : [];
+        const hourlySales = Array.from({ length: 24 }, (_, hour) => {
+          const point = salesChartData.find((item: any) => Number(item.hour) === hour);
+          return Number(point?.sales || 0);
+        });
+        setSalesSparkline(hourlySales);
 
         // Transform data to match expected format
         const dashboardData: DashboardData = {
@@ -474,7 +536,7 @@ export default function Dashboard() {
                   <div className="text-[16px] font-semibold text-amazon-headerTeal mb-0.5">{formatCurrency(dashboardData?.salesToday || 0)}</div>
                   <div className="text-[11px] text-[#565959]">{t('todaySoFar')}</div>
                   <div className="mt-2">
-                    <TinySparkline strokeWidth={2.5} />
+                    <TinySparkline data={salesSparkline} strokeWidth={2.5} />
                   </div>
                 </div>
               </div>

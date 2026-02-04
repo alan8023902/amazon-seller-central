@@ -3,6 +3,7 @@ import { dataService } from '../services/dataService';
 import { 
   SalesSnapshotSchema,
   DailySalesSchema,
+  type GlobalSnapshot,
   type SalesSnapshot, 
   type DailySales,
   type ApiResponse,
@@ -11,6 +12,57 @@ import {
 import { asyncHandler, createError } from '../middleware/errorHandler';
 
 const router = express.Router();
+
+type HourlyPoint = { hour: number; units: number; sales: number };
+type HourlySeries = { date: string; hours: HourlyPoint[] };
+type DailyPoint = {
+  date: string;
+  units: number;
+  sales: number;
+  lastYearUnits?: number;
+  lastYearSales?: number;
+};
+type SalesTimeSeries = {
+  id?: string;
+  store_id: string;
+  updated_at?: string;
+  day: {
+    today?: HourlySeries;
+    yesterday?: HourlySeries;
+    sameDayLastWeek?: HourlySeries;
+    sameDayLastYear?: HourlySeries;
+  };
+  week: {
+    startDate: string;
+    endDate: string;
+    current: DailyPoint[];
+    lastWeek: DailyPoint[];
+    lastYear: DailyPoint[];
+  };
+  month: {
+    startDate: string;
+    endDate: string;
+    current: DailyPoint[];
+    lastMonth: DailyPoint[];
+    lastYear: DailyPoint[];
+  };
+  year: {
+    startDate: string;
+    endDate: string;
+    days: DailyPoint[];
+  };
+};
+
+type CompareColumn = { key: string; label: string; lines: string[] };
+type CompareSeriesPoint = {
+  xIndex: number;
+  units: number;
+  sales: number;
+  hourLabel?: string;
+  date?: string;
+  weekLabel?: string;
+};
+type CompareSeries = { key: string; label: string; data: CompareSeriesPoint[] };
 
 const toUtcDate = (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 
@@ -35,6 +87,16 @@ const seededRandom = (seed: number) => {
   return x - Math.floor(x);
 };
 
+const computeSnapshotAverages = (totalOrderItems: number, unitsOrdered: number, orderedProductSales: number) => {
+  const safeTotal = totalOrderItems > 0 ? totalOrderItems : 0;
+  const avgUnits = safeTotal > 0 ? unitsOrdered / safeTotal : 0;
+  const avgSales = safeTotal > 0 ? orderedProductSales / safeTotal : 0;
+  return {
+    avgUnits: Number(avgUnits.toFixed(2)),
+    avgSales: Number(avgSales.toFixed(2)),
+  };
+};
+
 const createRng = (seed: number) => {
   let state = seed >>> 0;
   return () => {
@@ -56,15 +118,15 @@ const buildWeights = (start: Date, days: number, rng: () => number) => {
     const r2 = rng();
     const r3 = rng();
     const r4 = rng();
-    const base = 0.05 + r1 * 4.95; // 0.05 - 5.0
-    const tail = Math.pow(r2, 1.8); // heavier tail
-    const spread = 0.05 + tail * 12; // 0.05 - 12.05
-    const spike = r3 > 0.92 ? 6.2 : r3 < 0.1 ? 0.05 : 1;
-    const dip = r4 > 0.88 ? 0.4 : 1;
+    const base = 0.02 + r1 * 6.5; // 0.02 - 6.52
+    const tail = Math.pow(r2, 2.1); // heavier tail
+    const spread = 0.05 + tail * 24; // 0.05 - 24.05
+    const spike = r3 > 0.9 ? 8 + r3 * 10 : r3 < 0.08 ? 0.04 : 1;
+    const dip = r4 > 0.85 ? 0.25 : 1;
     const r5 = rng();
-    const nearZero = r5 < 0.06 ? 0.02 : 1;
+    const nearZero = r5 < 0.1 ? 0.01 : 1;
     const weight = base * spread * spike * dip * nearZero * weekendFactor;
-    weights.push(Math.max(0.002, Math.min(18, weight)));
+    weights.push(Math.max(0.001, Math.min(35, weight)));
   }
   return weights;
 };
@@ -93,6 +155,109 @@ const allocateTotals = (total: number, weights: number[]) => {
   return floors;
 };
 
+const formatHourLabel = (hour: number) => {
+  const normalized = hour % 24;
+  const suffix = normalized < 12 ? 'AM' : 'PM';
+  const display = normalized % 12 === 0 ? 12 : normalized % 12;
+  return `${display}${suffix}`;
+};
+
+const buildHourlyWeights = (rng: () => number) => {
+  const weights: number[] = [];
+  for (let i = 0; i < 24; i++) {
+    const r1 = rng();
+    const r2 = rng();
+    const r3 = rng();
+    const r4 = rng();
+    const base = 0.05 + r1 * 2.5; // 0.05 - 2.55
+    const tail = Math.pow(r2, 2.2);
+    const spread = 0.1 + tail * 18; // 0.1 - 18.1
+    const spike = r3 > 0.88 ? 6 + r3 * 8 : 1;
+    const dip = r4 < 0.12 ? 0.12 : 1;
+    const weight = base * spread * spike * dip;
+    weights.push(Math.max(0.002, Math.min(40, weight)));
+  }
+  return weights;
+};
+
+const buildHourlySeries = (
+  dateIso: string,
+  totalUnits: number,
+  totalSales: number,
+  rng: () => number
+): HourlySeries => {
+  const unitWeights = buildHourlyWeights(rng);
+  const salesWeights = buildHourlyWeights(rng);
+  const units = allocateTotals(Math.max(0, Math.round(totalUnits)), unitWeights);
+  const sales = allocateTotals(Math.max(0, Math.round(totalSales)), salesWeights);
+
+  const hours: HourlyPoint[] = [];
+  for (let hour = 0; hour < 24; hour++) {
+    hours.push({
+      hour,
+      units: units[hour],
+      sales: sales[hour],
+    });
+  }
+  return { date: dateIso, hours };
+};
+
+const hourlyToChartData = (series: HourlySeries, lastYear?: HourlySeries) => {
+  const lastYearMap = new Map<number, HourlyPoint>();
+  if (lastYear) {
+    lastYear.hours.forEach(item => lastYearMap.set(item.hour, item));
+  }
+
+  return series.hours.map(item => {
+    const last = lastYearMap.get(item.hour);
+    return {
+      date: series.date,
+      hour: item.hour,
+      hourLabel: formatHourLabel(item.hour),
+      xIndex: item.hour,
+      units: item.units,
+      sales: item.sales,
+      lastYearUnits: last?.units ?? 0,
+      lastYearSales: last?.sales ?? 0,
+    };
+  });
+};
+
+const hourlyToSeriesData = (series: HourlySeries): CompareSeriesPoint[] =>
+  series.hours.map(item => ({
+    date: series.date,
+    hour: item.hour,
+    hourLabel: formatHourLabel(item.hour),
+    xIndex: item.hour,
+    units: item.units,
+    sales: item.sales,
+  }));
+
+const weekToSeriesData = (entries: DailyPoint[]): CompareSeriesPoint[] =>
+  entries.map((item, idx) => ({
+    date: item.date,
+    xIndex: idx,
+    weekLabel: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][idx],
+    units: item.units,
+    sales: item.sales,
+  }));
+
+const monthToSeriesData = (entries: DailyPoint[]): CompareSeriesPoint[] =>
+  entries.map(item => ({
+    date: item.date,
+    xIndex: Number(item.date.split('-')[2]),
+    units: item.units,
+    sales: item.sales,
+  }));
+
+const getWeekStartUtc = (date: Date) => {
+  const start = new Date(date);
+  const day = start.getUTCDay();
+  const diff = (day + 6) % 7;
+  start.setUTCDate(start.getUTCDate() - diff);
+  return toUtcDate(start);
+};
+
 const generateDailySeries = (storeId: string, totalUnits: number, totalSales: number, days = 365) => {
   const end = toUtcDate(new Date());
   const start = addDaysUtc(end, -(days - 1));
@@ -109,17 +274,17 @@ const generateDailySeries = (storeId: string, totalUnits: number, totalSales: nu
   const units = allocateTotals(Math.max(0, Math.round(totalUnits)), unitWeights);
   const sales = allocateTotals(Math.max(0, Math.round(totalSales)), salesWeights);
 
-  const lastYearUnitsScale = 0.45 + lastYearUnitRng() * 0.45; // 0.45 - 0.90
-  const lastYearSalesScale = 0.4 + lastYearSalesRng() * 0.5; // 0.40 - 0.90
+  const lastYearUnitsScale = 0.3 + lastYearUnitRng() * 0.9; // 0.30 - 1.20
+  const lastYearSalesScale = 0.25 + lastYearSalesRng() * 0.95; // 0.25 - 1.20
   const lastYearUnitWeights = buildWeights(start, days, lastYearUnitRng);
   const lastYearSalesWeights = buildWeights(start, days, lastYearSalesRng);
   const lastYearUnits = allocateTotals(
     Math.max(0, Math.round(totalUnits * lastYearUnitsScale)),
-    lastYearUnitWeights.map(w => w * (0.3 + lastYearUnitRng() * 2.2))
+    lastYearUnitWeights.map(w => w * (0.2 + lastYearUnitRng() * 3.0))
   );
   const lastYearSales = allocateTotals(
     Math.max(0, Math.round(totalSales * lastYearSalesScale)),
-    lastYearSalesWeights.map(w => w * (0.3 + lastYearSalesRng() * 2.2))
+    lastYearSalesWeights.map(w => w * (0.2 + lastYearSalesRng() * 3.0))
   );
 
   const entries = [];
@@ -135,6 +300,517 @@ const generateDailySeries = (storeId: string, totalUnits: number, totalSales: nu
   }
 
   return { start, end, entries };
+};
+
+const buildDailyMap = (entries: DailyPoint[]) => {
+  const map = new Map<string, DailyPoint>();
+  entries.forEach(entry => {
+    map.set(entry.date, entry);
+  });
+  return map;
+};
+
+const normalizeDaily = (entry: DailyPoint | undefined, date: string): DailyPoint => ({
+  date,
+  units: entry?.units ?? 0,
+  sales: entry?.sales ?? 0,
+  lastYearUnits: entry?.lastYearUnits ?? 0,
+  lastYearSales: entry?.lastYearSales ?? 0,
+});
+
+const buildWeekSeriesFromDaily = (dailyMap: Map<string, DailyPoint>, todayUtc: Date) => {
+  const weekStart = getWeekStartUtc(todayUtc);
+  const current: DailyPoint[] = [];
+  const lastWeek: DailyPoint[] = [];
+  const lastYear: DailyPoint[] = [];
+
+  for (let i = 0; i < 7; i++) {
+    const currentDate = addDaysUtc(weekStart, i);
+    const currentIso = formatDate(currentDate);
+    const currentRecord = normalizeDaily(dailyMap.get(currentIso), currentIso);
+    const isFuture = currentDate.getTime() > todayUtc.getTime();
+
+    current.push({
+      ...currentRecord,
+      units: isFuture ? 0 : currentRecord.units,
+      sales: isFuture ? 0 : currentRecord.sales,
+      lastYearUnits: isFuture ? 0 : currentRecord.lastYearUnits,
+      lastYearSales: isFuture ? 0 : currentRecord.lastYearSales,
+    });
+
+    const lastWeekDate = addDaysUtc(weekStart, i - 7);
+    const lastWeekIso = formatDate(lastWeekDate);
+    lastWeek.push(normalizeDaily(dailyMap.get(lastWeekIso), lastWeekIso));
+
+    const lastYearDate = new Date(Date.UTC(
+      currentDate.getUTCFullYear() - 1,
+      currentDate.getUTCMonth(),
+      currentDate.getUTCDate()
+    ));
+    const lastYearIso = formatDate(lastYearDate);
+    lastYear.push({
+      date: lastYearIso,
+      units: currentRecord.lastYearUnits ?? 0,
+      sales: currentRecord.lastYearSales ?? 0,
+    });
+  }
+
+  return {
+    startDate: formatDate(weekStart),
+    endDate: formatDate(addDaysUtc(weekStart, 6)),
+    current,
+    lastWeek,
+    lastYear,
+  };
+};
+
+const buildMonthSeriesFromDaily = (dailyMap: Map<string, DailyPoint>, todayUtc: Date) => {
+  const monthStart = toUtcDate(new Date(Date.UTC(todayUtc.getUTCFullYear(), todayUtc.getUTCMonth(), 1)));
+  const daysInMonth = new Date(Date.UTC(todayUtc.getUTCFullYear(), todayUtc.getUTCMonth() + 1, 0)).getUTCDate();
+  const current: DailyPoint[] = [];
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = toUtcDate(new Date(Date.UTC(todayUtc.getUTCFullYear(), todayUtc.getUTCMonth(), day)));
+    const iso = formatDate(date);
+    const record = normalizeDaily(dailyMap.get(iso), iso);
+    const isFuture = date.getTime() > todayUtc.getTime();
+    current.push({
+      ...record,
+      units: isFuture ? 0 : record.units,
+      sales: isFuture ? 0 : record.sales,
+      lastYearUnits: isFuture ? 0 : record.lastYearUnits,
+      lastYearSales: isFuture ? 0 : record.lastYearSales,
+    });
+  }
+
+  const lastMonthStart = toUtcDate(new Date(Date.UTC(todayUtc.getUTCFullYear(), todayUtc.getUTCMonth() - 1, 1)));
+  const daysInLastMonth = new Date(Date.UTC(lastMonthStart.getUTCFullYear(), lastMonthStart.getUTCMonth() + 1, 0)).getUTCDate();
+  const lastMonth: DailyPoint[] = [];
+  for (let day = 1; day <= daysInLastMonth; day++) {
+    const date = toUtcDate(new Date(Date.UTC(lastMonthStart.getUTCFullYear(), lastMonthStart.getUTCMonth(), day)));
+    const iso = formatDate(date);
+    lastMonth.push(normalizeDaily(dailyMap.get(iso), iso));
+  }
+
+  const lastYear: DailyPoint[] = current.map(item => {
+    const baseDate = new Date(item.date);
+    const lastYearDate = new Date(Date.UTC(
+      baseDate.getUTCFullYear() - 1,
+      baseDate.getUTCMonth(),
+      baseDate.getUTCDate()
+    ));
+    return {
+      date: formatDate(lastYearDate),
+      units: item.lastYearUnits ?? 0,
+      sales: item.lastYearSales ?? 0,
+    };
+  });
+
+  return {
+    startDate: formatDate(monthStart),
+    endDate: formatDate(addDaysUtc(monthStart, daysInMonth - 1)),
+    current,
+    lastMonth,
+    lastYear,
+  };
+};
+
+const buildDaySeriesFromDaily = (storeId: string, dailyMap: Map<string, DailyPoint>, todayUtc: Date) => {
+  const todayIso = formatDate(todayUtc);
+  const yesterdayIso = formatDate(addDaysUtc(todayUtc, -1));
+  const lastWeekIso = formatDate(addDaysUtc(todayUtc, -7));
+  const todayRecord = normalizeDaily(dailyMap.get(todayIso), todayIso);
+  const yesterdayRecord = normalizeDaily(dailyMap.get(yesterdayIso), yesterdayIso);
+  const lastWeekRecord = normalizeDaily(dailyMap.get(lastWeekIso), lastWeekIso);
+
+  const seedBase = (Date.now() ^ hashString(storeId) ^ Math.floor(Math.random() * 1e9)) >>> 0;
+  const rngYesterday = createRng(seedBase + 17);
+  const rngLastWeek = createRng(seedBase + 73);
+  const rngLastYear = createRng(seedBase + 131);
+
+  const lastYearDate = new Date(Date.UTC(
+    todayUtc.getUTCFullYear() - 1,
+    todayUtc.getUTCMonth(),
+    todayUtc.getUTCDate()
+  ));
+  const lastYearIso = formatDate(lastYearDate);
+
+  return {
+    yesterday: buildHourlySeries(yesterdayIso, yesterdayRecord.units, yesterdayRecord.sales, rngYesterday),
+    sameDayLastWeek: buildHourlySeries(lastWeekIso, lastWeekRecord.units, lastWeekRecord.sales, rngLastWeek),
+    sameDayLastYear: buildHourlySeries(
+      lastYearIso,
+      todayRecord.lastYearUnits ?? 0,
+      todayRecord.lastYearSales ?? 0,
+      rngLastYear
+    ),
+  };
+};
+
+const buildTimeSeriesFromDaily = (
+  storeId: string,
+  entries: DailyPoint[],
+  existingToday?: HourlySeries
+): SalesTimeSeries => {
+  const todayUtc = toUtcDate(new Date());
+  const dailyMap = buildDailyMap(entries);
+
+  const day = buildDaySeriesFromDaily(storeId, dailyMap, todayUtc);
+  const week = buildWeekSeriesFromDaily(dailyMap, todayUtc);
+  const month = buildMonthSeriesFromDaily(dailyMap, todayUtc);
+
+  return {
+    store_id: storeId,
+    updated_at: new Date().toISOString(),
+    day: {
+      today: existingToday,
+      ...day,
+    },
+    week,
+    month,
+    year: {
+      startDate: entries.length ? entries[0].date : formatDate(addDaysUtc(todayUtc, -364)),
+      endDate: entries.length ? entries[entries.length - 1].date : formatDate(todayUtc),
+      days: entries,
+    },
+  };
+};
+
+const loadTimeSeriesForStore = async (storeId: string) => {
+  const series = await dataService.findByStoreId<SalesTimeSeries>('sales_time_series', storeId);
+  return series[0] || null;
+};
+
+const upsertTimeSeries = async (storeId: string, series: SalesTimeSeries) => {
+  const existing = await loadTimeSeriesForStore(storeId);
+  if (existing) {
+    const updated = await dataService.update<SalesTimeSeries>('sales_time_series', existing.id as string, {
+      ...series,
+      store_id: storeId,
+      updated_at: new Date().toISOString(),
+    });
+    return updated ?? { ...series, store_id: storeId };
+  }
+  return dataService.create<SalesTimeSeries>('sales_time_series', {
+    ...series,
+    store_id: storeId,
+    updated_at: new Date().toISOString(),
+  });
+};
+
+const fillTodaySeriesFromGlobalSnapshot = async (storeId: string, series: SalesTimeSeries) => {
+  const snapshots = await dataService.findByStoreId<GlobalSnapshot>('global_snapshots', storeId);
+  const snapshot = snapshots[0];
+  if (!snapshot) return series;
+
+  const totalUnits = snapshot.open_orders || 0;
+  const totalSales = snapshot.sales_amount || 0;
+  const todayIso = formatDate(toUtcDate(new Date()));
+  const seedBase = hashString(`${storeId}-${todayIso}-${totalUnits}-${totalSales}`);
+  const todaySeries = buildHourlySeries(todayIso, totalUnits, totalSales, createRng(seedBase + 29));
+
+  return {
+    ...series,
+    day: {
+      ...(series.day || {}),
+      today: todaySeries,
+    }
+  };
+};
+
+const ensureTimeSeries = async (storeId: string) => {
+  const existing = await loadTimeSeriesForStore(storeId);
+  if (existing && existing.year?.days?.length) {
+    const filled = await fillTodaySeriesFromGlobalSnapshot(storeId, existing);
+    if (filled !== existing) {
+      return upsertTimeSeries(storeId, filled);
+    }
+    return existing;
+  }
+
+  const snapshots = await dataService.findByStoreId<SalesSnapshot>('sales_snapshots', storeId);
+  const snapshot = snapshots[0];
+  const totalUnits = snapshot?.units_ordered ?? 192260;
+  const totalSales = snapshot?.ordered_product_sales ?? 18657478;
+
+  const { entries } = generateDailySeries(storeId, totalUnits, totalSales);
+  saveChartDataForStore(storeId, entries);
+  await saveDailySalesForStore(storeId, entries);
+
+  const nextSeries = buildTimeSeriesFromDaily(storeId, entries, existing?.day?.today);
+  const filled = await fillTodaySeriesFromGlobalSnapshot(storeId, nextSeries);
+  return upsertTimeSeries(storeId, filled);
+};
+
+const formatUnitsLine = (value: number) =>
+  `${new Intl.NumberFormat('en-US').format(Math.round(value))} Units`;
+const formatSalesLine = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+const sumHourly = (series?: HourlySeries) => {
+  if (!series) return { units: 0, sales: 0 };
+  return series.hours.reduce(
+    (acc, item) => {
+      acc.units += item.units;
+      acc.sales += item.sales;
+      return acc;
+    },
+    { units: 0, sales: 0 }
+  );
+};
+
+const sumDaily = (entries?: DailyPoint[]) => {
+  if (!entries || !entries.length) return { units: 0, sales: 0 };
+  return entries.reduce(
+    (acc, item) => {
+      acc.units += item.units;
+      acc.sales += item.sales;
+      return acc;
+    },
+    { units: 0, sales: 0 }
+  );
+};
+
+const buildSeriesResponse = (
+  series: SalesTimeSeries,
+  dimension: string | undefined,
+  startDate?: string,
+  endDate?: string
+) => {
+  const dailyEntries = series.year?.days ?? [];
+  const dailyMap = buildDailyMap(dailyEntries);
+  const todayUtc = toUtcDate(new Date());
+  const todayIso = formatDate(todayUtc);
+  const yesterdayIso = formatDate(addDaysUtc(todayUtc, -1));
+  const lastWeekIso = formatDate(addDaysUtc(todayUtc, -7));
+
+  const weekSeries = series.week?.current?.length
+    ? series.week
+    : buildWeekSeriesFromDaily(dailyMap, todayUtc);
+  const monthSeries = series.month?.current?.length
+    ? series.month
+    : buildMonthSeriesFromDaily(dailyMap, todayUtc);
+
+  const buildHourlyFromTotals = (dateIso: string, units: number, sales: number, seed: number) =>
+    buildHourlySeries(dateIso, units, sales, createRng(seed));
+
+  const compare = { columns: [] as CompareColumn[], series: [] as CompareSeries[] };
+
+  if (dimension === 'today') {
+    const todayRecord = normalizeDaily(dailyMap.get(todayIso), todayIso);
+    const yesterdayRecord = normalizeDaily(dailyMap.get(yesterdayIso), yesterdayIso);
+    const lastWeekRecord = normalizeDaily(dailyMap.get(lastWeekIso), lastWeekIso);
+
+    const seedBase = (Date.now() ^ hashString(series.store_id) ^ Math.floor(Math.random() * 1e9)) >>> 0;
+    const todaySeries =
+      series.day?.today ??
+      buildHourlyFromTotals(todayIso, todayRecord.units, todayRecord.sales, seedBase + 11);
+    const yesterdaySeries =
+      series.day?.yesterday ??
+      buildHourlyFromTotals(yesterdayIso, yesterdayRecord.units, yesterdayRecord.sales, seedBase + 17);
+    const lastWeekSeries =
+      series.day?.sameDayLastWeek ??
+      buildHourlyFromTotals(lastWeekIso, lastWeekRecord.units, lastWeekRecord.sales, seedBase + 23);
+
+    const lastYearDate = new Date(Date.UTC(
+      todayUtc.getUTCFullYear() - 1,
+      todayUtc.getUTCMonth(),
+      todayUtc.getUTCDate()
+    ));
+    const lastYearIso = formatDate(lastYearDate);
+    const lastYearSeries =
+      series.day?.sameDayLastYear ??
+      buildHourlyFromTotals(
+        lastYearIso,
+        todayRecord.lastYearUnits ?? 0,
+        todayRecord.lastYearSales ?? 0,
+        seedBase + 37
+      );
+
+    const chartData = hourlyToChartData(todaySeries, lastYearSeries);
+
+    const now = new Date();
+    const hourString = now.toLocaleString('en-US', {
+      timeZone: 'America/Los_Angeles',
+      hour: '2-digit',
+      hour12: false
+    });
+    const parsedHour = Number(hourString);
+    const currentHour = Number.isNaN(parsedHour) ? now.getHours() : parsedHour;
+    const todaySoFar = todaySeries.hours
+      .filter(item => item.hour <= currentHour)
+      .reduce((acc, item) => {
+        acc.units += item.units;
+        acc.sales += item.sales;
+        return acc;
+      }, { units: 0, sales: 0 });
+
+    const yesterdayTotals = sumHourly(yesterdaySeries);
+    const lastWeekTotals = sumHourly(lastWeekSeries);
+    const lastYearTotals = sumHourly(lastYearSeries);
+
+    compare.columns = [
+      {
+        key: 'current',
+        label: 'Today so far',
+        lines: [formatUnitsLine(todaySoFar.units), formatSalesLine(todaySoFar.sales)]
+      },
+      {
+        key: 'yesterday',
+        label: 'Yesterday',
+        lines: ['By end of day', formatUnitsLine(yesterdayTotals.units), formatSalesLine(yesterdayTotals.sales)]
+      },
+      {
+        key: 'sameDayLastWeek',
+        label: 'Same day last week',
+        lines: ['By end of day', formatUnitsLine(lastWeekTotals.units), formatSalesLine(lastWeekTotals.sales)]
+      },
+      {
+        key: 'sameDayLastYear',
+        label: 'Same day last year',
+        lines: ['By end of day', formatUnitsLine(lastYearTotals.units), formatSalesLine(lastYearTotals.sales)]
+      },
+    ];
+
+    compare.series = [
+      { key: 'yesterday', label: 'Yesterday', data: hourlyToSeriesData(yesterdaySeries) },
+      { key: 'sameDayLastWeek', label: 'Same day last week', data: hourlyToSeriesData(lastWeekSeries) },
+      { key: 'sameDayLastYear', label: 'Same day last year', data: hourlyToSeriesData(lastYearSeries) },
+    ];
+
+    return { data: chartData, compare };
+  }
+
+  if (dimension === 'yesterday') {
+    const yesterdayRecord = normalizeDaily(dailyMap.get(yesterdayIso), yesterdayIso);
+    const dayBeforeIso = formatDate(addDaysUtc(todayUtc, -2));
+    const dayBeforeRecord = normalizeDaily(dailyMap.get(dayBeforeIso), dayBeforeIso);
+    const lastWeekFromYesterdayIso = formatDate(addDaysUtc(todayUtc, -8));
+    const lastWeekRecord = normalizeDaily(dailyMap.get(lastWeekFromYesterdayIso), lastWeekFromYesterdayIso);
+
+    const seedBase = (Date.now() ^ hashString(series.store_id) ^ Math.floor(Math.random() * 1e9)) >>> 0;
+    const yesterdaySeries =
+      series.day?.yesterday ??
+      buildHourlyFromTotals(yesterdayIso, yesterdayRecord.units, yesterdayRecord.sales, seedBase + 19);
+
+    const lastYearDate = new Date(Date.UTC(
+      todayUtc.getUTCFullYear() - 1,
+      todayUtc.getUTCMonth(),
+      todayUtc.getUTCDate() - 1
+    ));
+    const lastYearIso = formatDate(lastYearDate);
+    const dayBeforeSeries = buildHourlyFromTotals(
+      dayBeforeIso,
+      dayBeforeRecord.units,
+      dayBeforeRecord.sales,
+      seedBase + 31
+    );
+    const lastWeekSeries = buildHourlyFromTotals(
+      lastWeekFromYesterdayIso,
+      lastWeekRecord.units,
+      lastWeekRecord.sales,
+      seedBase + 43
+    );
+    const lastYearSeries = buildHourlyFromTotals(
+      lastYearIso,
+      yesterdayRecord.lastYearUnits ?? 0,
+      yesterdayRecord.lastYearSales ?? 0,
+      seedBase + 41
+    );
+
+    const chartData = hourlyToChartData(yesterdaySeries, lastYearSeries);
+    const yesterdayTotals = sumHourly(yesterdaySeries);
+
+    compare.columns = [
+      {
+        key: 'current',
+        label: 'Yesterday',
+        lines: ['By end of day', formatUnitsLine(yesterdayTotals.units), formatSalesLine(yesterdayTotals.sales)]
+      },
+      {
+        key: 'dayBeforeYesterday',
+        label: 'Day before yesterday',
+        lines: ['By end of day', formatUnitsLine(dayBeforeRecord.units), formatSalesLine(dayBeforeRecord.sales)]
+      },
+      {
+        key: 'sameDayLastWeek',
+        label: 'Same day last week',
+        lines: ['By end of day', formatUnitsLine(lastWeekRecord.units), formatSalesLine(lastWeekRecord.sales)]
+      },
+      {
+        key: 'sameDayLastYear',
+        label: 'Same day last year',
+        lines: ['By end of day', formatUnitsLine(yesterdayRecord.lastYearUnits ?? 0), formatSalesLine(yesterdayRecord.lastYearSales ?? 0)]
+      },
+    ];
+
+    compare.series = [
+      { key: 'dayBeforeYesterday', label: 'Day before yesterday', data: hourlyToSeriesData(dayBeforeSeries) },
+      { key: 'sameDayLastWeek', label: 'Same day last week', data: hourlyToSeriesData(lastWeekSeries) },
+      { key: 'sameDayLastYear', label: 'Same day last year', data: hourlyToSeriesData(lastYearSeries) },
+    ];
+
+    return { data: chartData, compare };
+  }
+
+  if (dimension === 'week') {
+    const data = weekSeries.current.map((item, idx) => ({
+      ...item,
+      xIndex: idx,
+      weekLabel: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][idx],
+      lastYearUnits: weekSeries.lastYear[idx]?.units ?? item.lastYearUnits ?? 0,
+      lastYearSales: weekSeries.lastYear[idx]?.sales ?? item.lastYearSales ?? 0,
+    }));
+
+    const currentTotals = sumDaily(weekSeries.current);
+    const lastWeekTotals = sumDaily(weekSeries.lastWeek);
+    const lastYearTotals = sumDaily(weekSeries.lastYear);
+
+    compare.columns = [
+      { key: 'current', label: 'This week so far', lines: [formatUnitsLine(currentTotals.units), formatSalesLine(currentTotals.sales)] },
+      { key: 'lastWeek', label: 'Last week', lines: [formatUnitsLine(lastWeekTotals.units), formatSalesLine(lastWeekTotals.sales)] },
+      { key: 'sameWeekLastYear', label: 'Same week last year', lines: [formatUnitsLine(lastYearTotals.units), formatSalesLine(lastYearTotals.sales)] },
+    ];
+
+    compare.series = [
+      { key: 'lastWeek', label: 'Last week', data: weekToSeriesData(weekSeries.lastWeek) },
+      { key: 'sameWeekLastYear', label: 'Same week last year', data: weekToSeriesData(weekSeries.lastYear) },
+    ];
+
+    return { data, compare };
+  }
+
+  if (dimension === 'month') {
+    const data = monthSeries.current.map((item) => ({
+      ...item,
+      xIndex: Number(item.date.split('-')[2]),
+      lastYearUnits: item.lastYearUnits ?? 0,
+      lastYearSales: item.lastYearSales ?? 0,
+    }));
+
+    const currentTotals = sumDaily(monthSeries.current);
+    const lastMonthTotals = sumDaily(monthSeries.lastMonth);
+    const lastYearTotals = sumDaily(monthSeries.lastYear);
+
+    compare.columns = [
+      { key: 'current', label: 'This month so far', lines: [formatUnitsLine(currentTotals.units), formatSalesLine(currentTotals.sales)] },
+      { key: 'lastMonth', label: 'Last month', lines: [formatUnitsLine(lastMonthTotals.units), formatSalesLine(lastMonthTotals.sales)] },
+      { key: 'sameMonthLastYear', label: 'Same month last year', lines: [formatUnitsLine(lastYearTotals.units), formatSalesLine(lastYearTotals.sales)] },
+    ];
+
+    compare.series = [
+      { key: 'lastMonth', label: 'Last month', data: monthToSeriesData(monthSeries.lastMonth) },
+      { key: 'sameMonthLastYear', label: 'Same month last year', data: monthToSeriesData(monthSeries.lastYear) },
+    ];
+
+    return { data, compare };
+  }
+
+  const filtered = startDate && endDate
+    ? dailyEntries.filter(item => item.date >= startDate && item.date <= endDate)
+    : dailyEntries;
+
+  return { data: filtered };
 };
 
 const saveChartDataForStore = (
@@ -206,20 +882,37 @@ router.get('/', asyncHandler(async (req, res) => {
   
   // Create default snapshot if none exists
   if (!snapshot) {
+    const { avgUnits, avgSales } = computeSnapshotAverages(248, 192260, 18657478);
     snapshot = await dataService.create<SalesSnapshot>('sales_snapshots', {
       store_id: store_id as string,
       total_order_items: 248,
       units_ordered: 192260,
       ordered_product_sales: 18657478,
-      avg_units_per_order: 1.14,
-      avg_sales_per_order: 110.29,
+      avg_units_per_order_item: avgUnits,
+      avg_sales_per_order_item: avgSales,
+      avg_units_per_order: avgUnits,
+      avg_sales_per_order: avgSales,
       snapshot_time: new Date().toISOString(),
     });
   }
   
+  const { avgUnits: computedAvgUnits, avgSales: computedAvgSales } = computeSnapshotAverages(
+    snapshot.total_order_items || 0,
+    snapshot.units_ordered || 0,
+    snapshot.ordered_product_sales || 0
+  );
+
+  const normalizedSnapshot = {
+    ...snapshot,
+    avg_units_per_order_item: snapshot.avg_units_per_order_item ?? computedAvgUnits,
+    avg_sales_per_order_item: snapshot.avg_sales_per_order_item ?? computedAvgSales,
+    avg_units_per_order: snapshot.avg_units_per_order ?? computedAvgUnits,
+    avg_sales_per_order: snapshot.avg_sales_per_order ?? computedAvgSales,
+  };
+
   const response: ApiResponse<SalesSnapshot> = {
     success: true,
-    data: snapshot,
+    data: normalizedSnapshot,
   };
   
   res.json(response);
@@ -234,20 +927,37 @@ router.get('/snapshot/:storeId', asyncHandler(async (req, res) => {
   
   // Create default snapshot if none exists
   if (!snapshot) {
+    const { avgUnits, avgSales } = computeSnapshotAverages(248, 192260, 18657478);
     snapshot = await dataService.create<SalesSnapshot>('sales_snapshots', {
       store_id: storeId,
       total_order_items: 248,
       units_ordered: 192260,
       ordered_product_sales: 18657478,
-      avg_units_per_order: 1.14,
-      avg_sales_per_order: 110.29,
+      avg_units_per_order_item: avgUnits,
+      avg_sales_per_order_item: avgSales,
+      avg_units_per_order: avgUnits,
+      avg_sales_per_order: avgSales,
       snapshot_time: new Date().toISOString(),
     });
   }
   
+  const { avgUnits: computedAvgUnits, avgSales: computedAvgSales } = computeSnapshotAverages(
+    snapshot.total_order_items || 0,
+    snapshot.units_ordered || 0,
+    snapshot.ordered_product_sales || 0
+  );
+
+  const normalizedSnapshot = {
+    ...snapshot,
+    avg_units_per_order_item: snapshot.avg_units_per_order_item ?? computedAvgUnits,
+    avg_sales_per_order_item: snapshot.avg_sales_per_order_item ?? computedAvgSales,
+    avg_units_per_order: snapshot.avg_units_per_order ?? computedAvgUnits,
+    avg_sales_per_order: snapshot.avg_sales_per_order ?? computedAvgSales,
+  };
+
   const response: ApiResponse<SalesSnapshot> = {
     success: true,
-    data: snapshot,
+    data: normalizedSnapshot,
   };
   
   res.json(response);
@@ -267,18 +977,36 @@ router.put('/snapshot/:storeId', asyncHandler(async (req, res) => {
   
   if (!snapshot) {
     // Create new snapshot with default values
+    const totalOrderItems = updateData.total_order_items || 0;
+    const unitsOrdered = updateData.units_ordered || 0;
+    const orderedProductSales = updateData.ordered_product_sales || 0;
+    const { avgUnits, avgSales } = computeSnapshotAverages(totalOrderItems, unitsOrdered, orderedProductSales);
+
     snapshot = await dataService.create<SalesSnapshot>('sales_snapshots', {
       store_id: storeId,
-      total_order_items: updateData.total_order_items || 0,
-      units_ordered: updateData.units_ordered || 0,
-      ordered_product_sales: updateData.ordered_product_sales || 0,
-      avg_units_per_order: updateData.avg_units_per_order || 0,
-      avg_sales_per_order: updateData.avg_sales_per_order || 0,
+      total_order_items: totalOrderItems,
+      units_ordered: unitsOrdered,
+      ordered_product_sales: orderedProductSales,
+      avg_units_per_order_item: avgUnits,
+      avg_sales_per_order_item: avgSales,
+      avg_units_per_order: avgUnits,
+      avg_sales_per_order: avgSales,
       snapshot_time: new Date().toISOString(),
     });
   } else {
     // Update existing snapshot
-    const updatedSnapshot = await dataService.update<SalesSnapshot>('sales_snapshots', snapshot.id, updateData);
+    const totalOrderItems = updateData.total_order_items ?? snapshot.total_order_items ?? 0;
+    const unitsOrdered = updateData.units_ordered ?? snapshot.units_ordered ?? 0;
+    const orderedProductSales = updateData.ordered_product_sales ?? snapshot.ordered_product_sales ?? 0;
+    const { avgUnits, avgSales } = computeSnapshotAverages(totalOrderItems, unitsOrdered, orderedProductSales);
+
+    const updatedSnapshot = await dataService.update<SalesSnapshot>('sales_snapshots', snapshot.id, {
+      ...updateData,
+      avg_units_per_order_item: avgUnits,
+      avg_sales_per_order_item: avgSales,
+      avg_units_per_order: avgUnits,
+      avg_sales_per_order: avgSales,
+    });
     if (!updatedSnapshot) {
       throw createError('Failed to update sales snapshot', 500);
     }
@@ -297,6 +1025,9 @@ router.put('/snapshot/:storeId', asyncHandler(async (req, res) => {
     );
     saveChartDataForStore(storeId, entries);
     await saveDailySalesForStore(storeId, entries);
+    const existingSeries = await loadTimeSeriesForStore(storeId);
+    const nextSeries = buildTimeSeriesFromDaily(storeId, entries, existingSeries?.day?.today);
+    await upsertTimeSeries(storeId, nextSeries);
   } catch (error) {
     console.error('Failed to generate Business Reports chart data:', error);
     throw createError('Failed to generate Business Reports chart data', 500);
@@ -396,9 +1127,20 @@ router.post('/generate-daily/:storeId', asyncHandler(async (req, res) => {
 // GET /api/sales/chart-data/:storeId - Get formatted chart data
 router.get('/chart-data/:storeId', asyncHandler(async (req, res) => {
   const { storeId } = req.params;
-  const { startDate, endDate } = req.query as unknown as SalesDateRange;
+  const { startDate, endDate, dimension } = req.query as unknown as SalesDateRange & { dimension?: string };
   
   try {
+    if (dimension) {
+      const series = await ensureTimeSeries(storeId);
+      const responsePayload = buildSeriesResponse(series, dimension, startDate, endDate);
+      const response: ApiResponse = {
+        success: true,
+        ...responsePayload,
+      };
+      res.json(response);
+      return;
+    }
+
     const chartDataPath = require('path').join(__dirname, '../../data/chart_data.json');
     let chartData: any[] = [];
 
@@ -625,6 +1367,9 @@ router.post('/admin/sales-data/generate/:storeId', asyncHandler(async (req, res)
     const { entries } = generateDailySeries(storeId, totalUnits, totalSales);
     saveChartDataForStore(storeId, entries);
     await saveDailySalesForStore(storeId, entries);
+    const existingSeries = await loadTimeSeriesForStore(storeId);
+    const nextSeries = buildTimeSeriesFromDaily(storeId, entries, existingSeries?.day?.today);
+    await upsertTimeSeries(storeId, nextSeries);
     
     const response: ApiResponse = {
       success: true,
@@ -636,6 +1381,43 @@ router.post('/admin/sales-data/generate/:storeId', asyncHandler(async (req, res)
     console.error('Generate sample data error:', error);
     throw createError('Failed to generate sample data', 500);
   }
+}));
+
+router.get('/admin/time-series/:storeId', asyncHandler(async (req, res) => {
+  const { storeId } = req.params;
+
+  const series = await ensureTimeSeries(storeId);
+  const response: ApiResponse = {
+    success: true,
+    data: series,
+  };
+
+  res.json(response);
+}));
+
+router.post('/admin/time-series/generate/:storeId', asyncHandler(async (req, res) => {
+  const { storeId } = req.params;
+
+  const snapshots = await dataService.findByStoreId<SalesSnapshot>('sales_snapshots', storeId);
+  const snapshot = snapshots[0];
+  const totalUnits = snapshot?.units_ordered ?? 192260;
+  const totalSales = snapshot?.ordered_product_sales ?? 18657478;
+
+  const { entries } = generateDailySeries(storeId, totalUnits, totalSales);
+  saveChartDataForStore(storeId, entries);
+  await saveDailySalesForStore(storeId, entries);
+
+  const existingSeries = await loadTimeSeriesForStore(storeId);
+  const nextSeries = buildTimeSeriesFromDaily(storeId, entries, existingSeries?.day?.today);
+  await upsertTimeSeries(storeId, nextSeries);
+
+  const response: ApiResponse = {
+    success: true,
+    message: 'Sales time series regenerated successfully',
+    data: nextSeries,
+  };
+
+  res.json(response);
 }));
 
 

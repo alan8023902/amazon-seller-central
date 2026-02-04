@@ -89,8 +89,11 @@ export const SalesSnapshotSchema = z.object({
   total_order_items: z.number().int().default(0),
   units_ordered: z.number().int().default(0),
   ordered_product_sales: z.number().default(0),
-  avg_units_per_order: z.number().default(0),
-  avg_sales_per_order: z.number().default(0),
+  avg_units_per_order_item: z.number().default(0),
+  avg_sales_per_order_item: z.number().default(0),
+  // Backward compatibility (legacy fields)
+  avg_units_per_order: z.number().default(0).optional(),
+  avg_sales_per_order: z.number().default(0).optional(),
   snapshot_time: z.string().optional(),
 });
 
@@ -311,6 +314,10 @@ export interface ApiResponse<T = any> {
   yAxisConfig?: {
     unitsConfig: { ticks: number[]; domain: [number, number] };
     salesConfig: { ticks: number[]; domain: [number, number] };
+  };
+  compare?: {
+    columns: Array<{ key: string; label: string; lines: string[] }>;
+    series?: Array<{ key: string; label: string; data: any[] }>;
   };
 }
 

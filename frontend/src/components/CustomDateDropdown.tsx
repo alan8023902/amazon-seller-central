@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CustomDateDropdownProps {
@@ -12,7 +12,7 @@ const CustomDateDropdown: React.FC<CustomDateDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const dateOptions = useMemo(() => {
+  const dateOptions = (() => {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -27,7 +27,7 @@ const CustomDateDropdown: React.FC<CustomDateDropdownProps> = ({
       { label: `Year to date - ${fmt(today)}`, value: 'year' },
       { label: 'Custom', value: 'custom' }
     ];
-  }, []);
+  })();
 
   const selected = dateOptions.find(opt => opt.value === value) || dateOptions[5];
 
@@ -81,7 +81,7 @@ const CustomDateDropdown: React.FC<CustomDateDropdownProps> = ({
             <div
               key={option.value}
               onClick={() => handleOptionClick(option.value)}
-              className={`px-3 py-1 text-[11px] cursor-pointer whitespace-nowrap ${isSelected ? '' : 'hover:bg-gray-100'}`}
+              className={`px-3 py-1 text-[12px] cursor-pointer whitespace-nowrap ${isSelected ? '' : 'hover:bg-gray-100'}`}
               style={{
                 backgroundColor: isSelected ? '#DFEAF2' : '#ffffff',
                 color: '#0f1111',

@@ -124,8 +124,18 @@ const DashboardConfig: React.FC<DashboardConfigProps> = ({
     
     setLoading(true);
     try {
+      const computedTotalCount =
+        (globalSnapshot.orders?.fbmUnshipped || 0) +
+        (globalSnapshot.orders?.fbmPending || 0) +
+        (globalSnapshot.orders?.fbaPending || 0);
       const response = await dashboardApi.updateConfig(selectedStoreId, {
-        globalSnapshot,
+        globalSnapshot: {
+          ...globalSnapshot,
+          orders: {
+            ...globalSnapshot.orders,
+            totalCount: computedTotalCount
+          }
+        },
         welcomeBanner
       });
       if (response.success) {
@@ -179,6 +189,11 @@ const DashboardConfig: React.FC<DashboardConfigProps> = ({
     });
     message.info('已重置为默认值');
   };
+
+  const computedTotalCount =
+    (globalSnapshot.orders?.fbmUnshipped || 0) +
+    (globalSnapshot.orders?.fbmPending || 0) +
+    (globalSnapshot.orders?.fbaPending || 0);
 
   return (
     <div>
@@ -261,11 +276,8 @@ const DashboardConfig: React.FC<DashboardConfigProps> = ({
                       <Card size="small" title="Open Orders" style={{ marginBottom: 16 }}>
                         <Form.Item label="Total Count">
                           <InputNumber
-                            value={globalSnapshot.orders.totalCount}
-                            onChange={(value) => setGlobalSnapshot(prev => ({
-                              ...prev,
-                              orders: { ...prev.orders, totalCount: value || 0 }
-                            }))}
+                            value={computedTotalCount}
+                            disabled
                             style={{ width: '100%' }}
                           />
                         </Form.Item>

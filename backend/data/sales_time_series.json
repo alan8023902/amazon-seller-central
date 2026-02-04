@@ -1,0 +1,3776 @@
+[
+  {
+    "store_id": "store-us-main",
+    "updated_at": "2026-02-04T16:09:48.821Z",
+    "day": {
+      "yesterday": {
+        "date": "2026-02-03",
+        "hours": [
+          {
+            "hour": 0,
+            "units": 0,
+            "sales": 2085
+          },
+          {
+            "hour": 1,
+            "units": 0,
+            "sales": 267
+          },
+          {
+            "hour": 2,
+            "units": 2,
+            "sales": 40
+          },
+          {
+            "hour": 3,
+            "units": 1,
+            "sales": 713
+          },
+          {
+            "hour": 4,
+            "units": 9,
+            "sales": 4059
+          },
+          {
+            "hour": 5,
+            "units": 0,
+            "sales": 9284
+          },
+          {
+            "hour": 6,
+            "units": 0,
+            "sales": 7460
+          },
+          {
+            "hour": 7,
+            "units": 0,
+            "sales": 923
+          },
+          {
+            "hour": 8,
+            "units": 1,
+            "sales": 6743
+          },
+          {
+            "hour": 9,
+            "units": 0,
+            "sales": 3653
+          },
+          {
+            "hour": 10,
+            "units": 0,
+            "sales": 2566
+          },
+          {
+            "hour": 11,
+            "units": 4,
+            "sales": 7344
+          },
+          {
+            "hour": 12,
+            "units": 0,
+            "sales": 45
+          },
+          {
+            "hour": 13,
+            "units": 10,
+            "sales": 3492
+          },
+          {
+            "hour": 14,
+            "units": 1,
+            "sales": 214
+          },
+          {
+            "hour": 15,
+            "units": 0,
+            "sales": 5697
+          },
+          {
+            "hour": 16,
+            "units": 1,
+            "sales": 1112
+          },
+          {
+            "hour": 17,
+            "units": 3,
+            "sales": 609
+          },
+          {
+            "hour": 18,
+            "units": 0,
+            "sales": 3449
+          },
+          {
+            "hour": 19,
+            "units": 0,
+            "sales": 29
+          },
+          {
+            "hour": 20,
+            "units": 1,
+            "sales": 796
+          },
+          {
+            "hour": 21,
+            "units": 2,
+            "sales": 9030
+          },
+          {
+            "hour": 22,
+            "units": 0,
+            "sales": 1180
+          },
+          {
+            "hour": 23,
+            "units": 0,
+            "sales": 1999
+          }
+        ]
+      },
+      "sameDayLastWeek": {
+        "date": "2026-01-28",
+        "hours": [
+          {
+            "hour": 0,
+            "units": 14,
+            "sales": 161
+          },
+          {
+            "hour": 1,
+            "units": 2,
+            "sales": 2056
+          },
+          {
+            "hour": 2,
+            "units": 49,
+            "sales": 791
+          },
+          {
+            "hour": 3,
+            "units": 4,
+            "sales": 456
+          },
+          {
+            "hour": 4,
+            "units": 25,
+            "sales": 2056
+          },
+          {
+            "hour": 5,
+            "units": 0,
+            "sales": 263
+          },
+          {
+            "hour": 6,
+            "units": 28,
+            "sales": 1377
+          },
+          {
+            "hour": 7,
+            "units": 0,
+            "sales": 319
+          },
+          {
+            "hour": 8,
+            "units": 49,
+            "sales": 21
+          },
+          {
+            "hour": 9,
+            "units": 21,
+            "sales": 492
+          },
+          {
+            "hour": 10,
+            "units": 3,
+            "sales": 337
+          },
+          {
+            "hour": 11,
+            "units": 34,
+            "sales": 192
+          },
+          {
+            "hour": 12,
+            "units": 1,
+            "sales": 432
+          },
+          {
+            "hour": 13,
+            "units": 2,
+            "sales": 586
+          },
+          {
+            "hour": 14,
+            "units": 15,
+            "sales": 0
+          },
+          {
+            "hour": 15,
+            "units": 35,
+            "sales": 1337
+          },
+          {
+            "hour": 16,
+            "units": 1,
+            "sales": 275
+          },
+          {
+            "hour": 17,
+            "units": 2,
+            "sales": 635
+          },
+          {
+            "hour": 18,
+            "units": 3,
+            "sales": 271
+          },
+          {
+            "hour": 19,
+            "units": 17,
+            "sales": 37
+          },
+          {
+            "hour": 20,
+            "units": 0,
+            "sales": 459
+          },
+          {
+            "hour": 21,
+            "units": 17,
+            "sales": 968
+          },
+          {
+            "hour": 22,
+            "units": 16,
+            "sales": 1332
+          },
+          {
+            "hour": 23,
+            "units": 1,
+            "sales": 48
+          }
+        ]
+      },
+      "sameDayLastYear": {
+        "date": "2025-02-04",
+        "hours": [
+          {
+            "hour": 0,
+            "units": 2,
+            "sales": 199
+          },
+          {
+            "hour": 1,
+            "units": 1,
+            "sales": 1
+          },
+          {
+            "hour": 2,
+            "units": 0,
+            "sales": 5
+          },
+          {
+            "hour": 3,
+            "units": 1,
+            "sales": 172
+          },
+          {
+            "hour": 4,
+            "units": 0,
+            "sales": 67
+          },
+          {
+            "hour": 5,
+            "units": 1,
+            "sales": 5
+          },
+          {
+            "hour": 6,
+            "units": 2,
+            "sales": 727
+          },
+          {
+            "hour": 7,
+            "units": 2,
+            "sales": 37
+          },
+          {
+            "hour": 8,
+            "units": 0,
+            "sales": 711
+          },
+          {
+            "hour": 9,
+            "units": 0,
+            "sales": 4
+          },
+          {
+            "hour": 10,
+            "units": 1,
+            "sales": 1
+          },
+          {
+            "hour": 11,
+            "units": 0,
+            "sales": 70
+          },
+          {
+            "hour": 12,
+            "units": 0,
+            "sales": 20
+          },
+          {
+            "hour": 13,
+            "units": 2,
+            "sales": 217
+          },
+          {
+            "hour": 14,
+            "units": 0,
+            "sales": 121
+          },
+          {
+            "hour": 15,
+            "units": 0,
+            "sales": 12
+          },
+          {
+            "hour": 16,
+            "units": 0,
+            "sales": 407
+          },
+          {
+            "hour": 17,
+            "units": 0,
+            "sales": 36
+          },
+          {
+            "hour": 18,
+            "units": 2,
+            "sales": 5
+          },
+          {
+            "hour": 19,
+            "units": 0,
+            "sales": 148
+          },
+          {
+            "hour": 20,
+            "units": 0,
+            "sales": 726
+          },
+          {
+            "hour": 21,
+            "units": 0,
+            "sales": 15
+          },
+          {
+            "hour": 22,
+            "units": 1,
+            "sales": 726
+          },
+          {
+            "hour": 23,
+            "units": 1,
+            "sales": 2
+          }
+        ]
+      },
+      "today": {
+        "date": "2026-02-05",
+        "hours": [
+          {
+            "hour": 0,
+            "units": 0,
+            "sales": 69
+          },
+          {
+            "hour": 1,
+            "units": 0,
+            "sales": 1
+          },
+          {
+            "hour": 2,
+            "units": 1,
+            "sales": 0
+          },
+          {
+            "hour": 3,
+            "units": 0,
+            "sales": 158
+          },
+          {
+            "hour": 4,
+            "units": 0,
+            "sales": 27
+          },
+          {
+            "hour": 5,
+            "units": 1,
+            "sales": 6
+          },
+          {
+            "hour": 6,
+            "units": 1,
+            "sales": 56
+          },
+          {
+            "hour": 7,
+            "units": 0,
+            "sales": 73
+          },
+          {
+            "hour": 8,
+            "units": 0,
+            "sales": 25
+          },
+          {
+            "hour": 9,
+            "units": 0,
+            "sales": 8
+          },
+          {
+            "hour": 10,
+            "units": 0,
+            "sales": 1
+          },
+          {
+            "hour": 11,
+            "units": 0,
+            "sales": 1
+          },
+          {
+            "hour": 12,
+            "units": 1,
+            "sales": 30
+          },
+          {
+            "hour": 13,
+            "units": 1,
+            "sales": 160
+          },
+          {
+            "hour": 14,
+            "units": 0,
+            "sales": 13
+          },
+          {
+            "hour": 15,
+            "units": 0,
+            "sales": 77
+          },
+          {
+            "hour": 16,
+            "units": 0,
+            "sales": 3
+          },
+          {
+            "hour": 17,
+            "units": 0,
+            "sales": 14
+          },
+          {
+            "hour": 18,
+            "units": 0,
+            "sales": 0
+          },
+          {
+            "hour": 19,
+            "units": 0,
+            "sales": 15
+          },
+          {
+            "hour": 20,
+            "units": 0,
+            "sales": 18
+          },
+          {
+            "hour": 21,
+            "units": 0,
+            "sales": 81
+          },
+          {
+            "hour": 22,
+            "units": 0,
+            "sales": 4
+          },
+          {
+            "hour": 23,
+            "units": 1,
+            "sales": 160
+          }
+        ]
+      }
+    },
+    "week": {
+      "startDate": "2026-02-02",
+      "endDate": "2026-02-08",
+      "current": [
+        {
+          "date": "2026-02-02",
+          "units": 710,
+          "sales": 26610,
+          "lastYearUnits": 133,
+          "lastYearSales": 3838
+        },
+        {
+          "date": "2026-02-03",
+          "units": 35,
+          "sales": 72789,
+          "lastYearUnits": 75,
+          "lastYearSales": 1711
+        },
+        {
+          "date": "2026-02-04",
+          "units": 1,
+          "sales": 11,
+          "lastYearUnits": 16,
+          "lastYearSales": 4434
+        },
+        {
+          "date": "2026-02-05",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-06",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-07",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-08",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        }
+      ],
+      "lastWeek": [
+        {
+          "date": "2026-01-26",
+          "units": 2,
+          "sales": 9234,
+          "lastYearUnits": 9,
+          "lastYearSales": 9544
+        },
+        {
+          "date": "2026-01-27",
+          "units": 4,
+          "sales": 4180,
+          "lastYearUnits": 21,
+          "lastYearSales": 544
+        },
+        {
+          "date": "2026-01-28",
+          "units": 339,
+          "sales": 14901,
+          "lastYearUnits": 15,
+          "lastYearSales": 31741
+        },
+        {
+          "date": "2026-01-29",
+          "units": 219,
+          "sales": 72789,
+          "lastYearUnits": 65,
+          "lastYearSales": 1
+        },
+        {
+          "date": "2026-01-30",
+          "units": 252,
+          "sales": 29,
+          "lastYearUnits": 36,
+          "lastYearSales": 39264
+        },
+        {
+          "date": "2026-01-31",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 2768
+        },
+        {
+          "date": "2026-02-01",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 12,
+          "lastYearSales": 7427
+        }
+      ],
+      "lastYear": [
+        {
+          "date": "2025-02-02",
+          "units": 133,
+          "sales": 3838
+        },
+        {
+          "date": "2025-02-03",
+          "units": 75,
+          "sales": 1711
+        },
+        {
+          "date": "2025-02-04",
+          "units": 16,
+          "sales": 4434
+        },
+        {
+          "date": "2025-02-05",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-06",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-07",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-08",
+          "units": 0,
+          "sales": 0
+        }
+      ]
+    },
+    "month": {
+      "startDate": "2026-02-01",
+      "endDate": "2026-02-28",
+      "current": [
+        {
+          "date": "2026-02-01",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 12,
+          "lastYearSales": 7427
+        },
+        {
+          "date": "2026-02-02",
+          "units": 710,
+          "sales": 26610,
+          "lastYearUnits": 133,
+          "lastYearSales": 3838
+        },
+        {
+          "date": "2026-02-03",
+          "units": 35,
+          "sales": 72789,
+          "lastYearUnits": 75,
+          "lastYearSales": 1711
+        },
+        {
+          "date": "2026-02-04",
+          "units": 1,
+          "sales": 11,
+          "lastYearUnits": 16,
+          "lastYearSales": 4434
+        },
+        {
+          "date": "2026-02-05",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-06",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-07",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-08",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-09",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-10",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-11",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-12",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-13",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-14",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-15",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-16",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-17",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-18",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-19",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-20",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-21",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-22",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-23",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-24",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-25",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-26",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-27",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        },
+        {
+          "date": "2026-02-28",
+          "units": 0,
+          "sales": 0,
+          "lastYearUnits": 0,
+          "lastYearSales": 0
+        }
+      ],
+      "lastMonth": [
+        {
+          "date": "2026-01-01",
+          "units": 83,
+          "sales": 72789,
+          "lastYearUnits": 2,
+          "lastYearSales": 40832
+        },
+        {
+          "date": "2026-01-02",
+          "units": 710,
+          "sales": 116,
+          "lastYearUnits": 1133,
+          "lastYearSales": 15628
+        },
+        {
+          "date": "2026-01-03",
+          "units": 710,
+          "sales": 2038,
+          "lastYearUnits": 363,
+          "lastYearSales": 2079
+        },
+        {
+          "date": "2026-01-04",
+          "units": 10,
+          "sales": 1679,
+          "lastYearUnits": 1048,
+          "lastYearSales": 16682
+        },
+        {
+          "date": "2026-01-05",
+          "units": 76,
+          "sales": 53,
+          "lastYearUnits": 2,
+          "lastYearSales": 12332
+        },
+        {
+          "date": "2026-01-06",
+          "units": 104,
+          "sales": 34,
+          "lastYearUnits": 242,
+          "lastYearSales": 86910
+        },
+        {
+          "date": "2026-01-07",
+          "units": 157,
+          "sales": 25165,
+          "lastYearUnits": 35,
+          "lastYearSales": 41571
+        },
+        {
+          "date": "2026-01-08",
+          "units": 710,
+          "sales": 7786,
+          "lastYearUnits": 389,
+          "lastYearSales": 491
+        },
+        {
+          "date": "2026-01-09",
+          "units": 242,
+          "sales": 8,
+          "lastYearUnits": 22,
+          "lastYearSales": 68477
+        },
+        {
+          "date": "2026-01-10",
+          "units": 2,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 547
+        },
+        {
+          "date": "2026-01-11",
+          "units": 36,
+          "sales": 72789,
+          "lastYearUnits": 523,
+          "lastYearSales": 16713
+        },
+        {
+          "date": "2026-01-12",
+          "units": 613,
+          "sales": 40795,
+          "lastYearUnits": 415,
+          "lastYearSales": 3
+        },
+        {
+          "date": "2026-01-13",
+          "units": 16,
+          "sales": 72789,
+          "lastYearUnits": 476,
+          "lastYearSales": 19670
+        },
+        {
+          "date": "2026-01-14",
+          "units": 186,
+          "sales": 15397,
+          "lastYearUnits": 77,
+          "lastYearSales": 615
+        },
+        {
+          "date": "2026-01-15",
+          "units": 343,
+          "sales": 72789,
+          "lastYearUnits": 2,
+          "lastYearSales": 5785
+        },
+        {
+          "date": "2026-01-16",
+          "units": 3,
+          "sales": 72789,
+          "lastYearUnits": 105,
+          "lastYearSales": 11105
+        },
+        {
+          "date": "2026-01-17",
+          "units": 147,
+          "sales": 59,
+          "lastYearUnits": 4,
+          "lastYearSales": 53525
+        },
+        {
+          "date": "2026-01-18",
+          "units": 391,
+          "sales": 60880,
+          "lastYearUnits": 2,
+          "lastYearSales": 1629
+        },
+        {
+          "date": "2026-01-19",
+          "units": 710,
+          "sales": 26474,
+          "lastYearUnits": 12,
+          "lastYearSales": 61579
+        },
+        {
+          "date": "2026-01-20",
+          "units": 0,
+          "sales": 57614,
+          "lastYearUnits": 567,
+          "lastYearSales": 56910
+        },
+        {
+          "date": "2026-01-21",
+          "units": 41,
+          "sales": 19732,
+          "lastYearUnits": 172,
+          "lastYearSales": 49825
+        },
+        {
+          "date": "2026-01-22",
+          "units": 481,
+          "sales": 29750,
+          "lastYearUnits": 279,
+          "lastYearSales": 62133
+        },
+        {
+          "date": "2026-01-23",
+          "units": 470,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 21474
+        },
+        {
+          "date": "2026-01-24",
+          "units": 53,
+          "sales": 206,
+          "lastYearUnits": 46,
+          "lastYearSales": 4610
+        },
+        {
+          "date": "2026-01-25",
+          "units": 62,
+          "sales": 6955,
+          "lastYearUnits": 440,
+          "lastYearSales": 529
+        },
+        {
+          "date": "2026-01-26",
+          "units": 2,
+          "sales": 9234,
+          "lastYearUnits": 9,
+          "lastYearSales": 9544
+        },
+        {
+          "date": "2026-01-27",
+          "units": 4,
+          "sales": 4180,
+          "lastYearUnits": 21,
+          "lastYearSales": 544
+        },
+        {
+          "date": "2026-01-28",
+          "units": 339,
+          "sales": 14901,
+          "lastYearUnits": 15,
+          "lastYearSales": 31741
+        },
+        {
+          "date": "2026-01-29",
+          "units": 219,
+          "sales": 72789,
+          "lastYearUnits": 65,
+          "lastYearSales": 1
+        },
+        {
+          "date": "2026-01-30",
+          "units": 252,
+          "sales": 29,
+          "lastYearUnits": 36,
+          "lastYearSales": 39264
+        },
+        {
+          "date": "2026-01-31",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 2768
+        }
+      ],
+      "lastYear": [
+        {
+          "date": "2025-02-01",
+          "units": 12,
+          "sales": 7427
+        },
+        {
+          "date": "2025-02-02",
+          "units": 133,
+          "sales": 3838
+        },
+        {
+          "date": "2025-02-03",
+          "units": 75,
+          "sales": 1711
+        },
+        {
+          "date": "2025-02-04",
+          "units": 16,
+          "sales": 4434
+        },
+        {
+          "date": "2025-02-05",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-06",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-07",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-08",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-09",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-10",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-11",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-12",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-13",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-14",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-15",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-16",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-17",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-18",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-19",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-20",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-21",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-22",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-23",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-24",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-25",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-26",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-27",
+          "units": 0,
+          "sales": 0
+        },
+        {
+          "date": "2025-02-28",
+          "units": 0,
+          "sales": 0
+        }
+      ]
+    },
+    "year": {
+      "startDate": "2025-02-05",
+      "endDate": "2026-02-04",
+      "days": [
+        {
+          "date": "2025-02-05",
+          "units": 307,
+          "sales": 716,
+          "lastYearUnits": 190,
+          "lastYearSales": 44945
+        },
+        {
+          "date": "2025-02-06",
+          "units": 45,
+          "sales": 57471,
+          "lastYearUnits": 997,
+          "lastYearSales": 15
+        },
+        {
+          "date": "2025-02-07",
+          "units": 0,
+          "sales": 2,
+          "lastYearUnits": 271,
+          "lastYearSales": 79819
+        },
+        {
+          "date": "2025-02-08",
+          "units": 34,
+          "sales": 3777,
+          "lastYearUnits": 585,
+          "lastYearSales": 2331
+        },
+        {
+          "date": "2025-02-09",
+          "units": 0,
+          "sales": 12420,
+          "lastYearUnits": 79,
+          "lastYearSales": 8863
+        },
+        {
+          "date": "2025-02-10",
+          "units": 7,
+          "sales": 72789,
+          "lastYearUnits": 661,
+          "lastYearSales": 16796
+        },
+        {
+          "date": "2025-02-11",
+          "units": 710,
+          "sales": 27500,
+          "lastYearUnits": 9,
+          "lastYearSales": 2342
+        },
+        {
+          "date": "2025-02-12",
+          "units": 32,
+          "sales": 26447,
+          "lastYearUnits": 6,
+          "lastYearSales": 4979
+        },
+        {
+          "date": "2025-02-13",
+          "units": 417,
+          "sales": 63332,
+          "lastYearUnits": 764,
+          "lastYearSales": 135
+        },
+        {
+          "date": "2025-02-14",
+          "units": 1,
+          "sales": 809,
+          "lastYearUnits": 513,
+          "lastYearSales": 9928
+        },
+        {
+          "date": "2025-02-15",
+          "units": 5,
+          "sales": 1030,
+          "lastYearUnits": 293,
+          "lastYearSales": 30572
+        },
+        {
+          "date": "2025-02-16",
+          "units": 710,
+          "sales": 385,
+          "lastYearUnits": 20,
+          "lastYearSales": 17024
+        },
+        {
+          "date": "2025-02-17",
+          "units": 710,
+          "sales": 91,
+          "lastYearUnits": 110,
+          "lastYearSales": 117
+        },
+        {
+          "date": "2025-02-18",
+          "units": 501,
+          "sales": 3341,
+          "lastYearUnits": 151,
+          "lastYearSales": 552
+        },
+        {
+          "date": "2025-02-19",
+          "units": 710,
+          "sales": 887,
+          "lastYearUnits": 821,
+          "lastYearSales": 18884
+        },
+        {
+          "date": "2025-02-20",
+          "units": 66,
+          "sales": 389,
+          "lastYearUnits": 56,
+          "lastYearSales": 14022
+        },
+        {
+          "date": "2025-02-21",
+          "units": 710,
+          "sales": 49972,
+          "lastYearUnits": 1,
+          "lastYearSales": 6669
+        },
+        {
+          "date": "2025-02-22",
+          "units": 692,
+          "sales": 72789,
+          "lastYearUnits": 24,
+          "lastYearSales": 13256
+        },
+        {
+          "date": "2025-02-23",
+          "units": 312,
+          "sales": 5384,
+          "lastYearUnits": 2,
+          "lastYearSales": 4685
+        },
+        {
+          "date": "2025-02-24",
+          "units": 34,
+          "sales": 20711,
+          "lastYearUnits": 552,
+          "lastYearSales": 5640
+        },
+        {
+          "date": "2025-02-25",
+          "units": 710,
+          "sales": 968,
+          "lastYearUnits": 420,
+          "lastYearSales": 45680
+        },
+        {
+          "date": "2025-02-26",
+          "units": 25,
+          "sales": 20928,
+          "lastYearUnits": 62,
+          "lastYearSales": 78092
+        },
+        {
+          "date": "2025-02-27",
+          "units": 710,
+          "sales": 19345,
+          "lastYearUnits": 2,
+          "lastYearSales": 28309
+        },
+        {
+          "date": "2025-02-28",
+          "units": 470,
+          "sales": 34593,
+          "lastYearUnits": 176,
+          "lastYearSales": 44
+        },
+        {
+          "date": "2025-03-01",
+          "units": 95,
+          "sales": 17137,
+          "lastYearUnits": 10,
+          "lastYearSales": 5321
+        },
+        {
+          "date": "2025-03-02",
+          "units": 325,
+          "sales": 11877,
+          "lastYearUnits": 23,
+          "lastYearSales": 3844
+        },
+        {
+          "date": "2025-03-03",
+          "units": 81,
+          "sales": 27346,
+          "lastYearUnits": 1,
+          "lastYearSales": 5534
+        },
+        {
+          "date": "2025-03-04",
+          "units": 123,
+          "sales": 840,
+          "lastYearUnits": 0,
+          "lastYearSales": 275
+        },
+        {
+          "date": "2025-03-05",
+          "units": 73,
+          "sales": 2257,
+          "lastYearUnits": 152,
+          "lastYearSales": 29770
+        },
+        {
+          "date": "2025-03-06",
+          "units": 14,
+          "sales": 13269,
+          "lastYearUnits": 801,
+          "lastYearSales": 15215
+        },
+        {
+          "date": "2025-03-07",
+          "units": 79,
+          "sales": 21092,
+          "lastYearUnits": 81,
+          "lastYearSales": 61937
+        },
+        {
+          "date": "2025-03-08",
+          "units": 376,
+          "sales": 1739,
+          "lastYearUnits": 72,
+          "lastYearSales": 1414
+        },
+        {
+          "date": "2025-03-09",
+          "units": 710,
+          "sales": 245,
+          "lastYearUnits": 249,
+          "lastYearSales": 304
+        },
+        {
+          "date": "2025-03-10",
+          "units": 9,
+          "sales": 38002,
+          "lastYearUnits": 45,
+          "lastYearSales": 349
+        },
+        {
+          "date": "2025-03-11",
+          "units": 48,
+          "sales": 5913,
+          "lastYearUnits": 860,
+          "lastYearSales": 703
+        },
+        {
+          "date": "2025-03-12",
+          "units": 356,
+          "sales": 517,
+          "lastYearUnits": 153,
+          "lastYearSales": 462
+        },
+        {
+          "date": "2025-03-13",
+          "units": 210,
+          "sales": 72789,
+          "lastYearUnits": 254,
+          "lastYearSales": 2157
+        },
+        {
+          "date": "2025-03-14",
+          "units": 103,
+          "sales": 34489,
+          "lastYearUnits": 604,
+          "lastYearSales": 92
+        },
+        {
+          "date": "2025-03-15",
+          "units": 1,
+          "sales": 1522,
+          "lastYearUnits": 3,
+          "lastYearSales": 15096
+        },
+        {
+          "date": "2025-03-16",
+          "units": 436,
+          "sales": 3118,
+          "lastYearUnits": 16,
+          "lastYearSales": 43297
+        },
+        {
+          "date": "2025-03-17",
+          "units": 710,
+          "sales": 2093,
+          "lastYearUnits": 1183,
+          "lastYearSales": 2146
+        },
+        {
+          "date": "2025-03-18",
+          "units": 522,
+          "sales": 16472,
+          "lastYearUnits": 15,
+          "lastYearSales": 5225
+        },
+        {
+          "date": "2025-03-19",
+          "units": 221,
+          "sales": 30494,
+          "lastYearUnits": 266,
+          "lastYearSales": 9643
+        },
+        {
+          "date": "2025-03-20",
+          "units": 710,
+          "sales": 3139,
+          "lastYearUnits": 22,
+          "lastYearSales": 18445
+        },
+        {
+          "date": "2025-03-21",
+          "units": 8,
+          "sales": 896,
+          "lastYearUnits": 1,
+          "lastYearSales": 2
+        },
+        {
+          "date": "2025-03-22",
+          "units": 625,
+          "sales": 1161,
+          "lastYearUnits": 4,
+          "lastYearSales": 182
+        },
+        {
+          "date": "2025-03-23",
+          "units": 6,
+          "sales": 353,
+          "lastYearUnits": 19,
+          "lastYearSales": 748
+        },
+        {
+          "date": "2025-03-24",
+          "units": 710,
+          "sales": 392,
+          "lastYearUnits": 174,
+          "lastYearSales": 80879
+        },
+        {
+          "date": "2025-03-25",
+          "units": 710,
+          "sales": 6229,
+          "lastYearUnits": 27,
+          "lastYearSales": 21611
+        },
+        {
+          "date": "2025-03-26",
+          "units": 25,
+          "sales": 2747,
+          "lastYearUnits": 0,
+          "lastYearSales": 20391
+        },
+        {
+          "date": "2025-03-27",
+          "units": 9,
+          "sales": 99,
+          "lastYearUnits": 203,
+          "lastYearSales": 2454
+        },
+        {
+          "date": "2025-03-28",
+          "units": 710,
+          "sales": 8093,
+          "lastYearUnits": 26,
+          "lastYearSales": 109
+        },
+        {
+          "date": "2025-03-29",
+          "units": 0,
+          "sales": 26316,
+          "lastYearUnits": 5,
+          "lastYearSales": 7056
+        },
+        {
+          "date": "2025-03-30",
+          "units": 710,
+          "sales": 1775,
+          "lastYearUnits": 219,
+          "lastYearSales": 53236
+        },
+        {
+          "date": "2025-03-31",
+          "units": 710,
+          "sales": 13251,
+          "lastYearUnits": 600,
+          "lastYearSales": 14891
+        },
+        {
+          "date": "2025-04-01",
+          "units": 8,
+          "sales": 66,
+          "lastYearUnits": 9,
+          "lastYearSales": 18
+        },
+        {
+          "date": "2025-04-02",
+          "units": 710,
+          "sales": 1469,
+          "lastYearUnits": 24,
+          "lastYearSales": 333
+        },
+        {
+          "date": "2025-04-03",
+          "units": 228,
+          "sales": 49376,
+          "lastYearUnits": 6,
+          "lastYearSales": 18407
+        },
+        {
+          "date": "2025-04-04",
+          "units": 87,
+          "sales": 52842,
+          "lastYearUnits": 817,
+          "lastYearSales": 954
+        },
+        {
+          "date": "2025-04-05",
+          "units": 5,
+          "sales": 2197,
+          "lastYearUnits": 71,
+          "lastYearSales": 5980
+        },
+        {
+          "date": "2025-04-06",
+          "units": 4,
+          "sales": 1830,
+          "lastYearUnits": 40,
+          "lastYearSales": 21
+        },
+        {
+          "date": "2025-04-07",
+          "units": 1,
+          "sales": 41261,
+          "lastYearUnits": 7,
+          "lastYearSales": 313
+        },
+        {
+          "date": "2025-04-08",
+          "units": 710,
+          "sales": 52356,
+          "lastYearUnits": 232,
+          "lastYearSales": 3818
+        },
+        {
+          "date": "2025-04-09",
+          "units": 96,
+          "sales": 50337,
+          "lastYearUnits": 1,
+          "lastYearSales": 4328
+        },
+        {
+          "date": "2025-04-10",
+          "units": 58,
+          "sales": 54485,
+          "lastYearUnits": 4,
+          "lastYearSales": 81723
+        },
+        {
+          "date": "2025-04-11",
+          "units": 710,
+          "sales": 44070,
+          "lastYearUnits": 786,
+          "lastYearSales": 16124
+        },
+        {
+          "date": "2025-04-12",
+          "units": 4,
+          "sales": 15964,
+          "lastYearUnits": 47,
+          "lastYearSales": 2
+        },
+        {
+          "date": "2025-04-13",
+          "units": 1,
+          "sales": 12440,
+          "lastYearUnits": 63,
+          "lastYearSales": 586
+        },
+        {
+          "date": "2025-04-14",
+          "units": 710,
+          "sales": 49138,
+          "lastYearUnits": 0,
+          "lastYearSales": 65497
+        },
+        {
+          "date": "2025-04-15",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 6,
+          "lastYearSales": 5293
+        },
+        {
+          "date": "2025-04-16",
+          "units": 455,
+          "sales": 33993,
+          "lastYearUnits": 77,
+          "lastYearSales": 21872
+        },
+        {
+          "date": "2025-04-17",
+          "units": 3,
+          "sales": 2756,
+          "lastYearUnits": 392,
+          "lastYearSales": 14471
+        },
+        {
+          "date": "2025-04-18",
+          "units": 24,
+          "sales": 1797,
+          "lastYearUnits": 64,
+          "lastYearSales": 1
+        },
+        {
+          "date": "2025-04-19",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 276,
+          "lastYearSales": 50644
+        },
+        {
+          "date": "2025-04-20",
+          "units": 710,
+          "sales": 30171,
+          "lastYearUnits": 266,
+          "lastYearSales": 494
+        },
+        {
+          "date": "2025-04-21",
+          "units": 7,
+          "sales": 5271,
+          "lastYearUnits": 6,
+          "lastYearSales": 381
+        },
+        {
+          "date": "2025-04-22",
+          "units": 710,
+          "sales": 2140,
+          "lastYearUnits": 0,
+          "lastYearSales": 277
+        },
+        {
+          "date": "2025-04-23",
+          "units": 710,
+          "sales": 11137,
+          "lastYearUnits": 1,
+          "lastYearSales": 64987
+        },
+        {
+          "date": "2025-04-24",
+          "units": 0,
+          "sales": 20682,
+          "lastYearUnits": 171,
+          "lastYearSales": 66720
+        },
+        {
+          "date": "2025-04-25",
+          "units": 232,
+          "sales": 9694,
+          "lastYearUnits": 297,
+          "lastYearSales": 2
+        },
+        {
+          "date": "2025-04-26",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 157,
+          "lastYearSales": 63338
+        },
+        {
+          "date": "2025-04-27",
+          "units": 710,
+          "sales": 26648,
+          "lastYearUnits": 0,
+          "lastYearSales": 2
+        },
+        {
+          "date": "2025-04-28",
+          "units": 0,
+          "sales": 53494,
+          "lastYearUnits": 544,
+          "lastYearSales": 136
+        },
+        {
+          "date": "2025-04-29",
+          "units": 143,
+          "sales": 50756,
+          "lastYearUnits": 8,
+          "lastYearSales": 434
+        },
+        {
+          "date": "2025-04-30",
+          "units": 178,
+          "sales": 6598,
+          "lastYearUnits": 274,
+          "lastYearSales": 7
+        },
+        {
+          "date": "2025-05-01",
+          "units": 12,
+          "sales": 10454,
+          "lastYearUnits": 266,
+          "lastYearSales": 235
+        },
+        {
+          "date": "2025-05-02",
+          "units": 213,
+          "sales": 72789,
+          "lastYearUnits": 709,
+          "lastYearSales": 3176
+        },
+        {
+          "date": "2025-05-03",
+          "units": 3,
+          "sales": 27731,
+          "lastYearUnits": 170,
+          "lastYearSales": 56961
+        },
+        {
+          "date": "2025-05-04",
+          "units": 2,
+          "sales": 72789,
+          "lastYearUnits": 50,
+          "lastYearSales": 396
+        },
+        {
+          "date": "2025-05-05",
+          "units": 38,
+          "sales": 1026,
+          "lastYearUnits": 274,
+          "lastYearSales": 4043
+        },
+        {
+          "date": "2025-05-06",
+          "units": 710,
+          "sales": 43465,
+          "lastYearUnits": 29,
+          "lastYearSales": 994
+        },
+        {
+          "date": "2025-05-07",
+          "units": 71,
+          "sales": 54204,
+          "lastYearUnits": 2,
+          "lastYearSales": 48
+        },
+        {
+          "date": "2025-05-08",
+          "units": 668,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 687
+        },
+        {
+          "date": "2025-05-09",
+          "units": 710,
+          "sales": 15869,
+          "lastYearUnits": 52,
+          "lastYearSales": 4476
+        },
+        {
+          "date": "2025-05-10",
+          "units": 67,
+          "sales": 52161,
+          "lastYearUnits": 203,
+          "lastYearSales": 11359
+        },
+        {
+          "date": "2025-05-11",
+          "units": 710,
+          "sales": 172,
+          "lastYearUnits": 11,
+          "lastYearSales": 25439
+        },
+        {
+          "date": "2025-05-12",
+          "units": 340,
+          "sales": 72789,
+          "lastYearUnits": 716,
+          "lastYearSales": 5
+        },
+        {
+          "date": "2025-05-13",
+          "units": 91,
+          "sales": 479,
+          "lastYearUnits": 808,
+          "lastYearSales": 2228
+        },
+        {
+          "date": "2025-05-14",
+          "units": 138,
+          "sales": 50969,
+          "lastYearUnits": 76,
+          "lastYearSales": 195
+        },
+        {
+          "date": "2025-05-15",
+          "units": 710,
+          "sales": 1573,
+          "lastYearUnits": 0,
+          "lastYearSales": 27458
+        },
+        {
+          "date": "2025-05-16",
+          "units": 46,
+          "sales": 3412,
+          "lastYearUnits": 707,
+          "lastYearSales": 133
+        },
+        {
+          "date": "2025-05-17",
+          "units": 430,
+          "sales": 2067,
+          "lastYearUnits": 1041,
+          "lastYearSales": 13202
+        },
+        {
+          "date": "2025-05-18",
+          "units": 251,
+          "sales": 2785,
+          "lastYearUnits": 489,
+          "lastYearSales": 3563
+        },
+        {
+          "date": "2025-05-19",
+          "units": 407,
+          "sales": 43909,
+          "lastYearUnits": 47,
+          "lastYearSales": 80800
+        },
+        {
+          "date": "2025-05-20",
+          "units": 16,
+          "sales": 14551,
+          "lastYearUnits": 624,
+          "lastYearSales": 2558
+        },
+        {
+          "date": "2025-05-21",
+          "units": 57,
+          "sales": 11650,
+          "lastYearUnits": 0,
+          "lastYearSales": 39255
+        },
+        {
+          "date": "2025-05-22",
+          "units": 101,
+          "sales": 287,
+          "lastYearUnits": 9,
+          "lastYearSales": 108
+        },
+        {
+          "date": "2025-05-23",
+          "units": 7,
+          "sales": 14263,
+          "lastYearUnits": 4,
+          "lastYearSales": 16768
+        },
+        {
+          "date": "2025-05-24",
+          "units": 160,
+          "sales": 484,
+          "lastYearUnits": 44,
+          "lastYearSales": 4612
+        },
+        {
+          "date": "2025-05-25",
+          "units": 320,
+          "sales": 72789,
+          "lastYearUnits": 1101,
+          "lastYearSales": 79
+        },
+        {
+          "date": "2025-05-26",
+          "units": 3,
+          "sales": 1240,
+          "lastYearUnits": 1066,
+          "lastYearSales": 11659
+        },
+        {
+          "date": "2025-05-27",
+          "units": 8,
+          "sales": 72789,
+          "lastYearUnits": 129,
+          "lastYearSales": 70036
+        },
+        {
+          "date": "2025-05-28",
+          "units": 0,
+          "sales": 12913,
+          "lastYearUnits": 121,
+          "lastYearSales": 63843
+        },
+        {
+          "date": "2025-05-29",
+          "units": 195,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 61211
+        },
+        {
+          "date": "2025-05-30",
+          "units": 257,
+          "sales": 341,
+          "lastYearUnits": 4,
+          "lastYearSales": 15916
+        },
+        {
+          "date": "2025-05-31",
+          "units": 136,
+          "sales": 1791,
+          "lastYearUnits": 144,
+          "lastYearSales": 388
+        },
+        {
+          "date": "2025-06-01",
+          "units": 2,
+          "sales": 21756,
+          "lastYearUnits": 373,
+          "lastYearSales": 72403
+        },
+        {
+          "date": "2025-06-02",
+          "units": 30,
+          "sales": 72789,
+          "lastYearUnits": 606,
+          "lastYearSales": 68318
+        },
+        {
+          "date": "2025-06-03",
+          "units": 6,
+          "sales": 13716,
+          "lastYearUnits": 282,
+          "lastYearSales": 16230
+        },
+        {
+          "date": "2025-06-04",
+          "units": 288,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 12741
+        },
+        {
+          "date": "2025-06-05",
+          "units": 13,
+          "sales": 8024,
+          "lastYearUnits": 0,
+          "lastYearSales": 4140
+        },
+        {
+          "date": "2025-06-06",
+          "units": 105,
+          "sales": 72789,
+          "lastYearUnits": 453,
+          "lastYearSales": 15386
+        },
+        {
+          "date": "2025-06-07",
+          "units": 710,
+          "sales": 1332,
+          "lastYearUnits": 930,
+          "lastYearSales": 41967
+        },
+        {
+          "date": "2025-06-08",
+          "units": 710,
+          "sales": 63295,
+          "lastYearUnits": 393,
+          "lastYearSales": 40885
+        },
+        {
+          "date": "2025-06-09",
+          "units": 42,
+          "sales": 25316,
+          "lastYearUnits": 300,
+          "lastYearSales": 163
+        },
+        {
+          "date": "2025-06-10",
+          "units": 710,
+          "sales": 3037,
+          "lastYearUnits": 0,
+          "lastYearSales": 55709
+        },
+        {
+          "date": "2025-06-11",
+          "units": 710,
+          "sales": 18604,
+          "lastYearUnits": 633,
+          "lastYearSales": 994
+        },
+        {
+          "date": "2025-06-12",
+          "units": 4,
+          "sales": 267,
+          "lastYearUnits": 6,
+          "lastYearSales": 228
+        },
+        {
+          "date": "2025-06-13",
+          "units": 301,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 4777
+        },
+        {
+          "date": "2025-06-14",
+          "units": 22,
+          "sales": 4,
+          "lastYearUnits": 236,
+          "lastYearSales": 33799
+        },
+        {
+          "date": "2025-06-15",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 13,
+          "lastYearSales": 3875
+        },
+        {
+          "date": "2025-06-16",
+          "units": 134,
+          "sales": 72789,
+          "lastYearUnits": 644,
+          "lastYearSales": 33099
+        },
+        {
+          "date": "2025-06-17",
+          "units": 338,
+          "sales": 1136,
+          "lastYearUnits": 0,
+          "lastYearSales": 32843
+        },
+        {
+          "date": "2025-06-18",
+          "units": 18,
+          "sales": 1112,
+          "lastYearUnits": 76,
+          "lastYearSales": 141
+        },
+        {
+          "date": "2025-06-19",
+          "units": 66,
+          "sales": 999,
+          "lastYearUnits": 907,
+          "lastYearSales": 18693
+        },
+        {
+          "date": "2025-06-20",
+          "units": 246,
+          "sales": 1915,
+          "lastYearUnits": 183,
+          "lastYearSales": 328
+        },
+        {
+          "date": "2025-06-21",
+          "units": 50,
+          "sales": 33375,
+          "lastYearUnits": 2,
+          "lastYearSales": 4452
+        },
+        {
+          "date": "2025-06-22",
+          "units": 710,
+          "sales": 18556,
+          "lastYearUnits": 6,
+          "lastYearSales": 4755
+        },
+        {
+          "date": "2025-06-23",
+          "units": 710,
+          "sales": 22522,
+          "lastYearUnits": 162,
+          "lastYearSales": 28436
+        },
+        {
+          "date": "2025-06-24",
+          "units": 2,
+          "sales": 28000,
+          "lastYearUnits": 38,
+          "lastYearSales": 32167
+        },
+        {
+          "date": "2025-06-25",
+          "units": 710,
+          "sales": 35697,
+          "lastYearUnits": 1,
+          "lastYearSales": 286
+        },
+        {
+          "date": "2025-06-26",
+          "units": 9,
+          "sales": 949,
+          "lastYearUnits": 149,
+          "lastYearSales": 780
+        },
+        {
+          "date": "2025-06-27",
+          "units": 710,
+          "sales": 846,
+          "lastYearUnits": 484,
+          "lastYearSales": 1232
+        },
+        {
+          "date": "2025-06-28",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 156,
+          "lastYearSales": 279
+        },
+        {
+          "date": "2025-06-29",
+          "units": 41,
+          "sales": 72789,
+          "lastYearUnits": 1025,
+          "lastYearSales": 4707
+        },
+        {
+          "date": "2025-06-30",
+          "units": 527,
+          "sales": 53598,
+          "lastYearUnits": 3,
+          "lastYearSales": 15978
+        },
+        {
+          "date": "2025-07-01",
+          "units": 534,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 13435
+        },
+        {
+          "date": "2025-07-02",
+          "units": 710,
+          "sales": 15004,
+          "lastYearUnits": 26,
+          "lastYearSales": 86
+        },
+        {
+          "date": "2025-07-03",
+          "units": 192,
+          "sales": 283,
+          "lastYearUnits": 422,
+          "lastYearSales": 36037
+        },
+        {
+          "date": "2025-07-04",
+          "units": 708,
+          "sales": 31279,
+          "lastYearUnits": 119,
+          "lastYearSales": 77609
+        },
+        {
+          "date": "2025-07-05",
+          "units": 710,
+          "sales": 27999,
+          "lastYearUnits": 277,
+          "lastYearSales": 77459
+        },
+        {
+          "date": "2025-07-06",
+          "units": 197,
+          "sales": 6948,
+          "lastYearUnits": 34,
+          "lastYearSales": 306
+        },
+        {
+          "date": "2025-07-07",
+          "units": 710,
+          "sales": 30731,
+          "lastYearUnits": 529,
+          "lastYearSales": 40561
+        },
+        {
+          "date": "2025-07-08",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 846,
+          "lastYearSales": 71960
+        },
+        {
+          "date": "2025-07-09",
+          "units": 710,
+          "sales": 710,
+          "lastYearUnits": 400,
+          "lastYearSales": 4584
+        },
+        {
+          "date": "2025-07-10",
+          "units": 6,
+          "sales": 1042,
+          "lastYearUnits": 436,
+          "lastYearSales": 313
+        },
+        {
+          "date": "2025-07-11",
+          "units": 368,
+          "sales": 1465,
+          "lastYearUnits": 1038,
+          "lastYearSales": 12335
+        },
+        {
+          "date": "2025-07-12",
+          "units": 23,
+          "sales": 70201,
+          "lastYearUnits": 3,
+          "lastYearSales": 72388
+        },
+        {
+          "date": "2025-07-13",
+          "units": 710,
+          "sales": 29711,
+          "lastYearUnits": 61,
+          "lastYearSales": 1
+        },
+        {
+          "date": "2025-07-14",
+          "units": 103,
+          "sales": 825,
+          "lastYearUnits": 422,
+          "lastYearSales": 21690
+        },
+        {
+          "date": "2025-07-15",
+          "units": 474,
+          "sales": 3036,
+          "lastYearUnits": 862,
+          "lastYearSales": 34403
+        },
+        {
+          "date": "2025-07-16",
+          "units": 6,
+          "sales": 1216,
+          "lastYearUnits": 261,
+          "lastYearSales": 49493
+        },
+        {
+          "date": "2025-07-17",
+          "units": 1,
+          "sales": 1798,
+          "lastYearUnits": 149,
+          "lastYearSales": 449
+        },
+        {
+          "date": "2025-07-18",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 2,
+          "lastYearSales": 183
+        },
+        {
+          "date": "2025-07-19",
+          "units": 710,
+          "sales": 2,
+          "lastYearUnits": 48,
+          "lastYearSales": 262
+        },
+        {
+          "date": "2025-07-20",
+          "units": 432,
+          "sales": 72789,
+          "lastYearUnits": 105,
+          "lastYearSales": 1333
+        },
+        {
+          "date": "2025-07-21",
+          "units": 163,
+          "sales": 39382,
+          "lastYearUnits": 79,
+          "lastYearSales": 923
+        },
+        {
+          "date": "2025-07-22",
+          "units": 15,
+          "sales": 15,
+          "lastYearUnits": 2,
+          "lastYearSales": 12250
+        },
+        {
+          "date": "2025-07-23",
+          "units": 710,
+          "sales": 38251,
+          "lastYearUnits": 733,
+          "lastYearSales": 19777
+        },
+        {
+          "date": "2025-07-24",
+          "units": 595,
+          "sales": 2906,
+          "lastYearUnits": 1,
+          "lastYearSales": 6212
+        },
+        {
+          "date": "2025-07-25",
+          "units": 2,
+          "sales": 54809,
+          "lastYearUnits": 635,
+          "lastYearSales": 61
+        },
+        {
+          "date": "2025-07-26",
+          "units": 710,
+          "sales": 34772,
+          "lastYearUnits": 4,
+          "lastYearSales": 66840
+        },
+        {
+          "date": "2025-07-27",
+          "units": 13,
+          "sales": 402,
+          "lastYearUnits": 117,
+          "lastYearSales": 15052
+        },
+        {
+          "date": "2025-07-28",
+          "units": 94,
+          "sales": 8,
+          "lastYearUnits": 11,
+          "lastYearSales": 2769
+        },
+        {
+          "date": "2025-07-29",
+          "units": 100,
+          "sales": 2,
+          "lastYearUnits": 768,
+          "lastYearSales": 62362
+        },
+        {
+          "date": "2025-07-30",
+          "units": 41,
+          "sales": 16054,
+          "lastYearUnits": 650,
+          "lastYearSales": 76394
+        },
+        {
+          "date": "2025-07-31",
+          "units": 84,
+          "sales": 72789,
+          "lastYearUnits": 480,
+          "lastYearSales": 21963
+        },
+        {
+          "date": "2025-08-01",
+          "units": 710,
+          "sales": 2424,
+          "lastYearUnits": 824,
+          "lastYearSales": 15352
+        },
+        {
+          "date": "2025-08-02",
+          "units": 31,
+          "sales": 32671,
+          "lastYearUnits": 1184,
+          "lastYearSales": 65476
+        },
+        {
+          "date": "2025-08-03",
+          "units": 6,
+          "sales": 343,
+          "lastYearUnits": 4,
+          "lastYearSales": 4942
+        },
+        {
+          "date": "2025-08-04",
+          "units": 559,
+          "sales": 4585,
+          "lastYearUnits": 1,
+          "lastYearSales": 307
+        },
+        {
+          "date": "2025-08-05",
+          "units": 11,
+          "sales": 30116,
+          "lastYearUnits": 272,
+          "lastYearSales": 33126
+        },
+        {
+          "date": "2025-08-06",
+          "units": 710,
+          "sales": 40372,
+          "lastYearUnits": 10,
+          "lastYearSales": 14887
+        },
+        {
+          "date": "2025-08-07",
+          "units": 77,
+          "sales": 72789,
+          "lastYearUnits": 23,
+          "lastYearSales": 32022
+        },
+        {
+          "date": "2025-08-08",
+          "units": 72,
+          "sales": 72789,
+          "lastYearUnits": 723,
+          "lastYearSales": 3563
+        },
+        {
+          "date": "2025-08-09",
+          "units": 383,
+          "sales": 192,
+          "lastYearUnits": 1,
+          "lastYearSales": 24955
+        },
+        {
+          "date": "2025-08-10",
+          "units": 256,
+          "sales": 41897,
+          "lastYearUnits": 43,
+          "lastYearSales": 76391
+        },
+        {
+          "date": "2025-08-11",
+          "units": 167,
+          "sales": 3,
+          "lastYearUnits": 93,
+          "lastYearSales": 13517
+        },
+        {
+          "date": "2025-08-12",
+          "units": 92,
+          "sales": 72789,
+          "lastYearUnits": 864,
+          "lastYearSales": 23173
+        },
+        {
+          "date": "2025-08-13",
+          "units": 426,
+          "sales": 1234,
+          "lastYearUnits": 206,
+          "lastYearSales": 36
+        },
+        {
+          "date": "2025-08-14",
+          "units": 638,
+          "sales": 55749,
+          "lastYearUnits": 0,
+          "lastYearSales": 665
+        },
+        {
+          "date": "2025-08-15",
+          "units": 115,
+          "sales": 72789,
+          "lastYearUnits": 297,
+          "lastYearSales": 36
+        },
+        {
+          "date": "2025-08-16",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 97,
+          "lastYearSales": 22503
+        },
+        {
+          "date": "2025-08-17",
+          "units": 68,
+          "sales": 2,
+          "lastYearUnits": 6,
+          "lastYearSales": 54171
+        },
+        {
+          "date": "2025-08-18",
+          "units": 395,
+          "sales": 4006,
+          "lastYearUnits": 0,
+          "lastYearSales": 228
+        },
+        {
+          "date": "2025-08-19",
+          "units": 8,
+          "sales": 2,
+          "lastYearUnits": 14,
+          "lastYearSales": 316
+        },
+        {
+          "date": "2025-08-20",
+          "units": 15,
+          "sales": 865,
+          "lastYearUnits": 244,
+          "lastYearSales": 5710
+        },
+        {
+          "date": "2025-08-21",
+          "units": 0,
+          "sales": 7793,
+          "lastYearUnits": 1,
+          "lastYearSales": 15221
+        },
+        {
+          "date": "2025-08-22",
+          "units": 151,
+          "sales": 165,
+          "lastYearUnits": 468,
+          "lastYearSales": 59225
+        },
+        {
+          "date": "2025-08-23",
+          "units": 265,
+          "sales": 2034,
+          "lastYearUnits": 10,
+          "lastYearSales": 1977
+        },
+        {
+          "date": "2025-08-24",
+          "units": 1,
+          "sales": 9884,
+          "lastYearUnits": 8,
+          "lastYearSales": 53297
+        },
+        {
+          "date": "2025-08-25",
+          "units": 376,
+          "sales": 16930,
+          "lastYearUnits": 723,
+          "lastYearSales": 6072
+        },
+        {
+          "date": "2025-08-26",
+          "units": 426,
+          "sales": 13118,
+          "lastYearUnits": 18,
+          "lastYearSales": 30361
+        },
+        {
+          "date": "2025-08-27",
+          "units": 284,
+          "sales": 72789,
+          "lastYearUnits": 1061,
+          "lastYearSales": 11884
+        },
+        {
+          "date": "2025-08-28",
+          "units": 664,
+          "sales": 129,
+          "lastYearUnits": 103,
+          "lastYearSales": 58712
+        },
+        {
+          "date": "2025-08-29",
+          "units": 337,
+          "sales": 27,
+          "lastYearUnits": 60,
+          "lastYearSales": 6
+        },
+        {
+          "date": "2025-08-30",
+          "units": 639,
+          "sales": 34543,
+          "lastYearUnits": 590,
+          "lastYearSales": 10821
+        },
+        {
+          "date": "2025-08-31",
+          "units": 55,
+          "sales": 1590,
+          "lastYearUnits": 0,
+          "lastYearSales": 69128
+        },
+        {
+          "date": "2025-09-01",
+          "units": 710,
+          "sales": 237,
+          "lastYearUnits": 396,
+          "lastYearSales": 1361
+        },
+        {
+          "date": "2025-09-02",
+          "units": 77,
+          "sales": 36599,
+          "lastYearUnits": 29,
+          "lastYearSales": 11
+        },
+        {
+          "date": "2025-09-03",
+          "units": 117,
+          "sales": 72789,
+          "lastYearUnits": 3,
+          "lastYearSales": 55083
+        },
+        {
+          "date": "2025-09-04",
+          "units": 14,
+          "sales": 8863,
+          "lastYearUnits": 1108,
+          "lastYearSales": 84656
+        },
+        {
+          "date": "2025-09-05",
+          "units": 39,
+          "sales": 30705,
+          "lastYearUnits": 39,
+          "lastYearSales": 2679
+        },
+        {
+          "date": "2025-09-06",
+          "units": 710,
+          "sales": 609,
+          "lastYearUnits": 6,
+          "lastYearSales": 1996
+        },
+        {
+          "date": "2025-09-07",
+          "units": 46,
+          "sales": 36525,
+          "lastYearUnits": 42,
+          "lastYearSales": 2213
+        },
+        {
+          "date": "2025-09-08",
+          "units": 185,
+          "sales": 283,
+          "lastYearUnits": 808,
+          "lastYearSales": 72
+        },
+        {
+          "date": "2025-09-09",
+          "units": 710,
+          "sales": 128,
+          "lastYearUnits": 145,
+          "lastYearSales": 213
+        },
+        {
+          "date": "2025-09-10",
+          "units": 402,
+          "sales": 13020,
+          "lastYearUnits": 40,
+          "lastYearSales": 455
+        },
+        {
+          "date": "2025-09-11",
+          "units": 11,
+          "sales": 8755,
+          "lastYearUnits": 823,
+          "lastYearSales": 453
+        },
+        {
+          "date": "2025-09-12",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 41,
+          "lastYearSales": 58298
+        },
+        {
+          "date": "2025-09-13",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 41,
+          "lastYearSales": 1966
+        },
+        {
+          "date": "2025-09-14",
+          "units": 133,
+          "sales": 61524,
+          "lastYearUnits": 708,
+          "lastYearSales": 7272
+        },
+        {
+          "date": "2025-09-15",
+          "units": 355,
+          "sales": 10361,
+          "lastYearUnits": 40,
+          "lastYearSales": 6705
+        },
+        {
+          "date": "2025-09-16",
+          "units": 6,
+          "sales": 648,
+          "lastYearUnits": 0,
+          "lastYearSales": 23664
+        },
+        {
+          "date": "2025-09-17",
+          "units": 710,
+          "sales": 10793,
+          "lastYearUnits": 5,
+          "lastYearSales": 13270
+        },
+        {
+          "date": "2025-09-18",
+          "units": 1,
+          "sales": 72789,
+          "lastYearUnits": 390,
+          "lastYearSales": 23973
+        },
+        {
+          "date": "2025-09-19",
+          "units": 710,
+          "sales": 17781,
+          "lastYearUnits": 49,
+          "lastYearSales": 1215
+        },
+        {
+          "date": "2025-09-20",
+          "units": 3,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 491
+        },
+        {
+          "date": "2025-09-21",
+          "units": 594,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 32768
+        },
+        {
+          "date": "2025-09-22",
+          "units": 237,
+          "sales": 5967,
+          "lastYearUnits": 85,
+          "lastYearSales": 13677
+        },
+        {
+          "date": "2025-09-23",
+          "units": 568,
+          "sales": 33647,
+          "lastYearUnits": 1,
+          "lastYearSales": 3357
+        },
+        {
+          "date": "2025-09-24",
+          "units": 376,
+          "sales": 43702,
+          "lastYearUnits": 1,
+          "lastYearSales": 2263
+        },
+        {
+          "date": "2025-09-25",
+          "units": 710,
+          "sales": 71447,
+          "lastYearUnits": 35,
+          "lastYearSales": 25
+        },
+        {
+          "date": "2025-09-26",
+          "units": 24,
+          "sales": 72789,
+          "lastYearUnits": 426,
+          "lastYearSales": 7
+        },
+        {
+          "date": "2025-09-27",
+          "units": 0,
+          "sales": 3711,
+          "lastYearUnits": 338,
+          "lastYearSales": 54218
+        },
+        {
+          "date": "2025-09-28",
+          "units": 101,
+          "sales": 72789,
+          "lastYearUnits": 265,
+          "lastYearSales": 49838
+        },
+        {
+          "date": "2025-09-29",
+          "units": 710,
+          "sales": 13881,
+          "lastYearUnits": 1193,
+          "lastYearSales": 63896
+        },
+        {
+          "date": "2025-09-30",
+          "units": 319,
+          "sales": 107,
+          "lastYearUnits": 2,
+          "lastYearSales": 1099
+        },
+        {
+          "date": "2025-10-01",
+          "units": 8,
+          "sales": 66119,
+          "lastYearUnits": 478,
+          "lastYearSales": 17544
+        },
+        {
+          "date": "2025-10-02",
+          "units": 0,
+          "sales": 72789,
+          "lastYearUnits": 60,
+          "lastYearSales": 7
+        },
+        {
+          "date": "2025-10-03",
+          "units": 262,
+          "sales": 2049,
+          "lastYearUnits": 1036,
+          "lastYearSales": 23181
+        },
+        {
+          "date": "2025-10-04",
+          "units": 459,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 10991
+        },
+        {
+          "date": "2025-10-05",
+          "units": 2,
+          "sales": 68733,
+          "lastYearUnits": 37,
+          "lastYearSales": 11748
+        },
+        {
+          "date": "2025-10-06",
+          "units": 35,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 26162
+        },
+        {
+          "date": "2025-10-07",
+          "units": 283,
+          "sales": 72789,
+          "lastYearUnits": 154,
+          "lastYearSales": 60888
+        },
+        {
+          "date": "2025-10-08",
+          "units": 710,
+          "sales": 3482,
+          "lastYearUnits": 77,
+          "lastYearSales": 29180
+        },
+        {
+          "date": "2025-10-09",
+          "units": 710,
+          "sales": 60023,
+          "lastYearUnits": 737,
+          "lastYearSales": 24786
+        },
+        {
+          "date": "2025-10-10",
+          "units": 710,
+          "sales": 2957,
+          "lastYearUnits": 82,
+          "lastYearSales": 13
+        },
+        {
+          "date": "2025-10-11",
+          "units": 0,
+          "sales": 72789,
+          "lastYearUnits": 477,
+          "lastYearSales": 585
+        },
+        {
+          "date": "2025-10-12",
+          "units": 629,
+          "sales": 58,
+          "lastYearUnits": 597,
+          "lastYearSales": 54
+        },
+        {
+          "date": "2025-10-13",
+          "units": 316,
+          "sales": 72789,
+          "lastYearUnits": 28,
+          "lastYearSales": 3270
+        },
+        {
+          "date": "2025-10-14",
+          "units": 26,
+          "sales": 14079,
+          "lastYearUnits": 884,
+          "lastYearSales": 44
+        },
+        {
+          "date": "2025-10-15",
+          "units": 698,
+          "sales": 72789,
+          "lastYearUnits": 1208,
+          "lastYearSales": 68551
+        },
+        {
+          "date": "2025-10-16",
+          "units": 42,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 38071
+        },
+        {
+          "date": "2025-10-17",
+          "units": 7,
+          "sales": 3734,
+          "lastYearUnits": 48,
+          "lastYearSales": 361
+        },
+        {
+          "date": "2025-10-18",
+          "units": 710,
+          "sales": 1069,
+          "lastYearUnits": 107,
+          "lastYearSales": 153
+        },
+        {
+          "date": "2025-10-19",
+          "units": 710,
+          "sales": 374,
+          "lastYearUnits": 1026,
+          "lastYearSales": 22189
+        },
+        {
+          "date": "2025-10-20",
+          "units": 349,
+          "sales": 2060,
+          "lastYearUnits": 34,
+          "lastYearSales": 19470
+        },
+        {
+          "date": "2025-10-21",
+          "units": 710,
+          "sales": 37448,
+          "lastYearUnits": 8,
+          "lastYearSales": 2459
+        },
+        {
+          "date": "2025-10-22",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 2,
+          "lastYearSales": 8381
+        },
+        {
+          "date": "2025-10-23",
+          "units": 21,
+          "sales": 668,
+          "lastYearUnits": 0,
+          "lastYearSales": 25612
+        },
+        {
+          "date": "2025-10-24",
+          "units": 300,
+          "sales": 72789,
+          "lastYearUnits": 11,
+          "lastYearSales": 432
+        },
+        {
+          "date": "2025-10-25",
+          "units": 1,
+          "sales": 35346,
+          "lastYearUnits": 524,
+          "lastYearSales": 329
+        },
+        {
+          "date": "2025-10-26",
+          "units": 81,
+          "sales": 126,
+          "lastYearUnits": 184,
+          "lastYearSales": 43615
+        },
+        {
+          "date": "2025-10-27",
+          "units": 710,
+          "sales": 21728,
+          "lastYearUnits": 350,
+          "lastYearSales": 1716
+        },
+        {
+          "date": "2025-10-28",
+          "units": 398,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 2
+        },
+        {
+          "date": "2025-10-29",
+          "units": 710,
+          "sales": 3134,
+          "lastYearUnits": 202,
+          "lastYearSales": 1069
+        },
+        {
+          "date": "2025-10-30",
+          "units": 710,
+          "sales": 47273,
+          "lastYearUnits": 582,
+          "lastYearSales": 28572
+        },
+        {
+          "date": "2025-10-31",
+          "units": 3,
+          "sales": 68563,
+          "lastYearUnits": 692,
+          "lastYearSales": 58247
+        },
+        {
+          "date": "2025-11-01",
+          "units": 636,
+          "sales": 72789,
+          "lastYearUnits": 182,
+          "lastYearSales": 209
+        },
+        {
+          "date": "2025-11-02",
+          "units": 131,
+          "sales": 910,
+          "lastYearUnits": 295,
+          "lastYearSales": 322
+        },
+        {
+          "date": "2025-11-03",
+          "units": 13,
+          "sales": 447,
+          "lastYearUnits": 452,
+          "lastYearSales": 17279
+        },
+        {
+          "date": "2025-11-04",
+          "units": 710,
+          "sales": 2257,
+          "lastYearUnits": 185,
+          "lastYearSales": 28969
+        },
+        {
+          "date": "2025-11-05",
+          "units": 15,
+          "sales": 880,
+          "lastYearUnits": 604,
+          "lastYearSales": 248
+        },
+        {
+          "date": "2025-11-06",
+          "units": 88,
+          "sales": 72789,
+          "lastYearUnits": 228,
+          "lastYearSales": 13337
+        },
+        {
+          "date": "2025-11-07",
+          "units": 334,
+          "sales": 1651,
+          "lastYearUnits": 4,
+          "lastYearSales": 135
+        },
+        {
+          "date": "2025-11-08",
+          "units": 13,
+          "sales": 9152,
+          "lastYearUnits": 717,
+          "lastYearSales": 16648
+        },
+        {
+          "date": "2025-11-09",
+          "units": 710,
+          "sales": 6148,
+          "lastYearUnits": 14,
+          "lastYearSales": 5802
+        },
+        {
+          "date": "2025-11-10",
+          "units": 113,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 43401
+        },
+        {
+          "date": "2025-11-11",
+          "units": 220,
+          "sales": 328,
+          "lastYearUnits": 200,
+          "lastYearSales": 75417
+        },
+        {
+          "date": "2025-11-12",
+          "units": 314,
+          "sales": 21964,
+          "lastYearUnits": 187,
+          "lastYearSales": 40478
+        },
+        {
+          "date": "2025-11-13",
+          "units": 37,
+          "sales": 72789,
+          "lastYearUnits": 1176,
+          "lastYearSales": 2618
+        },
+        {
+          "date": "2025-11-14",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 27300
+        },
+        {
+          "date": "2025-11-15",
+          "units": 643,
+          "sales": 442,
+          "lastYearUnits": 54,
+          "lastYearSales": 43260
+        },
+        {
+          "date": "2025-11-16",
+          "units": 3,
+          "sales": 156,
+          "lastYearUnits": 738,
+          "lastYearSales": 20342
+        },
+        {
+          "date": "2025-11-17",
+          "units": 164,
+          "sales": 151,
+          "lastYearUnits": 101,
+          "lastYearSales": 8580
+        },
+        {
+          "date": "2025-11-18",
+          "units": 124,
+          "sales": 50537,
+          "lastYearUnits": 58,
+          "lastYearSales": 62170
+        },
+        {
+          "date": "2025-11-19",
+          "units": 303,
+          "sales": 72789,
+          "lastYearUnits": 38,
+          "lastYearSales": 41107
+        },
+        {
+          "date": "2025-11-20",
+          "units": 60,
+          "sales": 59730,
+          "lastYearUnits": 597,
+          "lastYearSales": 34085
+        },
+        {
+          "date": "2025-11-21",
+          "units": 0,
+          "sales": 50612,
+          "lastYearUnits": 530,
+          "lastYearSales": 38817
+        },
+        {
+          "date": "2025-11-22",
+          "units": 710,
+          "sales": 13314,
+          "lastYearUnits": 6,
+          "lastYearSales": 56319
+        },
+        {
+          "date": "2025-11-23",
+          "units": 9,
+          "sales": 72789,
+          "lastYearUnits": 139,
+          "lastYearSales": 6996
+        },
+        {
+          "date": "2025-11-24",
+          "units": 710,
+          "sales": 5044,
+          "lastYearUnits": 8,
+          "lastYearSales": 12922
+        },
+        {
+          "date": "2025-11-25",
+          "units": 112,
+          "sales": 1596,
+          "lastYearUnits": 956,
+          "lastYearSales": 30427
+        },
+        {
+          "date": "2025-11-26",
+          "units": 43,
+          "sales": 14448,
+          "lastYearUnits": 43,
+          "lastYearSales": 747
+        },
+        {
+          "date": "2025-11-27",
+          "units": 81,
+          "sales": 24,
+          "lastYearUnits": 1190,
+          "lastYearSales": 629
+        },
+        {
+          "date": "2025-11-28",
+          "units": 256,
+          "sales": 7,
+          "lastYearUnits": 57,
+          "lastYearSales": 66589
+        },
+        {
+          "date": "2025-11-29",
+          "units": 58,
+          "sales": 19817,
+          "lastYearUnits": 617,
+          "lastYearSales": 41251
+        },
+        {
+          "date": "2025-11-30",
+          "units": 173,
+          "sales": 72789,
+          "lastYearUnits": 65,
+          "lastYearSales": 31
+        },
+        {
+          "date": "2025-12-01",
+          "units": 94,
+          "sales": 72789,
+          "lastYearUnits": 413,
+          "lastYearSales": 441
+        },
+        {
+          "date": "2025-12-02",
+          "units": 142,
+          "sales": 34271,
+          "lastYearUnits": 722,
+          "lastYearSales": 2
+        },
+        {
+          "date": "2025-12-03",
+          "units": 40,
+          "sales": 2264,
+          "lastYearUnits": 2,
+          "lastYearSales": 33272
+        },
+        {
+          "date": "2025-12-04",
+          "units": 710,
+          "sales": 18362,
+          "lastYearUnits": 34,
+          "lastYearSales": 73
+        },
+        {
+          "date": "2025-12-05",
+          "units": 710,
+          "sales": 89,
+          "lastYearUnits": 6,
+          "lastYearSales": 1101
+        },
+        {
+          "date": "2025-12-06",
+          "units": 54,
+          "sales": 5423,
+          "lastYearUnits": 621,
+          "lastYearSales": 76561
+        },
+        {
+          "date": "2025-12-07",
+          "units": 710,
+          "sales": 455,
+          "lastYearUnits": 981,
+          "lastYearSales": 69276
+        },
+        {
+          "date": "2025-12-08",
+          "units": 185,
+          "sales": 9695,
+          "lastYearUnits": 772,
+          "lastYearSales": 34961
+        },
+        {
+          "date": "2025-12-09",
+          "units": 710,
+          "sales": 19667,
+          "lastYearUnits": 5,
+          "lastYearSales": 8440
+        },
+        {
+          "date": "2025-12-10",
+          "units": 67,
+          "sales": 53113,
+          "lastYearUnits": 407,
+          "lastYearSales": 13270
+        },
+        {
+          "date": "2025-12-11",
+          "units": 572,
+          "sales": 2971,
+          "lastYearUnits": 24,
+          "lastYearSales": 29874
+        },
+        {
+          "date": "2025-12-12",
+          "units": 552,
+          "sales": 23963,
+          "lastYearUnits": 15,
+          "lastYearSales": 19223
+        },
+        {
+          "date": "2025-12-13",
+          "units": 39,
+          "sales": 43062,
+          "lastYearUnits": 3,
+          "lastYearSales": 13585
+        },
+        {
+          "date": "2025-12-14",
+          "units": 710,
+          "sales": 30,
+          "lastYearUnits": 4,
+          "lastYearSales": 54632
+        },
+        {
+          "date": "2025-12-15",
+          "units": 710,
+          "sales": 7061,
+          "lastYearUnits": 288,
+          "lastYearSales": 678
+        },
+        {
+          "date": "2025-12-16",
+          "units": 35,
+          "sales": 6998,
+          "lastYearUnits": 306,
+          "lastYearSales": 5873
+        },
+        {
+          "date": "2025-12-17",
+          "units": 0,
+          "sales": 490,
+          "lastYearUnits": 1,
+          "lastYearSales": 156
+        },
+        {
+          "date": "2025-12-18",
+          "units": 14,
+          "sales": 7017,
+          "lastYearUnits": 132,
+          "lastYearSales": 124
+        },
+        {
+          "date": "2025-12-19",
+          "units": 16,
+          "sales": 2503,
+          "lastYearUnits": 163,
+          "lastYearSales": 23664
+        },
+        {
+          "date": "2025-12-20",
+          "units": 6,
+          "sales": 789,
+          "lastYearUnits": 100,
+          "lastYearSales": 66158
+        },
+        {
+          "date": "2025-12-21",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 1761
+        },
+        {
+          "date": "2025-12-22",
+          "units": 11,
+          "sales": 29319,
+          "lastYearUnits": 46,
+          "lastYearSales": 1910
+        },
+        {
+          "date": "2025-12-23",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 391,
+          "lastYearSales": 14122
+        },
+        {
+          "date": "2025-12-24",
+          "units": 78,
+          "sales": 72789,
+          "lastYearUnits": 111,
+          "lastYearSales": 21945
+        },
+        {
+          "date": "2025-12-25",
+          "units": 398,
+          "sales": 51838,
+          "lastYearUnits": 6,
+          "lastYearSales": 44459
+        },
+        {
+          "date": "2025-12-26",
+          "units": 710,
+          "sales": 2856,
+          "lastYearUnits": 423,
+          "lastYearSales": 55
+        },
+        {
+          "date": "2025-12-27",
+          "units": 710,
+          "sales": 726,
+          "lastYearUnits": 48,
+          "lastYearSales": 53
+        },
+        {
+          "date": "2025-12-28",
+          "units": 636,
+          "sales": 69175,
+          "lastYearUnits": 17,
+          "lastYearSales": 1581
+        },
+        {
+          "date": "2025-12-29",
+          "units": 710,
+          "sales": 5824,
+          "lastYearUnits": 137,
+          "lastYearSales": 53134
+        },
+        {
+          "date": "2025-12-30",
+          "units": 710,
+          "sales": 124,
+          "lastYearUnits": 818,
+          "lastYearSales": 62647
+        },
+        {
+          "date": "2025-12-31",
+          "units": 7,
+          "sales": 176,
+          "lastYearUnits": 6,
+          "lastYearSales": 6449
+        },
+        {
+          "date": "2026-01-01",
+          "units": 83,
+          "sales": 72789,
+          "lastYearUnits": 2,
+          "lastYearSales": 40832
+        },
+        {
+          "date": "2026-01-02",
+          "units": 710,
+          "sales": 116,
+          "lastYearUnits": 1133,
+          "lastYearSales": 15628
+        },
+        {
+          "date": "2026-01-03",
+          "units": 710,
+          "sales": 2038,
+          "lastYearUnits": 363,
+          "lastYearSales": 2079
+        },
+        {
+          "date": "2026-01-04",
+          "units": 10,
+          "sales": 1679,
+          "lastYearUnits": 1048,
+          "lastYearSales": 16682
+        },
+        {
+          "date": "2026-01-05",
+          "units": 76,
+          "sales": 53,
+          "lastYearUnits": 2,
+          "lastYearSales": 12332
+        },
+        {
+          "date": "2026-01-06",
+          "units": 104,
+          "sales": 34,
+          "lastYearUnits": 242,
+          "lastYearSales": 86910
+        },
+        {
+          "date": "2026-01-07",
+          "units": 157,
+          "sales": 25165,
+          "lastYearUnits": 35,
+          "lastYearSales": 41571
+        },
+        {
+          "date": "2026-01-08",
+          "units": 710,
+          "sales": 7786,
+          "lastYearUnits": 389,
+          "lastYearSales": 491
+        },
+        {
+          "date": "2026-01-09",
+          "units": 242,
+          "sales": 8,
+          "lastYearUnits": 22,
+          "lastYearSales": 68477
+        },
+        {
+          "date": "2026-01-10",
+          "units": 2,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 547
+        },
+        {
+          "date": "2026-01-11",
+          "units": 36,
+          "sales": 72789,
+          "lastYearUnits": 523,
+          "lastYearSales": 16713
+        },
+        {
+          "date": "2026-01-12",
+          "units": 613,
+          "sales": 40795,
+          "lastYearUnits": 415,
+          "lastYearSales": 3
+        },
+        {
+          "date": "2026-01-13",
+          "units": 16,
+          "sales": 72789,
+          "lastYearUnits": 476,
+          "lastYearSales": 19670
+        },
+        {
+          "date": "2026-01-14",
+          "units": 186,
+          "sales": 15397,
+          "lastYearUnits": 77,
+          "lastYearSales": 615
+        },
+        {
+          "date": "2026-01-15",
+          "units": 343,
+          "sales": 72789,
+          "lastYearUnits": 2,
+          "lastYearSales": 5785
+        },
+        {
+          "date": "2026-01-16",
+          "units": 3,
+          "sales": 72789,
+          "lastYearUnits": 105,
+          "lastYearSales": 11105
+        },
+        {
+          "date": "2026-01-17",
+          "units": 147,
+          "sales": 59,
+          "lastYearUnits": 4,
+          "lastYearSales": 53525
+        },
+        {
+          "date": "2026-01-18",
+          "units": 391,
+          "sales": 60880,
+          "lastYearUnits": 2,
+          "lastYearSales": 1629
+        },
+        {
+          "date": "2026-01-19",
+          "units": 710,
+          "sales": 26474,
+          "lastYearUnits": 12,
+          "lastYearSales": 61579
+        },
+        {
+          "date": "2026-01-20",
+          "units": 0,
+          "sales": 57614,
+          "lastYearUnits": 567,
+          "lastYearSales": 56910
+        },
+        {
+          "date": "2026-01-21",
+          "units": 41,
+          "sales": 19732,
+          "lastYearUnits": 172,
+          "lastYearSales": 49825
+        },
+        {
+          "date": "2026-01-22",
+          "units": 481,
+          "sales": 29750,
+          "lastYearUnits": 279,
+          "lastYearSales": 62133
+        },
+        {
+          "date": "2026-01-23",
+          "units": 470,
+          "sales": 72789,
+          "lastYearUnits": 1,
+          "lastYearSales": 21474
+        },
+        {
+          "date": "2026-01-24",
+          "units": 53,
+          "sales": 206,
+          "lastYearUnits": 46,
+          "lastYearSales": 4610
+        },
+        {
+          "date": "2026-01-25",
+          "units": 62,
+          "sales": 6955,
+          "lastYearUnits": 440,
+          "lastYearSales": 529
+        },
+        {
+          "date": "2026-01-26",
+          "units": 2,
+          "sales": 9234,
+          "lastYearUnits": 9,
+          "lastYearSales": 9544
+        },
+        {
+          "date": "2026-01-27",
+          "units": 4,
+          "sales": 4180,
+          "lastYearUnits": 21,
+          "lastYearSales": 544
+        },
+        {
+          "date": "2026-01-28",
+          "units": 339,
+          "sales": 14901,
+          "lastYearUnits": 15,
+          "lastYearSales": 31741
+        },
+        {
+          "date": "2026-01-29",
+          "units": 219,
+          "sales": 72789,
+          "lastYearUnits": 65,
+          "lastYearSales": 1
+        },
+        {
+          "date": "2026-01-30",
+          "units": 252,
+          "sales": 29,
+          "lastYearUnits": 36,
+          "lastYearSales": 39264
+        },
+        {
+          "date": "2026-01-31",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 0,
+          "lastYearSales": 2768
+        },
+        {
+          "date": "2026-02-01",
+          "units": 710,
+          "sales": 72789,
+          "lastYearUnits": 12,
+          "lastYearSales": 7427
+        },
+        {
+          "date": "2026-02-02",
+          "units": 710,
+          "sales": 26610,
+          "lastYearUnits": 133,
+          "lastYearSales": 3838
+        },
+        {
+          "date": "2026-02-03",
+          "units": 35,
+          "sales": 72789,
+          "lastYearUnits": 75,
+          "lastYearSales": 1711
+        },
+        {
+          "date": "2026-02-04",
+          "units": 1,
+          "sales": 11,
+          "lastYearUnits": 16,
+          "lastYearSales": 4434
+        }
+      ]
+    },
+    "id": "58ba2196-ea25-40b3-8045-eb58b0f7bcf4"
+  }
+]

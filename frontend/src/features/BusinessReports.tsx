@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../hooks/useI18n';
 import { useStore } from '../store';
 import { apiGet } from '../config/api';
@@ -19,6 +19,28 @@ import DatePicker from '../components/DatePicker';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const WEEK_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+const formatUnitsTick = (v: number) => {
+  if (v === 0) return '0';
+  if (v >= 1000 && v % 1000 === 0) return `${v / 1000}k`;
+  return `${Math.round(v)}`;
+};
+
+const formatSalesTick = (v: number) => {
+  if (v === 0) return '0';
+  if (v >= 1000 && v % 1000 === 0) return `${v / 1000}k`;
+  return `${Math.round(v)}`;
+};
+
+const formatDateForAPI = (dateStr: string) => {
+  if (!dateStr) return '';
+  if (dateStr.includes('-')) return dateStr;
+  const parts = dateStr.split('/');
+  if (parts.length !== 3) return '';
+  const [month, day, year] = parts;
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+};
 
 const parseISODate = (dateStr: string) => {
   if (!dateStr) return null;
@@ -26,6 +48,14 @@ const parseISODate = (dateStr: string) => {
   if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
   const [year, month, day] = parts;
   return new Date(Date.UTC(year, month - 1, day));
+};
+
+const parseLocalDate = (dateStr: string) => {
+  if (!dateStr) return null;
+  const parts = dateStr.split('-').map(Number);
+  if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+  const [year, month, day] = parts;
+  return new Date(year, month - 1, day);
 };
 
 const diffDays = (start: Date, end: Date) =>
@@ -79,6 +109,95 @@ const attachXIndex = (data: any[], rangeStart: Date) =>
     };
   });
 
+const formatHourLabel = (hour: number) => {
+  const normalized = hour % 24;
+  const suffix = normalized < 12 ? 'AM' : 'PM';
+  const display = normalized % 12 === 0 ? 12 : normalized % 12;
+  return `${display}${suffix}`;
+};
+
+const buildHourTicks = () => {
+  const ticks = Array.from({ length: 24 }, (_, i) => i);
+  const labels = new Map<number, string>();
+  ticks.forEach(hour => {
+    labels.set(hour, formatHourLabel(hour));
+  });
+  return { ticks, labels };
+};
+
+const allocateTotalsToBuckets = (total: number, weights: number[]) => {
+  if (total <= 0 || weights.length === 0) {
+    return weights.map(() => 0);
+  }
+  const sumWeights = weights.reduce((sum, w) => sum + w, 0);
+  const raw = weights.map(w => (w / sumWeights) * total);
+  const floors = raw.map(value => Math.floor(value));
+  let remainder = total - floors.reduce((sum, value) => sum + value, 0);
+
+  const fractions = raw
+    .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
+    .sort((a, b) => b.fraction - a.fraction);
+
+  let cursor = 0;
+  while (remainder > 0 && fractions.length > 0) {
+    floors[fractions[cursor].index] += 1;
+    remainder -= 1;
+    cursor = (cursor + 1) % fractions.length;
+  }
+
+  return floors;
+};
+
+const buildHourlySeries = (
+  dateISO: string,
+  totalUnits: number,
+  totalSales: number,
+  lastYearUnits: number,
+  lastYearSales: number
+) => {
+  const hourWeights = Array.from({ length: 24 }, () => 0.1 + Math.random() * 1.9);
+  const salesWeights = Array.from({ length: 24 }, () => 0.1 + Math.random() * 1.9);
+  const lastYearUnitWeights = Array.from({ length: 24 }, () => 0.1 + Math.random() * 1.9);
+  const lastYearSalesWeights = Array.from({ length: 24 }, () => 0.1 + Math.random() * 1.9);
+
+  const units = allocateTotalsToBuckets(Math.max(0, Math.round(totalUnits)), hourWeights);
+  const sales = allocateTotalsToBuckets(Math.max(0, Math.round(totalSales)), salesWeights);
+  const lastUnits = allocateTotalsToBuckets(Math.max(0, Math.round(lastYearUnits)), lastYearUnitWeights);
+  const lastSales = allocateTotalsToBuckets(Math.max(0, Math.round(lastYearSales)), lastYearSalesWeights);
+
+  return Array.from({ length: 24 }, (_, hour) => ({
+    date: dateISO,
+    hour,
+    hourLabel: formatHourLabel(hour),
+    xIndex: hour,
+    units: units[hour],
+    sales: sales[hour],
+    lastYearUnits: lastUnits[hour],
+    lastYearSales: lastSales[hour],
+  }));
+};
+
+type CompareColumn = {
+  key: string;
+  label: string;
+  lines: string[];
+};
+
+type CompareSeriesPoint = {
+  xIndex: number;
+  units: number;
+  sales: number;
+  hourLabel?: string;
+  date?: string;
+  weekLabel?: string;
+};
+
+type CompareSeries = {
+  key: string;
+  label: string;
+  data: CompareSeriesPoint[];
+};
+
 const BusinessReports: React.FC = () => {
   const { t, formatCurrency, formatNumber } = useI18n();
   const { currentStore } = useStore();
@@ -88,15 +207,18 @@ const BusinessReports: React.FC = () => {
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
   const [startDate, setStartDate] = useState(() => {
-    const lastYear = new Date();
-    lastYear.setFullYear(lastYear.getFullYear() - 1);
-    return formatDateISO(lastYear);
+    const today = new Date();
+    return formatDateISO(today);
   });
   const [endDate, setEndDate] = useState(() => {
     const today = new Date();
     return formatDateISO(today);
   });
-  const [selectedDateRange, setSelectedDateRange] = useState('custom');
+  const [selectedDateRange, setSelectedDateRange] = useState('today');
+  const [chartMode, setChartMode] = useState<'daily' | 'hourly' | 'week' | 'month'>('daily');
+  const [compareColumns, setCompareColumns] = useState<CompareColumn[]>([]);
+  const [compareSeries, setCompareSeries] = useState<CompareSeries[]>([]);
+  const [compareVisibility, setCompareVisibility] = useState<Record<string, boolean>>({});
 
   const [chartData, setChartData] = useState<any[]>([]);
   const [yAxisConfig, setYAxisConfig] = useState({
@@ -130,6 +252,35 @@ const BusinessReports: React.FC = () => {
   const [baseRange, setBaseRange] = useState<{ start: Date; end: Date } | null>(null);
 
   const showComparison = appliedDateRange.isApplied;
+  const isHourlyView = chartMode === 'hourly';
+  const hourTickData = useMemo(() => buildHourTicks(), []);
+
+  const getCompareColor = (key: string) => {
+    if (key === 'current') return '#008296';
+    if (key === 'yesterday' || key === 'dayBeforeYesterday') return '#d73027';
+    if (key === 'sameDayLastWeek' || key === 'lastWeek' || key === 'lastMonth') return '#FDA465';
+    if (key === 'sameDayLastYear' || key === 'sameWeekLastYear' || key === 'sameMonthLastYear') return '#8a8a8a';
+    return '#565959';
+  };
+
+  const addDaysToISO = (dateStr: string, delta: number) => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return '';
+    const [year, month, day] = parts;
+    const date = new Date(year, month - 1, day);
+    date.setDate(date.getDate() + delta);
+    return formatDateISO(date);
+  };
+
+  const getWeekStart = (date: Date) => {
+    const start = new Date(date);
+    const day = start.getDay();
+    const diff = (day + 6) % 7; // Monday = 0
+    start.setDate(start.getDate() - diff);
+    start.setHours(0, 0, 0, 0);
+    return start;
+  };
 
   const monthTickData = useMemo(() => {
     if (!baseRange) {
@@ -138,6 +289,36 @@ const BusinessReports: React.FC = () => {
     return buildMonthTicks(baseRange.start, baseRange.end);
   }, [baseRange]);
 
+  const weekTickData = useMemo(() => {
+    if (chartMode !== 'week') {
+      return { ticks: [], labels: new Map<number, string>() };
+    }
+    const labels = new Map<number, string>();
+    const ticks: number[] = [];
+    chartData.forEach((item: any) => {
+      if (typeof item.xIndex === 'number') {
+        ticks.push(item.xIndex);
+        labels.set(item.xIndex, item.weekLabel || '');
+      }
+    });
+    return { ticks, labels };
+  }, [chartMode, chartData]);
+
+  const monthDayTickData = useMemo(() => {
+    if (chartMode !== 'month') {
+      return { ticks: [], labels: new Map<number, string>() };
+    }
+    const ticks: number[] = [];
+    const labels = new Map<number, string>();
+    chartData.forEach((item: any) => {
+      if (typeof item.xIndex === 'number') {
+        ticks.push(item.xIndex);
+        labels.set(item.xIndex, String(item.xIndex));
+      }
+    });
+    return { ticks, labels };
+  }, [chartMode, chartData]);
+
   const xDomain = useMemo(() => {
     if (!baseRange) return undefined;
     return [0, diffDays(baseRange.start, baseRange.end)] as [number, number];
@@ -145,11 +326,18 @@ const BusinessReports: React.FC = () => {
 
   // ✅ 生成固定的13个月标签
   // ===== 动态Y轴刻度系统 - 根据数据动态计算3个坐标 =====
-  const calculateYAxisConfiguration = (maxUnits: number, maxSales: number) => {
-    // ✅ 按照用户要求的Y轴计算规则
-    const calculateYAxisTicks = (maxValue: number, defaultMax: number, defaultInterval: number) => {
+  const calculateYAxisConfiguration = (
+    maxUnits: number,
+    maxSales: number,
+    mode: 'daily' | 'hourly' | 'week' | 'month' = 'daily'
+  ) => {
+    const calculateYAxisTicks = (
+      maxValue: number,
+      defaultMax: number,
+      defaultInterval: number,
+      roundInterval: boolean
+    ) => {
       if (maxValue <= defaultMax) {
-        // 如果最大值在默认范围内，使用默认的Y轴配置
         const ticks = [];
         for (let i = 0; i <= 3; i++) {
           ticks.push(i * defaultInterval);
@@ -159,56 +347,66 @@ const BusinessReports: React.FC = () => {
           domain: [0, defaultMax] as [number, number]
         };
       } else {
-        // 如果超出默认范围，按照3的倍数重新计算
-        // 找到最接近maxValue且能被3整除的数值
-        const targetMax = Math.ceil(maxValue * 1.1); // 增加10%余量
+        if (!roundInterval) {
+          const interval = Math.ceil(maxValue / 3);
+          return {
+            ticks: [0, interval, interval * 2, interval * 3],
+            domain: [0, interval * 3] as [number, number]
+          };
+        }
+
+        const targetMax = Math.ceil(maxValue * 1.1);
         const interval = Math.ceil(targetMax / 3);
-        
-        // 美化间隔数字
+
         let niceInterval: number;
         if (interval <= 1000) {
-          niceInterval = Math.ceil(interval / 100) * 100; // 取整到百位
+          niceInterval = Math.ceil(interval / 100) * 100;
         } else if (interval <= 10000) {
-          niceInterval = Math.ceil(interval / 1000) * 1000; // 取整到千位
+          niceInterval = Math.ceil(interval / 1000) * 1000;
         } else {
-          niceInterval = Math.ceil(interval / 10000) * 10000; // 取整到万位
+          niceInterval = Math.ceil(interval / 10000) * 10000;
         }
-        
+
         return {
           ticks: [0, niceInterval, niceInterval * 2, niceInterval * 3],
           domain: [0, niceInterval * 3] as [number, number]
         };
       }
     };
-    
+
+    const unitDefaults = mode === 'hourly'
+      ? { max: 75, interval: 25, round: false }
+      : mode === 'week' || mode === 'month'
+        ? { max: 3000, interval: 1000, round: false }
+        : { max: 7500, interval: 2500, round: true };
+    const salesDefaults = mode === 'hourly'
+      ? { max: 3000, interval: 1000, round: false }
+      : mode === 'week'
+        ? { max: 60000, interval: 20000, round: false }
+        : mode === 'month'
+          ? { max: 75000, interval: 25000, round: false }
+          : { max: 150000, interval: 50000, round: true };
+
     return {
-      unitsConfig: calculateYAxisTicks(maxUnits, 7500, 2500), // 默认0,2.5k,5k,7.5k
-      salesConfig: calculateYAxisTicks(maxSales, 150000, 50000) // 默认0,50k,100k,150k
+      unitsConfig: calculateYAxisTicks(maxUnits, unitDefaults.max, unitDefaults.interval, unitDefaults.round),
+      salesConfig: calculateYAxisTicks(maxSales, salesDefaults.max, salesDefaults.interval, salesDefaults.round)
     };
   };
 
-  // ===== Axis tick formatting (match Seller Central) =====
-  const formatUnitsTick = (v: number) => {
-    if (v === 0) return '0';
-    if (v >= 1000) return `${v / 1000}k`; // ✅ 2500 -> 2.5k, 5000 -> 5k, 7500 -> 7.5k, 10000 -> 10k
-    return v.toString();
+  const updateSnapshotFromTotals = (totalUnits: number, totalSales: number) => {
+    const totalOrderItems = totalUnits;
+    setSnapshotData(prev => ({
+      ...prev,
+      totalOrderItems: new Intl.NumberFormat('en-US').format(totalOrderItems),
+      unitsOrdered: new Intl.NumberFormat('en-US').format(totalUnits),
+      orderedProductSales: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalSales),
+      avgUnitsPerOrder: totalOrderItems > 0 ? (totalUnits / totalOrderItems).toFixed(2) : '0.00',
+      avgSalesPerOrder: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+        totalOrderItems > 0 ? totalSales / totalOrderItems : 0
+      ),
+      timestamp: prev.timestamp
+    }));
   };
-
-  const formatSalesTick = (v: number) => {
-    if (v === 0) return '0';
-    if (v >= 1000) return `${v / 1000}k`; // ✅ 50000 -> 50k, 100000 -> 100k, 150000 -> 150k, 200000 -> 200k
-    return v.toString();
-  };
-
-  const formatDateForAPI = (dateStr: string) => {
-    if (!dateStr) return '';
-    if (dateStr.includes('-')) return dateStr;
-    const parts = dateStr.split('/');
-    if (parts.length !== 3) return '';
-    const [month, day, year] = parts;
-    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  };
-
   const generateFallbackChartData = () => {
     // ✅ 生成13个月的按天数据，但X轴只显示月份标签
     const now = new Date();
@@ -282,11 +480,16 @@ const BusinessReports: React.FC = () => {
     const maxUnits = Math.max(...data.map(d => d.units || 0));
     const maxSales = Math.max(...data.map(d => d.sales || 0));
     
-    const yAxisConfig = calculateYAxisConfiguration(maxUnits, maxSales);
+    const yAxisConfig = calculateYAxisConfiguration(maxUnits, maxSales, 'daily');
     setYAxisConfig(yAxisConfig);
   };
 
-  const loadChartData = async (start?: string, end?: string) => {
+  const loadChartData = async (
+    start?: string,
+    end?: string,
+    viewMode: 'daily' | 'hourly' | 'week' | 'month' = 'daily',
+    dimension?: string
+  ) => {
     if (!currentStore?.id) return;
 
     try {
@@ -294,11 +497,73 @@ const BusinessReports: React.FC = () => {
       const params = new URLSearchParams();
       if (start) params.append('startDate', start);
       if (end) params.append('endDate', end);
+      if (dimension) params.append('dimension', dimension);
 
       const response = await apiGet(`/api/sales/chart-data/${currentStore.id}?${params.toString()}`);
       if (response.success && response.data && response.data.length > 0) {
-        // ✅ 直接使用后端返回的数据，后端已经处理好了13个月的结构
+        const resolvedMode: 'daily' | 'hourly' | 'week' | 'month' =
+          viewMode === 'hourly' || viewMode === 'week' || viewMode === 'month'
+            ? viewMode
+            : 'daily';
+        setChartMode(resolvedMode);
+        const incomingColumns = response.compare?.columns || [];
+        setCompareColumns(incomingColumns);
+        setCompareSeries(response.compare?.series || []);
+        setCompareVisibility(prev => {
+          if (!incomingColumns.length) return {};
+          const next: Record<string, boolean> = {};
+          incomingColumns.forEach((column: CompareColumn) => {
+            next[column.key] = prev[column.key] ?? true;
+          });
+          return next;
+        });
+
         const rawData = response.data;
+        if (resolvedMode === 'hourly') {
+          setChartData(rawData);
+          setBaseRange(null);
+
+          const maxUnits = Math.max(...rawData.map((d: any) => Math.max(d.units || 0, d.lastYearUnits || 0)));
+          const maxSales = Math.max(...rawData.map((d: any) => Math.max(d.sales || 0, d.lastYearSales || 0)));
+          setYAxisConfig(calculateYAxisConfiguration(maxUnits, maxSales, 'hourly'));
+
+          const totalUnits = rawData.reduce((sum: number, item: any) => sum + (item.units || 0), 0);
+          const totalSales = rawData.reduce((sum: number, item: any) => sum + (item.sales || 0), 0);
+          updateSnapshotFromTotals(totalUnits, totalSales);
+
+          return;
+        }
+
+        if (resolvedMode === 'week') {
+          setChartData(rawData);
+          setBaseRange(null);
+
+          const maxUnits = Math.max(...rawData.map((d: any) => Math.max(d.units || 0, d.lastYearUnits || 0)));
+          const maxSales = Math.max(...rawData.map((d: any) => Math.max(d.sales || 0, d.lastYearSales || 0)));
+          setYAxisConfig(calculateYAxisConfiguration(maxUnits, maxSales, 'week'));
+
+          const totalUnits = rawData.reduce((sum: number, item: any) => sum + (item.units || 0), 0);
+          const totalSales = rawData.reduce((sum: number, item: any) => sum + (item.sales || 0), 0);
+          updateSnapshotFromTotals(totalUnits, totalSales);
+
+          return;
+        }
+
+        if (resolvedMode === 'month') {
+          setChartData(rawData);
+          setBaseRange(null);
+
+          const maxUnits = Math.max(...rawData.map((d: any) => Math.max(d.units || 0, d.lastYearUnits || 0)));
+          const maxSales = Math.max(...rawData.map((d: any) => Math.max(d.sales || 0, d.lastYearSales || 0)));
+          setYAxisConfig(calculateYAxisConfiguration(maxUnits, maxSales, 'month'));
+
+          const totalUnits = rawData.reduce((sum: number, item: any) => sum + (item.units || 0), 0);
+          const totalSales = rawData.reduce((sum: number, item: any) => sum + (item.sales || 0), 0);
+          updateSnapshotFromTotals(totalUnits, totalSales);
+
+          return;
+        }
+
         let range = baseRange;
 
         if (!range || (!start && !end)) {
@@ -311,25 +576,17 @@ const BusinessReports: React.FC = () => {
 
         const chartData = range ? attachXIndex(rawData, range.start) : rawData;
         setChartData(chartData);
-        
-        // ✅ 如果后端返回了Y轴配置，使用它；否则前端计算
-        if (response.yAxisConfig) {
-          setYAxisConfig(response.yAxisConfig);
-        } else {
-          // 如果没有Y轴配置，前端计算
-          const maxUnits = Math.max(...chartData.map((d: any) => Math.max(d.units || 0, d.lastYearUnits || 0)));
-          const maxSales = Math.max(...chartData.map((d: any) => Math.max(d.sales || 0, d.lastYearSales || 0)));
-          
-          const yAxisConfig = calculateYAxisConfiguration(maxUnits, maxSales);
-          setYAxisConfig(yAxisConfig);
-        }
-        
-        // ✅ 如果有日期范围参数，更新底部统计数据
+
+        const maxUnits = Math.max(...chartData.map((d: any) => Math.max(d.units || 0, d.lastYearUnits || 0)));
+        const maxSales = Math.max(...chartData.map((d: any) => Math.max(d.sales || 0, d.lastYearSales || 0)));
+        const yAxisConfig = calculateYAxisConfiguration(maxUnits, maxSales, 'daily');
+        setYAxisConfig(yAxisConfig);
+
         if (start && end && chartData.length > 0) {
           const totalUnits = chartData.reduce((sum: any, item: any) => sum + (item.units || 0), 0);
           const totalSales = chartData.reduce((sum: any, item: any) => sum + (item.sales || 0), 0);
           const totalOrders = chartData.filter((item: any) => (item.units || 0) > 0).length;
-          
+
           setSnapshotData(prev => ({
             ...prev,
             totalOrderItems: new Intl.NumberFormat('en-US').format(Math.floor(totalUnits * 0.8)),
@@ -352,11 +609,15 @@ const BusinessReports: React.FC = () => {
           }));
         }
       } else {
-        generateFallbackChartData();
+        setChartData([]);
+        setCompareColumns([]);
+        setCompareSeries([]);
+        setCompareVisibility({});
       }
     } catch (e) {
       console.error('Chart data loading error:', e);
-      generateFallbackChartData();
+      setChartData([]);
+      setCompareColumns([]);
     } finally {
       setLoading(false);
     }
@@ -368,7 +629,16 @@ const BusinessReports: React.FC = () => {
 
     console.log('Apply filters:', { startDate, endDate, apiStartDate, apiEndDate });
 
-    await loadChartData(apiStartDate, apiEndDate);
+    const viewMode: 'daily' | 'hourly' | 'week' | 'month' =
+      selectedDateRange === 'today' || selectedDateRange === 'yesterday'
+        ? 'hourly'
+        : selectedDateRange === 'week'
+          ? 'week'
+          : selectedDateRange === 'month'
+            ? 'month'
+            : 'daily';
+    setChartMode(viewMode);
+    await loadChartData(apiStartDate, apiEndDate, viewMode, selectedDateRange);
 
     setAppliedDateRange({
       startDate,
@@ -379,6 +649,14 @@ const BusinessReports: React.FC = () => {
 
   const handleDateRangeChange = (value: string) => {
     setSelectedDateRange(value);
+    setCompareColumns([]);
+    setCompareSeries([]);
+    setCompareVisibility({});
+    setAppliedDateRange({
+      startDate: '',
+      endDate: '',
+      isApplied: false
+    });
 
     const today = new Date();
     let newStartDate = '';
@@ -407,14 +685,13 @@ const BusinessReports: React.FC = () => {
         break;
       }
       case 'week': {
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - 6);
+        const weekStart = getWeekStart(today);
         newStartDate = fmt(weekStart);
         newEndDate = fmt(today);
         break;
       }
       case 'month': {
-        const monthStart = addMonths(today, -1);
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
         newStartDate = fmt(monthStart);
         newEndDate = fmt(today);
         break;
@@ -451,7 +728,17 @@ const BusinessReports: React.FC = () => {
         const response = await apiGet(`/api/sales/snapshot/${currentStore.id}`);
         if (response.success && response.data) {
           const data = response.data;
-          const currentTimestamp = new Date().toLocaleString('en-US', {
+          const totalOrderItems = data.total_order_items || 0;
+          const unitsOrdered = data.units_ordered || 0;
+          const orderedProductSales = data.ordered_product_sales || 0;
+          const avgUnits =
+            data.avg_units_per_order_item ??
+            (totalOrderItems > 0 ? unitsOrdered / totalOrderItems : 0);
+          const avgSales =
+            data.avg_sales_per_order_item ??
+            (totalOrderItems > 0 ? orderedProductSales / totalOrderItems : 0);
+          const snapshotTime = data.snapshot_time ? new Date(data.snapshot_time) : new Date();
+          const formattedTimestamp = snapshotTime.toLocaleString('en-US', {
             timeZone: 'America/Los_Angeles',
             month: '2-digit',
             day: '2-digit',
@@ -463,16 +750,16 @@ const BusinessReports: React.FC = () => {
           });
 
           setSnapshotData({
-            totalOrderItems: new Intl.NumberFormat('en-US').format(data.total_order_items || 0),
-            unitsOrdered: new Intl.NumberFormat('en-US').format(data.units_ordered || 0),
+            totalOrderItems: new Intl.NumberFormat('en-US').format(totalOrderItems),
+            unitsOrdered: new Intl.NumberFormat('en-US').format(unitsOrdered),
             orderedProductSales: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-              data.ordered_product_sales || 0
+              orderedProductSales
             ),
-            avgUnitsPerOrder: (data.avg_units_per_order_item || 0).toFixed(2),
+            avgUnitsPerOrder: avgUnits.toFixed(2),
             avgSalesPerOrder: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-              data.avg_sales_per_order_item || 0
+              avgSales
             ),
-            timestamp: currentTimestamp
+            timestamp: formattedTimestamp
           });
         }
       } catch (e) {
@@ -481,10 +768,103 @@ const BusinessReports: React.FC = () => {
     };
 
     loadSnapshotData();
-    // ✅ 默认加载13个月数据，不传日期参数
-    loadChartData();
+    // ✅ 默认加载当天24小时数据，不显示对比
+    loadChartData(undefined, undefined, 'hourly', 'today');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStore]);
+
+  const xAxisTicks = isHourlyView
+    ? hourTickData.ticks
+    : chartMode === 'week'
+      ? weekTickData.ticks
+      : chartMode === 'month'
+        ? monthDayTickData.ticks
+        : monthTickData.ticks;
+  const xAxisDomain = isHourlyView
+    ? ([0, 23] as [number, number])
+    : chartMode === 'week'
+      ? ([0, 6] as [number, number])
+      : chartMode === 'month'
+        ? ([1, monthDayTickData.ticks.length || 31] as [number, number])
+        : xDomain;
+  const xAxisTickFormatter = (value: number) => {
+    if (isHourlyView) return hourTickData.labels.get(Number(value)) || '';
+    if (chartMode === 'week') return weekTickData.labels.get(Number(value)) || '';
+    if (chartMode === 'month') return String(value);
+    return monthTickData.labels.get(Number(value)) || '';
+  };
+
+  const chartDataWithCompare = useMemo(() => {
+    if (!compareSeries.length) return chartData;
+    const seriesMaps = new Map<string, Map<number, CompareSeriesPoint>>();
+    compareSeries.forEach(series => {
+      const map = new Map<number, CompareSeriesPoint>();
+      series.data.forEach(point => {
+        map.set(point.xIndex, point);
+      });
+      seriesMaps.set(series.key, map);
+    });
+
+    return chartData.map((item: any) => {
+      const next = { ...item };
+      compareSeries.forEach(series => {
+        const match = seriesMaps.get(series.key)?.get(Number(item.xIndex));
+        next[`compare_${series.key}_units`] = match ? match.units : 0;
+        next[`compare_${series.key}_sales`] = match ? match.sales : 0;
+      });
+      return next;
+    });
+  }, [chartData, compareSeries]);
+
+  const visibleCompareSeries = useMemo(
+    () => compareSeries.filter(series => compareVisibility[series.key] !== false),
+    [compareSeries, compareVisibility]
+  );
+
+  const isCurrentVisible = !showComparison || compareVisibility.current !== false;
+
+  const hasCustomCompare = showComparison && compareColumns.length > 0;
+
+  const renderCompareColumn = (column: CompareColumn) => {
+    const isChecked = compareVisibility[column.key] !== false;
+    const lineColor = getCompareColor(column.key);
+    return (
+      <div className={styles.compareCheckbox}>
+        <button
+          type="button"
+          onClick={() =>
+            setCompareVisibility(prev => ({
+              ...prev,
+              [column.key]: prev[column.key] === false
+            }))
+          }
+          className="w-4 h-4 border-2 rounded-[2px] flex items-center justify-center mt-1 bg-white"
+          style={{
+            borderColor: '#007185',
+            backgroundColor: isChecked ? '#007185' : '#ffffff'
+          }}
+          aria-label={`${column.label} toggle`}
+        >
+          {isChecked && <Check size={12} className="text-white" />}
+        </button>
+        <div>
+          <span className={styles.checkboxLabel} style={{ color: lineColor }}>
+            {column.label}
+          </span>
+          {isChecked && (
+            <div className={styles.checkboxValues}>
+              {column.lines.map((line, idx) => (
+                <span key={idx} style={(line.includes('Units') || line.includes('$')) ? { color: lineColor } : undefined}>
+                  {line}
+                  {idx < column.lines.length - 1 && <br />}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className={cn(styles.businessReports, styles.pageContainer)}>
@@ -557,10 +937,12 @@ const BusinessReports: React.FC = () => {
                 <div className={styles.datePicker}>
                   <CustomDateDropdown value={selectedDateRange} onChange={handleDateRangeChange} />
 
-                  <div className={styles.dateInputsRow}>
-                    <DatePicker value={startDate} onChange={setStartDate} />
-                    <DatePicker value={endDate} onChange={setEndDate} />
-                  </div>
+                  {selectedDateRange === 'custom' && (
+                    <div className={styles.dateInputsRow}>
+                      <DatePicker value={startDate} onChange={setStartDate} />
+                      <DatePicker value={endDate} onChange={setEndDate} />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -648,19 +1030,24 @@ const BusinessReports: React.FC = () => {
             <div className={styles.chartWrapper}>
               <div className={styles.yAxisTitle}>Units ordered</div>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 18, right: 20, left: 12, bottom: 8 }}>
+                <LineChart data={chartDataWithCompare} margin={{ top: 18, right: 20, left: 12, bottom: isHourlyView ? 20 : 8 }}>
                   <CartesianGrid vertical={false} stroke="#e7e7e7" strokeWidth={1} />
                   <XAxis
                     dataKey="xIndex"
                     type="number"
-                    domain={xDomain}
-                    ticks={monthTickData.ticks}
+                    domain={xAxisDomain}
+                    ticks={xAxisTicks}
                     axisLine={{ stroke: '#d5d9d9' }}
                     tickLine={{ stroke: '#d5d9d9', strokeWidth: 0.5 }}
-                    tick={{ fontSize: 10, fill: '#565959' }}
+                    tick={{
+                      fontSize: 10,
+                      fill: '#565959',
+                      angle: isHourlyView ? -45 : 0,
+                      textAnchor: isHourlyView ? 'end' : 'middle'
+                    }}
                     interval={0}
-                    tickFormatter={(value) => monthTickData.labels.get(Number(value)) || ''}
-                    height={30}
+                    tickFormatter={xAxisTickFormatter}
+                    height={isHourlyView ? 50 : 30}
                     padding={{ left: 5, right: 5 }}
                   />
                   <YAxis
@@ -677,14 +1064,20 @@ const BusinessReports: React.FC = () => {
                       if (!active || !payload || !payload.length) return null;
                       const d = payload[0].payload;
                       const showLastYear = showComparison && (d.lastYearUnits || 0) > 0;
-                      const date = new Date(d.date).toLocaleString('en-US', {
-                        month: '2-digit',
-                        day: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                      });
+                      const date = isHourlyView
+                        ? `${new Date(d.date).toLocaleDateString('en-US', {
+                            month: '2-digit',
+                            day: '2-digit',
+                            year: 'numeric'
+                          })} ${d.hourLabel || ''}`
+                        : new Date(d.date).toLocaleString('en-US', {
+                            month: '2-digit',
+                            day: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                          });
                       return (
                         <div style={{
                           backgroundColor: '#fff',
@@ -709,9 +1102,21 @@ const BusinessReports: React.FC = () => {
                       );
                     }}
                   />
-                  <Line type="linear" dataKey="units" stroke="#008296" strokeWidth={1} dot={false} activeDot={false} />
-                  {/* ✅ 只有当有同期数据时才显示红色线 */}
-                  {showComparison && chartData.some(d => (d.lastYearUnits || 0) > 0) && (
+                  {isCurrentVisible && (
+                    <Line type="linear" dataKey="units" stroke="#008296" strokeWidth={1} dot={false} activeDot={false} />
+                  )}
+                  {showComparison && visibleCompareSeries.map(series => (
+                    <Line
+                      key={`units-${series.key}`}
+                      type="linear"
+                      dataKey={`compare_${series.key}_units`}
+                      stroke={getCompareColor(series.key)}
+                      strokeWidth={1}
+                      dot={false}
+                      activeDot={false}
+                    />
+                  ))}
+                  {!visibleCompareSeries.length && showComparison && chartData.some(d => (d.lastYearUnits || 0) > 0) && (
                     <Line type="linear" dataKey="lastYearUnits" stroke="#d73027" strokeWidth={1} dot={false} activeDot={false} />
                   )}
                 </LineChart>
@@ -725,19 +1130,24 @@ const BusinessReports: React.FC = () => {
             <div className={styles.chartWrapper}>
               <div className={styles.yAxisTitle}>Ordered product sales</div>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 18, right: 20, left: 12, bottom: 8 }}>
+                <LineChart data={chartDataWithCompare} margin={{ top: 18, right: 20, left: 12, bottom: isHourlyView ? 20 : 8 }}>
                   <CartesianGrid vertical={false} stroke="#e7e7e7" strokeWidth={1} />
                   <XAxis
                     dataKey="xIndex"
                     type="number"
-                    domain={xDomain}
-                    ticks={monthTickData.ticks}
+                    domain={xAxisDomain}
+                    ticks={xAxisTicks}
                     axisLine={{ stroke: '#d5d9d9' }}
                     tickLine={{ stroke: '#d5d9d9', strokeWidth: 0.5 }}
-                    tick={{ fontSize: 10, fill: '#565959' }}
+                    tick={{
+                      fontSize: 10,
+                      fill: '#565959',
+                      angle: isHourlyView ? -45 : 0,
+                      textAnchor: isHourlyView ? 'end' : 'middle'
+                    }}
                     interval={0}
-                    tickFormatter={(value) => monthTickData.labels.get(Number(value)) || ''}
-                    height={30}
+                    tickFormatter={xAxisTickFormatter}
+                    height={isHourlyView ? 50 : 30}
                     padding={{ left: 5, right: 5 }}
                   />
                   <YAxis
@@ -754,14 +1164,20 @@ const BusinessReports: React.FC = () => {
                       if (!active || !payload || !payload.length) return null;
                       const d = payload[0].payload;
                       const showLastYear = showComparison && (d.lastYearSales || 0) > 0;
-                      const date = new Date(d.date).toLocaleString('en-US', {
-                        month: '2-digit',
-                        day: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                      });
+                      const date = isHourlyView
+                        ? `${new Date(d.date).toLocaleDateString('en-US', {
+                            month: '2-digit',
+                            day: '2-digit',
+                            year: 'numeric'
+                          })} ${d.hourLabel || ''}`
+                        : new Date(d.date).toLocaleString('en-US', {
+                            month: '2-digit',
+                            day: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                          });
                       return (
                         <div style={{
                           backgroundColor: '#fff',
@@ -786,9 +1202,21 @@ const BusinessReports: React.FC = () => {
                       );
                     }}
                   />
-                  <Line type="linear" dataKey="sales" stroke="#008296" strokeWidth={1} dot={false} activeDot={false} />
-                  {/* ✅ 只有当有同期数据时才显示红色线 */}
-                  {showComparison && chartData.some(d => (d.lastYearSales || 0) > 0) && (
+                  {isCurrentVisible && (
+                    <Line type="linear" dataKey="sales" stroke="#008296" strokeWidth={1} dot={false} activeDot={false} />
+                  )}
+                  {showComparison && visibleCompareSeries.map(series => (
+                    <Line
+                      key={`sales-${series.key}`}
+                      type="linear"
+                      dataKey={`compare_${series.key}_sales`}
+                      stroke={getCompareColor(series.key)}
+                      strokeWidth={1}
+                      dot={false}
+                      activeDot={false}
+                    />
+                  ))}
+                  {!visibleCompareSeries.length && showComparison && chartData.some(d => (d.lastYearSales || 0) > 0) && (
                     <Line type="linear" dataKey="lastYearSales" stroke="#d73027" strokeWidth={1} dot={false} activeDot={false} />
                   )}
                 </LineChart>
@@ -838,47 +1266,60 @@ const BusinessReports: React.FC = () => {
           <div className="w-px bg-[#ddd] ml-12 mr-6 self-stretch" />
 
           <div className={styles.compareContent}>
-            <div className={styles.compareCheckbox}>
-              <div className="w-4 h-4 border-2 border-[#007185] rounded-[2px] bg-[#007185] flex items-center justify-center mt-1">
-                <Check size={12} className="text-white" />
+            {hasCustomCompare ? (
+              <div className={styles.compareColumns}>
+                {compareColumns.map((column, idx) => (
+                  <React.Fragment key={`${column.label}-${idx}`}>
+                    {renderCompareColumn(column)}
+                    {idx < compareColumns.length - 1 && (
+                      <div className="w-px bg-[#ddd] ml-4 mr-4 self-stretch" />
+                    )}
+                  </React.Fragment>
+                ))}
               </div>
-              <div>
-                <span className={styles.checkboxLabel}>{t('selectedDateRange')}</span>
-                <div className={styles.checkboxValues}>
-                  <span style={{ color: '#008296' }}>{snapshotData.unitsOrdered} {t('units')}</span>
-                  <br />
-                  <span style={{ color: '#008296' }}>{snapshotData.orderedProductSales}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-px bg-[#ddd] ml-4 mr-8 self-stretch" />
-
-            {/* ✅ 只有当有同期数据时才显示同期对比 */}
-            {showComparison && chartData.some(d => (d.lastYearUnits || 0) > 0 || (d.lastYearSales || 0) > 0) && (
-              <div className={styles.compareCheckbox}>
-                <div className="w-4 h-4 border-2 border-[#007185] rounded-[2px] bg-[#007185] flex items-center justify-center mt-1">
-                  <Check size={12} className="text-white" />
-                </div>
-                <div>
-                  <span className={styles.checkboxLabel}>{t('sameDateRangeOneYearAgo')}</span>
-                  <div className={styles.checkboxValues}>
-                    <span style={{ color: '#d73027' }}>
-                      {new Intl.NumberFormat('en-US').format(
-                        chartData.reduce((sum, item) => sum + (item.lastYearUnits || 0), 0)
-                      )} {t('units')}
-                    </span>
-                    <br />
-                    <span style={{ color: '#d73027' }}>
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-                        chartData.reduce((sum, item) => sum + (item.lastYearSales || 0), 0)
-                      )}
-                    </span>
+            ) : (
+              <>
+                <div className={styles.compareCheckbox}>
+                  <div className="w-4 h-4 border-2 border-[#007185] rounded-[2px] bg-[#007185] flex items-center justify-center mt-1">
+                    <Check size={12} className="text-white" />
+                  </div>
+                  <div>
+                    <span className={styles.checkboxLabel}>{t('selectedDateRange')}</span>
+                    <div className={styles.checkboxValues}>
+                      <span style={{ color: '#008296' }}>{snapshotData.unitsOrdered} {t('units')}</span>
+                      <br />
+                      <span style={{ color: '#008296' }}>{snapshotData.orderedProductSales}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
 
+                <div className="w-px bg-[#ddd] ml-4 mr-8 self-stretch" />
+
+                {showComparison && chartData.some(d => (d.lastYearUnits || 0) > 0 || (d.lastYearSales || 0) > 0) && (
+                  <div className={styles.compareCheckbox}>
+                    <div className="w-4 h-4 border-2 border-[#007185] rounded-[2px] bg-[#007185] flex items-center justify-center mt-1">
+                      <Check size={12} className="text-white" />
+                    </div>
+                    <div>
+                      <span className={styles.checkboxLabel}>{t('sameDateRangeOneYearAgo')}</span>
+                      <div className={styles.checkboxValues}>
+                        <span style={{ color: '#d73027' }}>
+                          {new Intl.NumberFormat('en-US').format(
+                            chartData.reduce((sum, item) => sum + (item.lastYearUnits || 0), 0)
+                          )} {t('units')}
+                        </span>
+                        <br />
+                        <span style={{ color: '#d73027' }}>
+                          {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+                            chartData.reduce((sum, item) => sum + (item.lastYearSales || 0), 0)
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -891,3 +1332,6 @@ const BusinessReports: React.FC = () => {
 };
 
 export default BusinessReports;
+
+
+

@@ -12,6 +12,129 @@ import { asyncHandler, createError } from '../middleware/errorHandler';
 
 const router = express.Router();
 
+type HourlyPoint = { hour: number; units: number; sales: number };
+type HourlySeries = { date: string; hours: HourlyPoint[] };
+type SalesTimeSeriesRecord = {
+  id?: string;
+  store_id: string;
+  updated_at?: string;
+  day?: {
+    today?: HourlySeries;
+    [key: string]: any;
+  };
+  week?: any;
+  month?: any;
+  year?: any;
+};
+
+const toUtcDate = (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+const formatDate = (date: Date) => date.toISOString().split('T')[0];
+
+const hashString = (value: string) => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+};
+
+const createRng = (seed: number) => {
+  let state = seed >>> 0;
+  return () => {
+    state |= 0;
+    state = (state + 0x6D2B79F5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const allocateTotals = (total: number, weights: number[]) => {
+  if (total <= 0 || weights.length === 0) {
+    return weights.map(() => 0);
+  }
+
+  const sumWeights = weights.reduce((sum, w) => sum + w, 0);
+  const raw = weights.map(w => (w / sumWeights) * total);
+  const floors = raw.map(value => Math.floor(value));
+  let remainder = total - floors.reduce((sum, value) => sum + value, 0);
+
+  const fractions = raw
+    .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
+    .sort((a, b) => b.fraction - a.fraction);
+
+  let cursor = 0;
+  while (remainder > 0 && fractions.length > 0) {
+    floors[fractions[cursor].index] += 1;
+    remainder -= 1;
+    cursor = (cursor + 1) % fractions.length;
+  }
+
+  return floors;
+};
+
+const buildHourlyWeights = (rng: () => number) => {
+  const weights: number[] = [];
+  for (let i = 0; i < 24; i++) {
+    const r1 = rng();
+    const r2 = rng();
+    const r3 = rng();
+    const r4 = rng();
+    const base = 0.05 + r1 * 2.5;
+    const tail = Math.pow(r2, 2.2);
+    const spread = 0.1 + tail * 18;
+    const spike = r3 > 0.88 ? 6 + r3 * 8 : 1;
+    const dip = r4 < 0.12 ? 0.12 : 1;
+    const weight = base * spread * spike * dip;
+    weights.push(Math.max(0.002, Math.min(40, weight)));
+  }
+  return weights;
+};
+
+const buildHourlySeries = (dateIso: string, totalUnits: number, totalSales: number, rng: () => number): HourlySeries => {
+  const unitWeights = buildHourlyWeights(rng);
+  const salesWeights = buildHourlyWeights(rng);
+  const units = allocateTotals(Math.max(0, Math.round(totalUnits)), unitWeights);
+  const sales = allocateTotals(Math.max(0, Math.round(totalSales)), salesWeights);
+
+  return {
+    date: dateIso,
+    hours: Array.from({ length: 24 }, (_, hour) => ({
+      hour,
+      units: units[hour],
+      sales: sales[hour],
+    }))
+  };
+};
+
+const upsertTodayHourlySeries = async (storeId: string, totalUnits: number, totalSales: number) => {
+  const todayIso = formatDate(toUtcDate(new Date()));
+  const seedBase = hashString(`${storeId}-${todayIso}-${totalUnits}-${totalSales}`);
+  const rng = createRng(seedBase + 5);
+  const todaySeries = buildHourlySeries(todayIso, totalUnits, totalSales, rng);
+
+  const existing = await dataService.findByStoreId<SalesTimeSeriesRecord>('sales_time_series', storeId);
+  const current = existing[0];
+  const updated: SalesTimeSeriesRecord = {
+    ...(current || { store_id: storeId }),
+    store_id: storeId,
+    updated_at: new Date().toISOString(),
+    day: {
+      ...(current?.day || {}),
+      today: todaySeries,
+    },
+    week: current?.week || { startDate: '', endDate: '', current: [], lastWeek: [], lastYear: [] },
+    month: current?.month || { startDate: '', endDate: '', current: [], lastMonth: [], lastYear: [] },
+    year: current?.year || { startDate: '', endDate: '', days: [] },
+  };
+
+  if (current?.id) {
+    await dataService.update<SalesTimeSeriesRecord>('sales_time_series', current.id, updated);
+  } else {
+    await dataService.create<SalesTimeSeriesRecord>('sales_time_series', updated);
+  }
+};
+
 // GET /api/dashboard/snapshot/:storeId - Get global snapshot data
 router.get('/snapshot/:storeId', asyncHandler(async (req, res) => {
   const { storeId } = req.params;
@@ -313,12 +436,12 @@ router.put('/config/:storeId', asyncHandler(async (req, res) => {
   // Transform admin interface data to backend format
   const backendData = {
     sales_amount: globalSnapshot.sales?.todaySoFar || 0,
-    open_orders: globalSnapshot.orders?.totalCount || 0,
     buyer_messages: globalSnapshot.messages?.casesRequiringAttention || 0,
     featured_offer_percent: globalSnapshot.featuredOffer?.percentage || 100,
     seller_feedback_rating: globalSnapshot.feedback?.rating || 5.0,
     seller_feedback_count: globalSnapshot.feedback?.count || 0,
     payments_balance: globalSnapshot.payments?.totalBalance || 0,
+    open_orders: 0,
     fbm_unshipped: globalSnapshot.orders?.fbmUnshipped || 0,
     fbm_pending: globalSnapshot.orders?.fbmPending || 0,
     fba_pending: globalSnapshot.orders?.fbaPending || 0,
@@ -327,6 +450,12 @@ router.put('/config/:storeId', asyncHandler(async (req, res) => {
     ad_impressions: globalSnapshot.ads?.impressions || 0,
     updated_at: new Date().toISOString(),
   };
+
+  const computedOpenOrders =
+    (backendData.fbm_unshipped || 0) +
+    (backendData.fbm_pending || 0) +
+    (backendData.fba_pending || 0);
+  backendData.open_orders = computedOpenOrders;
   
   const updateData = GlobalSnapshotSchema.partial().parse(backendData);
   
@@ -366,6 +495,14 @@ router.put('/config/:storeId', asyncHandler(async (req, res) => {
     snapshot = updatedSnapshot;
   }
   
+  try {
+    const totalUnits = Number(globalSnapshot?.orders?.totalCount || 0);
+    const totalSales = Number(globalSnapshot?.sales?.todaySoFar || 0);
+    await upsertTodayHourlySeries(storeId, totalUnits, totalSales);
+  } catch (error) {
+    console.error('Failed to update today hourly sales series:', error);
+  }
+
   const response: ApiResponse<GlobalSnapshot> = {
     success: true,
     data: snapshot,
